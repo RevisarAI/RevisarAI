@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import bodyParser from "body-parser";
 import reviewsRouter from "./routes/reviewsRoutes";
+import apiKeyRouter from "./routes/apiKeyRoutes";
 
 
 const app = express();
@@ -13,6 +14,7 @@ const initApp = () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use("/reviews", reviewsRouter);
+  app.use("/keys", apiKeyRouter)
 
   return new Promise<Express>((resolve, reject) => {
     mongoose

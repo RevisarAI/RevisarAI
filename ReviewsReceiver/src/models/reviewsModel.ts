@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 export interface IReview {
-  buisnessId: string;
+  businessId: string;
   value: string;
   date: Date;
 }
 
 const reviewSchema = new mongoose.Schema<IReview>({
-  buisnessId: { type: String, required: true },
+  businessId: { type: String, required: true },
   value: { type: String, required: true },
   date: { type: Date, required: true },
 });
