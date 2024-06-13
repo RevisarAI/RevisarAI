@@ -1,6 +1,6 @@
 import reviewsModel, { IReview } from "../models/reviewsModel";
 
-class ReviewsController {
+class BatchController {
   async post(req, res) {
     let { businessId, reviews } = req.body;
     reviews = reviews.map((review) => {
@@ -19,4 +19,4 @@ class ReviewsController {
   }
 }
 
-export default new ReviewsController();
+export default new BatchController();

@@ -22,6 +22,6 @@ reviews = [{
         "date": "2024-02-02 01:01:01"
     }]
 
-url = "http://localhost:3000/reviews"
+url = "http://localhost:3000/batch"
 
 requests.post(url, json={"reviews": reviews}, headers={"x-api-key": API_KEY})
