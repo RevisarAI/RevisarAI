@@ -2,8 +2,8 @@ import { Router } from 'express';
 import ReviewsController from '../controllers/reviewsController';
 import checkApiKey from '../common/apiKeyMiddleware';
 
-const reviewsRouter = Router();
+const batchRouter = Router();
 
-reviewsRouter.post('/', checkApiKey, ReviewsController.post.bind(ReviewsController));
+batchRouter.post('/', checkApiKey, ReviewsController.post.bind(ReviewsController));
 
-export default reviewsRouter;
+export default batchRouter;
