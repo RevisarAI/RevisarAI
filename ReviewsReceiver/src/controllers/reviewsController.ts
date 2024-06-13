@@ -2,8 +2,7 @@ import reviewsModel, { IReview } from "../models/reviewsModel";
 
 class ReviewsController {
   async post(req, res) {
-    let { businessId } = req.body;
-    let { reviews } = req.body;
+    let { businessId, reviews } = req.body;
     reviews = reviews.map((review) => {
       return {
         ...review,
