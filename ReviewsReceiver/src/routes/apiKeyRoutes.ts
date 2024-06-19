@@ -6,7 +6,7 @@ const apiKeyRouter = Router();
 
 // TODO: set up the route to generate a new API key in seperate service
 
-apiKeyRouter.post('/generate', async (req, res) => {
+apiKeyRouter.post('/', async (req, res) => {
   const { businessId } = req.body;
 
   if (!businessId) {
