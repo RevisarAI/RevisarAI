@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  metadatadb:
+    image: mongo:latest
+    container_name: metadatadb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: metadatadb
+    volumes:
+      - metadatadb_data:/data/db
+
+  datalake:
+    image: mongo:latest
+    container_name: datalake
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: datalake
+    volumes:
+      - datalake_data:/data/db
+
+volumes:
+  metadatadb_data:
+  datalake_data: 
