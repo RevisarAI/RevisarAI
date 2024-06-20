@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "start": "tsc && node dist/server.js",
+    "dev": "nodemon ./src/server.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "http": "^0.0.1-security",
+    "mongoose": "^8.4.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.2"
+  }
+}
