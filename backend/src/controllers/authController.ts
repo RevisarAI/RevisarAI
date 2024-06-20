@@ -5,7 +5,7 @@ import { signAccessToken, signRefreshToken } from "../utils/signTokens";
 
 const register = async (req, res) => {
   try {
-    let client = await clientModel.findOne({ email: req.body.email });
+    const client = await clientModel.findOne({ email: req.body.email });
     if (client != null) {
       res.status(400).send("Email already exists");
     }
