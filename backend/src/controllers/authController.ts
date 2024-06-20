@@ -14,7 +14,7 @@ const register = async (req, res) => {
     const businessId = uuidv4();
     const accessToken = await signAccessToken(businessId);
     const refreshToken = await signRefreshToken(businessId);
-    client = new clientModel({
+    await new clientModel({
       email: req.body.email,
       fullName: req.body.fullName,
       businessName: req.body.businessName,
@@ -22,8 +22,7 @@ const register = async (req, res) => {
       businessId: businessId,
       password: hash,
       tokens: [refreshToken],
-    });
-    client = await client.save();
+    }).save();
     res.status(201).send({ businessId, accessToken, refreshToken });
   } catch (error) {
     console.error(error);
