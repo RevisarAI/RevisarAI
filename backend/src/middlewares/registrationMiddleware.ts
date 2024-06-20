@@ -1,4 +1,4 @@
-const validateClientMiddleware = (req, res, next) => {
+const registrationMiddleware = (req, res, next) => {
   const { email, fullName, businessName, businessDescription, password } =
     req.body;
   if (
@@ -13,4 +13,4 @@ const validateClientMiddleware = (req, res, next) => {
   next();
 };
 
-export default validateClientMiddleware;
+export default registrationMiddleware;
