@@ -14,14 +14,16 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.20",
+    "@react-oauth/google": "^0.12.1",
     "@tanstack/react-form": "^0.23.2",
+    "@tanstack/react-query": "^5.45.1",
     "@tanstack/react-router": "^1.39.4",
     "axios": "^1.7.2",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "validator": "^13.12.0",
-    "shared-types": "file:../shared-types"
+    "shared-types": "file:../shared-types",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "^1.39.4",

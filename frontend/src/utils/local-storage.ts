@@ -1,7 +1,4 @@
-interface UserTokens {
-  accessToken: string;
-  refreshToken: string;
-}
+import { UserTokens } from 'shared-types';
 
 export const clearTokens = (): void => {
   localStorage.removeItem('token');

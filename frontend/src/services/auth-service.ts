@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { UserTokens } from 'shared-types';
 
 export class AuthenticationService {
   private apiClient: AxiosInstance;
@@ -8,6 +9,10 @@ export class AuthenticationService {
   }
 
   async login(email: string, password: string, signal?: AbortSignal): Promise<UserTokens> {
+    // TODO: implement
+  }
+
+  async googleSignIn(credential: string): Promise<UserTokens> {
     // TODO: implement
   }
 

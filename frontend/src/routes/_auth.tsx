@@ -5,13 +5,15 @@ import { Outlet, createFileRoute } from '@tanstack/react-router';
 const AuthLayout: React.FC = () => {
   return (
     <Grid container>
-      <Grid item xs={6} container spacing={0} direction="row" alignItems="center" justifyContent="center">
-        <Grid item xs={7}>
+      <Grid item md={6} container spacing={0} justifyContent="center">
+        <Grid item md={7} container justifyItems="center">
           <Outlet />
         </Grid>
       </Grid>
-      <Grid item xs={6}>
-        <AuthBlobs />
+      <Grid item md={6} container justifyItems="center" height="100vh">
+        <Grid item md={12}>
+          <AuthBlobs />
+        </Grid>
       </Grid>
     </Grid>
   );
