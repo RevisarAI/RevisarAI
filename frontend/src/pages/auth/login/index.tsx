@@ -19,6 +19,9 @@ import {
   Checkbox,
   CircularProgress,
   Alert,
+  Snackbar,
+  SnackbarContent,
+  useTheme,
 } from '@mui/material';
 import { useAuth } from '@/utils/auth-context';
 
@@ -27,6 +30,7 @@ const validateEmail = (email: string) => !isEmpty(email) && isEmail(email);
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+  const theme = useTheme();
 
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,8 +65,10 @@ const LoginPage: React.FC = () => {
     validators: {
       onSubmit({ value }) {
         const requiredFields = ['email', 'password'] as Array<keyof typeof value>;
-        if (!validateEmail(value.email) || requiredFields.some((field) => isEmpty(value[field].toString())))
+        if (!validateEmail(value.email) || requiredFields.some((field) => isEmpty(value[field].toString()))) {
+          setErrorOccurred(true);
           return 'Missing or invalid values';
+        }
       },
     },
   });
@@ -72,7 +78,7 @@ const LoginPage: React.FC = () => {
       setErrorOccurred(false);
       setIsLoading(true);
       const tokens = await authenticationService.googleSignIn(credential);
-      writeTokens(tokens, true);
+      writeTokens(tokens, loginForm.getFieldValue('remember'));
 
       flushSync(() => {
         const payload = jwtDecode<JwtPayload & IUserDetails>(tokens.accessToken, {});
@@ -181,7 +187,19 @@ const LoginPage: React.FC = () => {
         </Grid>
       </Grid>
       <Grid item>
-        <Button fullWidth variant="contained" disabled={isLoading} color="primary" style={{ borderRadius: '5vh' }}>
+        <Button
+          fullWidth
+          variant="contained"
+          disabled={isLoading}
+          color="primary"
+          style={{ borderRadius: '5vh' }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            loginForm.validateAllFields('submit');
+            loginForm.handleSubmit();
+          }}
+        >
           {isLoading ? (
             <CircularProgress size={20} color="inherit" />
           ) : (
@@ -199,11 +217,10 @@ const LoginPage: React.FC = () => {
           </a>
         </Typography>
       </Grid>
-      {errorOccurred && (
-        <Grid item>
-          <Alert severity="error">Wrong email or password</Alert>
-        </Grid>
-      )}
+
+      <Snackbar open={errorOccurred} onClose={() => setErrorOccurred(false)} autoHideDuration={4000}>
+        <SnackbarContent message="Invalid email or password" style={{ backgroundColor: theme.palette.error.main }} />
+      </Snackbar>
     </Grid>
   );
 };
