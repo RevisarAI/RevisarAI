@@ -18,6 +18,11 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
+      '/auth': {
+        // REST call to /auth/... will be proxied to http://localhost:8000/auth/...
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
     },
   },
 });
