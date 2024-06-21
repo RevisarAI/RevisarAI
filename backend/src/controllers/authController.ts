@@ -58,8 +58,16 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Bad email or password" });
     }
 
-    const accessToken = await signAccessToken(client.businessId);
-    const refreshToken = await signRefreshToken(client.businessId);
+    const clientDetails: IUserDetails = {
+      email: client.email,
+      fullName: client.fullName,
+      businessName: client.businessName,
+      businessDescription: client.businessDescription,
+      businessId: client.businessId,
+    };
+  
+
+    const { accessToken, refreshToken } = await signTokens(clientDetails);
 
     client.tokens.push(refreshToken);
 
