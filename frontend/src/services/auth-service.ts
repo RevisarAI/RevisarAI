@@ -9,7 +9,16 @@ export class AuthenticationService {
   }
 
   async login(email: string, password: string, signal?: AbortSignal): Promise<UserTokens> {
-    // TODO: implement
+    return (
+      await this.apiClient.post<UserTokens>(
+        '/login',
+        { email, password },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          signal,
+        }
+      )
+    ).data;
   }
 
   async googleSignIn(credential: string): Promise<UserTokens> {
