@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { signTokens } from '../utils/signTokens';
-import { ICreateUser, IUserDetails, IUserTokens } from 'shared-types';
+import { IClient, ICreateUser, IUserDetails, IUserTokens } from 'shared-types';
 
 const register = async (req: Request<{}, IUserDetails & IUserTokens, ICreateUser>, res) => {
   try {
@@ -42,24 +42,23 @@ const register = async (req: Request<{}, IUserDetails & IUserTokens, ICreateUser
   }
 };
 
-const login = async (req, res) => {
+const login = async (req: Request<{}, IUserTokens, Pick<IClient, 'email' | 'password'>>, res) => {
   const { email, password } = req.body;
 
   try {
     const client = await clientModel.findOne({ email });
 
     if (client == null) {
-      return res.status(400).json({ message: "Bad email or password" });
+      return res.status(400).json({ message: 'Bad email or password' });
     }
 
     const isMatch = await bcrypt.compare(password, client.password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Bad email or password" });
+      return res.status(400).json({ message: 'Bad email or password' });
     }
 
-    const accessToken = await signAccessToken(client.businessId);
-    const refreshToken = await signRefreshToken(client.businessId);
+    const { accessToken, refreshToken } = await signTokens(client);
 
     client.tokens.push(refreshToken);
 
