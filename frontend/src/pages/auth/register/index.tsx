@@ -13,23 +13,28 @@ import {
   Button,
   Typography,
   CircularProgress,
-  Alert,
+  Snackbar,
+  SnackbarContent,
+  useTheme,
 } from '@mui/material';
 import { useAuth } from '@/utils/auth-context';
 
 const validateEmail = (email: string) => !isEmpty(email) && isEmail(email);
+const validatePasswords = (password: string, confirmPassword: string) => password === confirmPassword;
 
 const RegisterPage: React.FC = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const auth = useAuth();
 
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const registerForm = useForm<IClient>({
+  const registerForm = useForm<IClient & {confirmPassword: string}>({
     defaultValues: {
       email: '',
       password: '',
+      confirmPassword: '',
       fullName: '',
       businessName: '',
       businessDescription: '',
@@ -39,8 +44,7 @@ const RegisterPage: React.FC = () => {
       try {
         setErrorOccurred(false);
         setIsLoading(true);
-        const { email, password } = value;
-        const tokens = await authenticationService.login(email, password);
+        const tokens = await authenticationService.register(value);
 
         writeTokens(tokens, false);
 
@@ -58,9 +62,12 @@ const RegisterPage: React.FC = () => {
     },
     validators: {
       onSubmit({ value }) {
-        const requiredFields = ['email', 'password'] as Array<keyof typeof value>;
-        if (!validateEmail(value.email) || requiredFields.some((field) => isEmpty(value[field].toString())))
-          return 'Missing or invalid values';
+        const requiredFields = ['email', 'password', 'fullName', 'businessName', 'businessDescription'] as Array<keyof typeof value>;
+        if (!validateEmail(value.email) ||
+            !validatePasswords(value.password, value.confirmPassword) ||
+            requiredFields.some((field) => isEmpty(value[field].toString())))
+            setErrorOccurred(true);
+            return 'Missing or invalid values';
       },
     },
   });
@@ -134,7 +141,6 @@ const RegisterPage: React.FC = () => {
               fullWidth
               multiline
               rows={5}
-              maxRows={5}
               id="businessDescription-input"
               label="Business Description"
               placeholder='Up to 200 characters'
@@ -166,11 +172,11 @@ const RegisterPage: React.FC = () => {
       </Grid>
       <Grid item>
         <registerForm.Field
-          name="password"
+          name="confirmPassword"
           children={(field) => (
             <TextField
               fullWidth
-              id="confirm-password-input"
+              id="confirmPassword-input"
               label="Confirm Password"
               type="password"
               variant="outlined"
@@ -182,7 +188,19 @@ const RegisterPage: React.FC = () => {
         />
       </Grid>
       <Grid item>
-        <Button fullWidth variant="contained" disabled={isLoading} color="primary" style={{ borderRadius: '5vh' }}>
+        <Button
+         fullWidth
+         variant="contained"
+         disabled={isLoading}
+         color="primary"
+         style={{ borderRadius: '5vh' }}
+         onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          registerForm.validateAllFields('submit');
+          registerForm.handleSubmit();
+        }}
+         >
           {isLoading ? (
             <CircularProgress size={20} color="inherit" />
           ) : (
@@ -192,11 +210,9 @@ const RegisterPage: React.FC = () => {
           )}
         </Button>
       </Grid>
-      {errorOccurred && (
-        <Grid item>
-          <Alert severity="error">Wrong email or password</Alert>
-        </Grid>
-      )}
+      <Snackbar open={errorOccurred} onClose={() => setErrorOccurred(false)} autoHideDuration={4000}>
+        <SnackbarContent message="Invalid email or password" style={{ backgroundColor: theme.palette.error.main }} />
+      </Snackbar>
     </Grid>
   );
 };
