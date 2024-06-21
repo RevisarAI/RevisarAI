@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { signTokens } from '../utils/signTokens';
-import { IClient, ICreateUser, IUserDetails, IUserTokens } from 'shared-types';
+import { ICreateUser, ILoginFormData, IUserDetails, IUserTokens } from 'shared-types';
 
 const register = async (req: Request<{}, IUserDetails & IUserTokens, ICreateUser>, res) => {
   try {
@@ -42,7 +42,10 @@ const register = async (req: Request<{}, IUserDetails & IUserTokens, ICreateUser
   }
 };
 
-const login = async (req: Request<{}, IUserTokens, Pick<IClient, 'email' | 'password'>>, res) => {
+const login = async (
+  req: Request<{}, IUserTokens, Pick<ILoginFormData, 'email' | 'password'>>,
+  res
+) => {
   const { email, password } = req.body;
 
   try {
