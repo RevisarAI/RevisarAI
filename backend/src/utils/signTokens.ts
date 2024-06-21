@@ -1,14 +1,12 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
+import { IUserDetails, IUserTokens } from 'shared-types';
 
-const signAccessToken = async (clientId: string) => {
-  return await jwt.sign({ _id: clientId }, process.env.ACCESS_TOKEN_SECRET, {
+const signTokens = async (clientDetails: IUserDetails): Promise<IUserTokens> => {
+  const accessToken = await jwt.sign(clientDetails, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
   });
+  const refreshToken = await jwt.sign(clientDetails, process.env.REFRESH_TOKEN_SECRET, {});
+  return { accessToken, refreshToken };
 };
 
-const signRefreshToken = async (clientId: string) => {
-  return await jwt.sign({ _id: clientId }, process.env.REFRESH_TOKEN_SECRET, {
-  });
-};
-
-export { signAccessToken, signRefreshToken };
+export { signTokens };
