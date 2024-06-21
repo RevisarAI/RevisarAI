@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
       setErrorOccurred(false);
       setIsLoading(true);
       const tokens = await authenticationService.googleSignIn(credential);
-      writeTokens(tokens, loginForm.getFieldValue('remember'));
+      writeTokens(tokens, true);
 
       flushSync(() => {
         const payload = jwtDecode<JwtPayload & IUserDetails>(tokens.accessToken, {});
