@@ -30,4 +30,33 @@ const register = async (req, res) => {
   }
 };
 
-export default { register };
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const client = await clientModel.findOne({ email });
+
+    if (client == null) {
+      return res.status(400).json({ message: "Bad email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, client.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Bad email or password" });
+    }
+
+    const accessToken = await signAccessToken(client.businessId);
+    const refreshToken = await signRefreshToken(client.businessId);
+
+    client.tokens.push(refreshToken);
+
+    await client.save();
+    res.status(200).send({ accessToken, refreshToken });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+};
+
+export default { register, login };
