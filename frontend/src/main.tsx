@@ -2,10 +2,11 @@ import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { ThemeProvider, createTheme } from '@mui/material';
+import { Grid, ThemeProvider, createTheme } from '@mui/material';
 import { AuthProvider } from '@/utils/auth-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuth } from '@/utils/auth-context';
+import { CircularProgress } from '@mui/material';
 import './main.css';
 
 // Import the generated route tree
@@ -47,7 +48,14 @@ const App: React.FC = () => {
   const auth = useAuth();
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      <RouterProvider router={router} context={{ auth }} />
+      {auth.refreshTokenStatus === 'pending' ? (
+        <Grid container justifyContent="center" alignContent="center" height="100%">
+          <CircularProgress size={60} />
+        </Grid>
+      ) : (
+        <RouterProvider router={router} context={{ auth }} />
+      )}
+      ;
     </div>
   );
 };
