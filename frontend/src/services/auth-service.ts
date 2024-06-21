@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { IUserDetails, IUserTokens } from 'shared-types';
+import { ICreateUser, IUserTokens, IUserDetails } from 'shared-types';
 
 export class AuthenticationService {
   private apiClient: AxiosInstance;
@@ -29,8 +29,12 @@ export class AuthenticationService {
     // TODO: implement
   }
 
-  async register(newUser: IUserDetails & { password: string }): Promise<IUserTokens> {
-    // TODO: implement
+  async register(newUser: ICreateUser): Promise<IUserDetails & IUserTokens> {
+    return (
+      await this.apiClient.post('/register', newUser, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    ).data;
   }
 
   async logout(refreshToken: string): Promise<void> {
