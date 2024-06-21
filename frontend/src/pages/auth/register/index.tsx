@@ -30,7 +30,7 @@ const RegisterPage: React.FC = () => {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const registerForm = useForm<IClient & {confirmPassword: string}>({
+  const registerForm = useForm<IClient & { confirmPassword: string }>({
     defaultValues: {
       email: '',
       password: '',
@@ -62,12 +62,16 @@ const RegisterPage: React.FC = () => {
     },
     validators: {
       onSubmit({ value }) {
-        const requiredFields = ['email', 'password', 'fullName', 'businessName', 'businessDescription'] as Array<keyof typeof value>;
-        if (!validateEmail(value.email) ||
-            !validatePasswords(value.password, value.confirmPassword) ||
-            requiredFields.some((field) => isEmpty(value[field].toString())))
-            setErrorOccurred(true);
-            return 'Missing or invalid values';
+        const requiredFields = ['email', 'password', 'fullName', 'businessName', 'businessDescription'] as Array<
+          keyof typeof value
+        >;
+        if (
+          !validateEmail(value.email) ||
+          !validatePasswords(value.password, value.confirmPassword) ||
+          requiredFields.some((field) => isEmpty(value[field]!.toString()))
+        )
+          setErrorOccurred(true);
+        return 'Missing or invalid values';
       },
     },
   });
@@ -78,7 +82,7 @@ const RegisterPage: React.FC = () => {
         <Typography variant="h4" textAlign="left">
           Register
           <Typography variant="body1" style={{ opacity: '0.5' }} textAlign="left">
-          Let’s get to know each other!
+            Let’s get to know each other!
           </Typography>
         </Typography>
       </Grid>
@@ -143,7 +147,7 @@ const RegisterPage: React.FC = () => {
               rows={5}
               id="businessDescription-input"
               label="Business Description"
-              placeholder='Up to 200 characters'
+              placeholder="Up to 200 characters"
               type="name"
               variant="outlined"
               value={field.state.value}
@@ -189,18 +193,18 @@ const RegisterPage: React.FC = () => {
       </Grid>
       <Grid item>
         <Button
-         fullWidth
-         variant="contained"
-         disabled={isLoading}
-         color="primary"
-         style={{ borderRadius: '5vh' }}
-         onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          registerForm.validateAllFields('submit');
-          registerForm.handleSubmit();
-        }}
-         >
+          fullWidth
+          variant="contained"
+          disabled={isLoading}
+          color="primary"
+          style={{ borderRadius: '5vh' }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            registerForm.validateAllFields('submit');
+            registerForm.handleSubmit();
+          }}
+        >
           {isLoading ? (
             <CircularProgress size={20} color="inherit" />
           ) : (

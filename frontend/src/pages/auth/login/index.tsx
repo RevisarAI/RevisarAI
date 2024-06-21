@@ -198,7 +198,13 @@ const LoginPage: React.FC = () => {
       <Grid item>
         <Typography display="block" variant="body1">
           Not registered yet?{' '}
-          <a href="" onClick={openRegisterPage}>
+          <a
+            href=""
+            onClick={(e) => {
+              e.preventDefault();
+              openRegisterPage();
+            }}
+          >
             Create an account
           </a>
         </Typography>
