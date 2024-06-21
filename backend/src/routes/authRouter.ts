@@ -38,6 +38,29 @@ const authRouter = Router();
  */
 authRouter.post('/register', registrationMiddleware, authController.register);
 
+/**
+ * @swagger
+ * paths:
+ *  /auth/login:
+ *    post:
+ *      summary: Login a client
+ *      description: This endpoint logs in a client.
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/LoginClient'
+ *      responses:
+ *        200:
+ *          description: Client logged in successfully.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ClientTokens'
+ *        400:
+ *          description: Bad email or password.
+ */
 authRouter.post('/login', loginMiddleware, authController.login);
 
 export default authRouter;

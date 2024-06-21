@@ -59,8 +59,23 @@ import { IClient } from 'shared-types';
  *       refreshToken:
  *         type: string
  *         description: The refresh token for the client
+ * 
+ *   LoginClient:
+ *     type: object
+ *     required:
+ *       - email
+ *       - password
+ *     properties:
+ *       email:
+ *         type: string
+ *         description: The email of the client
+ *       password:
+ *         type: string
+ *         description: The password of the client
+ *     example:
+ *       email: "user123@gmail.com"
+ *       password: "password123"
  */
-
 const clientSchema = new mongoose.Schema<IClient>({
   email: { type: String, required: true },
   fullName: { type: String, required: true },
