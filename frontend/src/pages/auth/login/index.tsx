@@ -92,7 +92,7 @@ const LoginPage: React.FC = () => {
   };
 
   const openRegisterPage = () => {
-    // navigate({ to: '/register' });
+    navigate({ to: '/register' });
   };
 
   return (
