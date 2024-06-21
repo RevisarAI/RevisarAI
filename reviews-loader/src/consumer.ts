@@ -1,0 +1,114 @@
+import OpenAI from 'openai'
+import { IRawReview, IReview, IReviewAnalaysis } from 'shared-types'
+import createLogger from './utils/logger'
+import reviewModel from './models/review.model'
+import winston from 'winston'
+
+import { Consumer, Kafka, EachMessagePayload } from 'kafkajs'
+
+export class ReviewsConsumer {
+  private kafkaConsumer: Consumer
+  private logger: winston.Logger
+  private openai: OpenAI
+
+  public constructor() {
+    this.kafkaConsumer = this.createKafkaConsumer()
+    this.logger = createLogger('consumer')
+    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  }
+
+  public async startConsumer(): Promise<void> {
+    await this.kafkaConsumer.connect()
+    await this.kafkaConsumer.subscribe({ topic: 'reviews', fromBeginning: false })
+
+    await this.kafkaConsumer.run({
+      autoCommit: false,
+      eachMessage: async (messagePayload: EachMessagePayload) => {
+        const { topic, partition, message } = messagePayload
+        const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
+        this.logger.info(`- ${prefix} ${message.key}#${message.value}`)
+
+        const review: IRawReview = JSON.parse(message.value!.toString())
+        this.logger.info(`Sending review to Openai... Review: ${review.value}`)
+        const response = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are an AI language model designed to analyze reviews. Please read the following review and provide the sentiment (positive, negative, or neutral) and a rating out of 10 based on the content of the review. Consider the overall tone, language used, and any specific praises or criticisms mentioned.'
+            },
+            { role: 'user', content: message.value!.toString() },
+            {
+              role: 'system',
+              content:
+                'Please provide the output in the following JSON format: { "sentiment": "positive", "rating": 9 }'
+            }
+          ]
+        })
+
+        const reviewAnalysis: IReviewAnalaysis = JSON.parse(response.choices[0].message.content!)
+
+        this.logger.info(
+          `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`
+        )
+        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis }
+        await reviewModel.create(reviewWithAnalysis)
+
+        this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }])
+      }
+    })
+  }
+
+  public async shutdown(): Promise<void> {
+    await this.kafkaConsumer.disconnect()
+  }
+
+  private createKafkaConsumer(): Consumer {
+    const brokers = process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094']
+
+    const kafka = new Kafka({
+      clientId: 'reviews-loader',
+      brokers,
+      retry:
+        process.env.NODE_ENV === 'production'
+          ? { initialRetryTime: 100, retries: 8 }
+          : { initialRetryTime: 300, retries: 2 }
+    })
+    const consumer = kafka.consumer({ groupId: 'test-group' })
+    return consumer
+  }
+}
+
+const initConsumer = async () => {
+  const consumer = new ReviewsConsumer()
+  await consumer.startConsumer()
+
+  const errorTypes = ['unhandledRejection', 'uncaughtException']
+  const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2']
+
+  errorTypes.forEach((type) => {
+    process.on(type, async (e) => {
+      try {
+        console.log(`process.on ${type}`)
+        console.error(e)
+        await consumer.shutdown()
+        process.exit(0)
+      } catch (_) {
+        process.exit(1)
+      }
+    })
+  })
+
+  signalTraps.forEach((type) => {
+    process.once(type, async () => {
+      try {
+        await consumer.shutdown()
+      } finally {
+        process.kill(process.pid, type)
+      }
+    })
+  })
+}
+
+export default initConsumer
