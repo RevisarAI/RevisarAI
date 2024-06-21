@@ -1,0 +1,20 @@
+{
+  "name": "shared-types",
+  "version": "1.0.0",
+  "description": "Types for RevisarAI typescript projects",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "mongoose": "^8.2.1"
+  }
+}

@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), TanStackRouterVite()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'), // import with @
@@ -14,6 +15,11 @@ export default defineConfig({
     proxy: {
       '/api': {
         // REST call to /api/... will be proxied to http://localhost:8000/api/...
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/auth': {
+        // REST call to /auth/... will be proxied to http://localhost:8000/auth/...
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
