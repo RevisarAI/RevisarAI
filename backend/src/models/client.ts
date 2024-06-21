@@ -1,17 +1,17 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+import { IClient } from 'shared-types';
 
 /**
  * @swagger
  * components:
  *  schemas:
- *   Client:
+ *   CreateClient:
  *    type: object
  *    required:
  *     - email
  *     - fullName
  *     - businessName
  *     - businessDescription
- *     - businessId
  *     - password
  *    properties:
  *     email:
@@ -26,9 +26,6 @@ import mongoose from "mongoose";
  *     businessDescription:
  *      type: string
  *      description: The description of the business
- *     businessId:
- *      type: string
- *      description: The ID of the business
  *     password:
  *      type: string
  *      description: The password of the client
@@ -37,19 +34,32 @@ import mongoose from "mongoose";
  *     fullName: "John Doe"
  *     businessName: "John's Bakery"
  *     businessDescription: "A bakery that sells cakes and pastries"
- *     businessId: "123456"
  *     password: "password123"
+ *
+ *   Client:
+ *    allOf:
+ *     - $ref: '#/components/schemas/CreateClient'
+ *     - type: object
+ *       required:
+ *        - businessId
+ *       properties:
+ *        businessId:
+ *         type: string
+ *         description: The unique identifier for the business
+ *
+ *   ClientTokens:
+ *     type: object
+ *     required:
+ *       - accessToken
+ *       - refreshToken
+ *     properties:
+ *       accessToken:
+ *         type: string
+ *         description: The access token for the client
+ *       refreshToken:
+ *         type: string
+ *         description: The refresh token for the client
  */
-
-export interface IClient {
-  email: string;
-  fullName: string;
-  businessName: string;
-  businessDescription: string;
-  businessId: string;
-  password: string;
-  tokens?: string[];
-}
 
 const clientSchema = new mongoose.Schema<IClient>({
   email: { type: String, required: true },
@@ -58,7 +68,7 @@ const clientSchema = new mongoose.Schema<IClient>({
   businessDescription: { type: String, required: true },
   businessId: { type: String, required: true },
   password: { type: String, required: true, maxlength: 1000 },
-  tokens: [{ type: String }]
+  tokens: [{ type: String }],
 });
 
-export default mongoose.model<IClient>("Clients", clientSchema);
+export default mongoose.model<IClient>('Clients', clientSchema);
