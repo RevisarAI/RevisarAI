@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { UserTokens } from 'shared-types';
+import { IUserDetails, IUserTokens } from 'shared-types';
 
 export class AuthenticationService {
   private apiClient: AxiosInstance;
@@ -8,9 +8,9 @@ export class AuthenticationService {
     this.apiClient = axios.create({ baseURL: `/auth` });
   }
 
-  async login(email: string, password: string, signal?: AbortSignal): Promise<UserTokens> {
+  async login(email: string, password: string, signal?: AbortSignal): Promise<IUserTokens> {
     return (
-      await this.apiClient.post<UserTokens>(
+      await this.apiClient.post<IUserTokens>(
         '/login',
         { email, password },
         {
@@ -21,15 +21,15 @@ export class AuthenticationService {
     ).data;
   }
 
-  async googleSignIn(credential: string): Promise<UserTokens> {
+  async googleSignIn(credential: string): Promise<IUserTokens> {
     // TODO: implement
   }
 
-  async refreshAccessToken(refreshToken: string, signal?: AbortSignal): Promise<UserTokens> {
+  async refreshAccessToken(refreshToken: string, signal?: AbortSignal): Promise<IUserTokens> {
     // TODO: implement
   }
 
-  async register(newUser: IUserDetails & { password: string }): Promise<UserTokens> {
+  async register(newUser: IUserDetails & { password: string }): Promise<IUserTokens> {
     // TODO: implement
   }
 
