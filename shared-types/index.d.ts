@@ -1,7 +1,7 @@
 import { Types as mongooseTypes } from 'mongoose';
 
 declare namespace sharedTypes {
-  interface UserTokens {
+  interface IUserTokens {
     accessToken: string;
     refreshToken: string;
   }
@@ -12,17 +12,20 @@ declare namespace sharedTypes {
     remember: boolean;
   }
 
-  export interface IUser {
+  interface IClient {
     _id?: mongooseTypes.ObjectId;
     email: string;
-    password: string;
     fullName: string;
     businessName: string;
-    businessDesc: string;
-    refreshTokens?: string[];
+    businessDescription: string;
+    businessId: string;
+    password: string;
+    tokens?: string[];
   }
 
-  export type IUserDetails = Pick<IUser, '_id' | 'email' | 'fullName' | 'businessName'>;
+  type IUserDetails = Omit<IClient, '_id' | 'password' | 'tokens'>;
+
+  type ICreateUser = Pick<IClient, 'email' | 'fullName' | 'businessName' | 'businessDescription' | 'password'>;
 }
 
 export = sharedTypes;
