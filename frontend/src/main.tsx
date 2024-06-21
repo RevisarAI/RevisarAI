@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider, createTheme } from '@mui/material';
 import { AuthProvider } from '@/utils/auth-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useAuth } from '@/utils/auth-context';
 import './main.css';
 
 // Import the generated route tree
@@ -13,7 +14,13 @@ import { routeTree } from './routeTree.gen';
 const queryClient = new QueryClient();
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  context: {
+    queryClient,
+    auth: undefined!,
+  },
+});
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -36,6 +43,15 @@ const theme = createTheme({
   },
 });
 
+const App: React.FC = () => {
+  const auth = useAuth();
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <RouterProvider router={router} context={{ auth }} />
+    </div>
+  );
+};
+
 const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
@@ -45,9 +61,7 @@ if (!rootElement.innerHTML) {
         <AuthProvider>
           <StrictMode>
             <ThemeProvider theme={theme}>
-              <div style={{ width: '100vw', height: '100vh' }}>
-                <RouterProvider router={router} />
-              </div>
+              <App />
             </ThemeProvider>
           </StrictMode>
         </AuthProvider>

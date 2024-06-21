@@ -6,7 +6,7 @@ import { writeTokens } from '@/utils/local-storage';
 import { flushSync } from 'react-dom';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { IUserDetails, IClient } from 'shared-types';
-import { useNavigate } from '@tanstack/react-router';
+import { getRouteApi, useNavigate } from '@tanstack/react-router';
 import {
   TextField,
   Grid,
@@ -25,7 +25,6 @@ const validatePasswords = (password: string, confirmPassword: string) => passwor
 const RegisterPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const auth = useAuth();
 
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,9 +68,10 @@ const RegisterPage: React.FC = () => {
           !validateEmail(value.email) ||
           !validatePasswords(value.password, value.confirmPassword) ||
           requiredFields.some((field) => isEmpty(value[field]!.toString()))
-        )
+        ) {
           setErrorOccurred(true);
-        return 'Missing or invalid values';
+          return 'Missing or invalid values';
+        }
       },
     },
   });
