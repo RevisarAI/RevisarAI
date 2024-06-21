@@ -18,17 +18,23 @@ const AuthBlobs: React.FC = () => {
         backgroundSize: 'cover',
       }}
     >
-      <Grid item md={7}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" color="primary.main" style={{ textAlign: 'center' }}>
-              Re-discover your
-              <br />
-              business with AI.
-            </Typography>
-            <Typography color="primary.main" style={{ textAlign: 'center', fontSize: '1.5vh' }}>
-              The most advanced solutions to give your business the insights it needs in order to succeed!
-            </Typography>
+      <Grid item md={7} height="25%">
+        <Card style={{ height: '100%', alignContent: 'center', borderRadius: '2vh' }}>
+          <CardContent style={{ height: '100%' }}>
+            <Grid container direction="column" justifyContent="space-around" height="80%">
+              <Grid item>
+                <Typography variant="h5" color="primary.main" textAlign="center">
+                  Re-discover your
+                  <br />
+                  business with AI.
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Typography color="primary.main" variant="body2" textAlign="center">
+                  The most advanced solutions to give your business the insights it needs in order to succeed!
+                </Typography>
+              </Grid>
+            </Grid>
           </CardContent>
         </Card>
       </Grid>
