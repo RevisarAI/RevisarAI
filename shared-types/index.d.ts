@@ -27,6 +27,11 @@ declare namespace sharedTypes {
 
   type ICreateUser = Pick<IClient, 'email' | 'fullName' | 'businessName' | 'businessDescription' | 'password'>;
 
+  interface IBatchReview {
+    value: string;
+    date: Date;
+  }
+  
   interface IRawReview {
     businessId: string;
     value: string;

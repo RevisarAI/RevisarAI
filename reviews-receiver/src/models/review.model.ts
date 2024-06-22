@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import { datalake } from '../db'
+import { IRawReview } from 'shared-types'
 
 /**
  * @swagger
@@ -26,16 +27,10 @@ import mongoose from "mongoose";
  *     value: 'The AI analysis seems a bit hit-or-miss. Some of the insights were spot-on, but others felt off base. Also, the pricing seems a bit high for the current feature set.'
  *     date: '2021-09-01T00:00:00.000Z'
  */
-export interface IReview {
-  businessId: string;
-  value: string;
-  date: Date;
-}
-
-const reviewSchema = new mongoose.Schema<IReview>({
+const reviewSchema = new datalake.Schema<IRawReview>({
   businessId: { type: String, required: true },
   value: { type: String, required: true },
-  date: { type: Date, required: true },
-});
+  date: { type: Date, required: true }
+})
 
-export default mongoose.model<IReview>("Review", reviewSchema);
+export default datalake.model<IRawReview>('Review', reviewSchema)
