@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 const SiteLayout: React.FC = () => {
   return (
     <Grid container>
-      <Grid item md={3} height="100vh">
+      <Grid container item md={3} height="100vh">
         <Navbar/>
         </Grid>
         <Grid>

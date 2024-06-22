@@ -26,10 +26,7 @@ const Navbar: React.FC = () => {
       };
 
     return (<>
-    <Drawer
-    variant="permanent"
-    anchor="left">
-    <List sx={{ backgroundColor: '#F4F3FA', height: '100%'}}>
+    <List sx={{ backgroundColor: '#F4F3FA', height: '100%', width: '100%'}}>
         <ListItem>
         <ListItemIcon>
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +53,6 @@ const Navbar: React.FC = () => {
             </ListItem>
         ))}
         </List>
-        </Drawer>
     </>
     );
 };
