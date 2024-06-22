@@ -1,5 +1,5 @@
-import { IClient } from 'shared-types'
-import { metadata } from '../db'
+import { IClient } from 'shared-types';
+import { metadata } from '../db';
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ const clientSchema = new metadata.Schema<IClient>({
   businessDescription: { type: String, required: true },
   businessId: { type: String, required: true },
   password: { type: String, required: true, maxlength: 1000 },
-  tokens: [{ type: String }]
-})
+  tokens: [{ type: String }],
+});
 
-export default metadata.model<IClient>('Clients', clientSchema)
+export default metadata.model<IClient>('Clients', clientSchema);

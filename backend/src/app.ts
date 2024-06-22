@@ -1,21 +1,21 @@
-import express from 'express'
-import cors from 'cors'
-import bodyParser from 'body-parser'
-import authRouter from './routes/auth.router'
-import { connectDatalake, connectMetadata } from './db'
-import swaggerJsDoc from 'swagger-jsdoc'
-import swaggerUi from 'swagger-ui-express'
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import authRouter from './routes/auth.router';
+import { connectDatalake, connectMetadata } from './db';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
-const app = express()
+const app = express();
 
 const initApp = async () => {
-  app.use(cors())
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
-  app.use('/auth', authRouter)
+  app.use(cors());
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use('/auth', authRouter);
 
-  await connectDatalake()
-  await connectMetadata()
+  await connectDatalake();
+  await connectMetadata();
 
   const swaggerOptions: swaggerJsDoc.Options = {
     definition: {
@@ -23,25 +23,25 @@ const initApp = async () => {
       info: {
         title: 'RevisarAI backend API',
         description: 'This is the API for RevisarAI backend service',
-        version: '1.0.0'
+        version: '1.0.0',
       },
       components: {
         securitySchemes: {
           bearerAuth: {
             type: 'http',
             scheme: 'bearer',
-            bearerFormat: 'JWT'
-          }
-        }
-      }
+            bearerFormat: 'JWT',
+          },
+        },
+      },
     },
-    apis: ['./src/routes/*.ts', './src/models/*.ts']
-  }
+    apis: ['./src/routes/*.ts', './src/models/*.ts'],
+  };
 
-  const specs = swaggerJsDoc(swaggerOptions)
-  app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs))
+  const specs = swaggerJsDoc(swaggerOptions);
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-  return app
-}
+  return app;
+};
 
-export default initApp
+export default initApp;
