@@ -19,8 +19,6 @@ declare global {
 }
 export { Request as AuthRequest };
 
-const { JWT_SECRET } = process.env as Record<string, string>;
-
 const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
