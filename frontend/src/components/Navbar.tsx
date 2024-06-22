@@ -32,8 +32,11 @@ const Navbar: React.FC = () => {
       };
     
       const hanleLogout = async () => {
-        clearTokens();
         await authenticationService.logout(sessionStorage.getItem('refreshToken')!);
+        clearTokens();
+        auth.setUser(null);
+        auth.isAuthenticated = false;
+        navigate({ to: "/" });
       };
 
     return (<>
