@@ -1,4 +1,11 @@
-import { IReview, ISentimentBarChartGroup, IWordFrequency, Sentiment } from 'shared-types';
+import {
+  IReview,
+  ISentimentBarChartGroup,
+  IWordFrequency,
+  IPieChartData,
+  Sentiment,
+  IBusinessAnalysis,
+} from 'shared-types';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
 import { AuthRequest } from 'common/auth.middleware';
@@ -21,9 +28,10 @@ class ReviewController extends BaseController<IReview> {
       businessId,
     });
 
-    const analysis = {
+    const analysis: IBusinessAnalysis = {
       sentimentOverTime: this.getSentimentOverTime(reviews),
       wordsFrequencies: this.getWordsFrequencies(reviews),
+      dataSourceDistribution: this.getDataSourceDistribution(reviews),
     };
     return res.status(httpStatus.OK).send(analysis);
   }
@@ -46,7 +54,7 @@ class ReviewController extends BaseController<IReview> {
     }
 
     reviews.forEach((review) => {
-      const dateData = sentimentOverTime.get(review.date.toDateString())!;
+      const dateData = sentimentOverTime.get(review.date.toLocaleDateString())!;
       dateData[review.sentiment as Sentiment]++;
     });
 
@@ -57,9 +65,11 @@ class ReviewController extends BaseController<IReview> {
     const wordFrequency = new Map<string, number>();
 
     reviews.forEach((review) => {
-      review.value.split(' ').forEach((word) => {
-        const count = wordFrequency.get(word) ?? 0;
-        wordFrequency.set(word, count + 1);
+      review.phrases.forEach((phrase) => {
+        phrase.split(' ').forEach((word) => {
+          const count = wordFrequency.get(word) ?? 0;
+          wordFrequency.set(word, count + 1);
+        });
       });
     });
 
@@ -67,6 +77,17 @@ class ReviewController extends BaseController<IReview> {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([text, value]) => ({ text, value }));
+  }
+
+  private getDataSourceDistribution(reviews: IReview[]): IPieChartData[] {
+    const dataSources = new Map<string, number>();
+
+    reviews.forEach((review) => {
+      const count = dataSources.get(review.dataSource) ?? 0;
+      dataSources.set(review.dataSource, count + 1);
+    });
+
+    return Array.from(dataSources.entries()).map(([label, value], id) => ({ value, label, id }));
   }
 }
 

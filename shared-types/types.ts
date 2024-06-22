@@ -48,3 +48,9 @@ export interface IWordFrequency {
   value: number;
 }
 export type Sentiment = 'positive' | 'negative' | 'neutral';
+
+export interface IBusinessAnalysis {
+  sentimentOverTime: ISentimentBarChartGroup[];
+  wordsFrequencies: IWordFrequency[];
+  dataSourceDistribution: IPieChartData[];
+}
