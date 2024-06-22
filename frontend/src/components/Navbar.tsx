@@ -1,9 +1,10 @@
-import { List, ListItem, ListItemText, ListItemButton, ListItemIcon } from '@mui/material';
+import { Avatar, List, ListItem, ListItemText, ListItemButton, ListItemIcon } from '@mui/material';
 import React from 'react';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { useAuth } from '@/utils/auth-context';
 
 interface IMenuItem {
     text: string,
@@ -17,11 +18,12 @@ const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '
 
 const Navbar: React.FC = () => {
     const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const auth = useAuth(); 
 
-    const handleListItemClick = (
+    const handleRedirect = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,
         index: number) => {
-        setSelectedIndex(index);
+            setSelectedIndex(index);
       };
 
     return (<>
@@ -39,7 +41,7 @@ const Navbar: React.FC = () => {
             <ListItem key={item.text}>
                 <ListItemButton
                     selected={selectedIndex === i}
-                    onClick={(e) => handleListItemClick(e, i)}
+                    onClick={(e) => handleRedirect(e, i)}
                     sx={{borderRadius: '10vh',
                         "&.Mui-selected": {
                         backgroundColor: "#DCE2F9"
@@ -51,18 +53,31 @@ const Navbar: React.FC = () => {
                 </ListItemButton>
             </ListItem>
         ))}
-        <ListItem sx={{ bottom: "0", position: "absolute", marginBottom: "2vh" }}>
-            <ListItemButton
-            sx={{ borderRadius: '10vh',
-                 "&.Mui-selected": {
-                  backgroundColor: "#DCE2F9"
-            }}}>
-                <ListItemIcon>
-                    <ExitToAppIcon/>
-                </ListItemIcon>
-                <ListItemText primary="Log Out"/>
-            </ListItemButton>
+        <List sx={{ bottom: "0", position: "absolute", marginBottom: "2vh", width: '100%' }}>
+            <ListItem >
+                <ListItemButton
+                sx={{ borderRadius: '10vh',
+                    "&.Mui-selected": {
+                    backgroundColor: "#DCE2F9"
+                }}}>
+                    <ListItemIcon>
+                        <ExitToAppIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Log Out"/>
+                </ListItemButton>
+            </ListItem>
+            <ListItem>
+            <ListItemIcon>
+                <Avatar
+                alt="ProfilePic"
+                src=""
+                >
+                    {auth.user?.fullName.split(" ").map((n)=>n[0]).join("")}
+                </Avatar>
+            </ListItemIcon>
+            <ListItemText primary={auth.user?.fullName} secondary={auth.user?.email}/>
         </ListItem>
+        </List>
         </List>
     </>
     );
