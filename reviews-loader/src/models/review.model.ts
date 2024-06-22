@@ -21,6 +21,10 @@ const reviewSchema = new mongoose.Schema<IReview>({
   rating: {
     type: Number,
     required: true
+  },
+  phrases: {
+    type: [String],
+    required: true
   }
 })
 

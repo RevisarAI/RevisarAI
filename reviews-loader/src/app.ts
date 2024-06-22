@@ -26,8 +26,10 @@ const initApp = async (): Promise<Express> => {
 
   app.use(healthRoute)
 
-  logger.debug('calling init DB')
+  logger.info('calling init DB')
   await initDB()
+
+  logger.info('calling init consumer')
   await initConsumer()
 
   return app

@@ -36,13 +36,12 @@ export class ReviewsConsumer {
             {
               role: 'system',
               content:
-                'You are an AI language model designed to analyze reviews. Please read the following review and provide the sentiment (positive, negative, or neutral) and a rating out of 10 based on the content of the review. Consider the overall tone, language used, and any specific praises or criticisms mentioned.'
+                'You analyze reviews. Read the review, determine the sentiment (positive, negative, or neutral), provide a rating out of 10, and extract concise, relevant phrases that succinctly explain the sentiment exactly as they appear in the review. Only use phrases that are verbatim from the review text without rephrasing or summarizing. In the phrases, use as few words as possible, if possible even just a couple of keywords. Consider the overall tone, language used, and any specific praises or criticisms mentioned.'
             },
             { role: 'user', content: message.value!.toString() },
             {
               role: 'system',
-              content:
-                'Please provide the output in the following JSON format: { "sentiment": "positive", "rating": 9 }'
+              content: 'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "phrases": [...] }'
             }
           ]
         })
@@ -75,7 +74,7 @@ export class ReviewsConsumer {
           ? { initialRetryTime: 100, retries: 8 }
           : { initialRetryTime: 300, retries: 2 }
     })
-    const consumer = kafka.consumer({ groupId: 'test-group' })
+    const consumer = kafka.consumer({ groupId: 'review-analysis-group' })
     return consumer
   }
 }

@@ -36,6 +36,7 @@ declare namespace sharedTypes {
   interface IReviewAnalaysis {
     sentiment: string;
     rating: number;
+    phrases: string[];
   }
   type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
 }
