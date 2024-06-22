@@ -6,6 +6,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useAuth } from '@/utils/auth-context';
 import { useNavigate } from '@tanstack/react-router';
+import { clearTokens } from '@/utils/local-storage';
+import { authenticationService } from '@/services/auth-service';
 
 interface IMenuItem {
     text: string,
@@ -27,6 +29,11 @@ const Navbar: React.FC = () => {
         index: number) => {
             setSelectedIndex(index);
             navigate({ to: navbarItems[index].link || '/' });
+      };
+    
+      const hanleLogout = async () => {
+        clearTokens();
+        await authenticationService.logout(sessionStorage.getItem('refreshToken')!);
       };
 
     return (<>
@@ -62,7 +69,9 @@ const Navbar: React.FC = () => {
                 sx={{ borderRadius: '10vh',
                     "&.Mui-selected": {
                     backgroundColor: "#DCE2F9"
-                }}}>
+                }}}
+                onClick={hanleLogout}
+                >
                     <ListItemIcon>
                         <ExitToAppIcon/>
                     </ListItemIcon>
