@@ -1,7 +1,18 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { Grid } from '@mui/material';
+import Navbar from '@/components/Navbar';
 
 const SiteLayout: React.FC = () => {
-  return <div>navbar etc...</div>;
+  return (
+    <Grid container>
+      <Grid item md={3} height="100vh">
+        <Navbar/>
+        </Grid>
+        <Grid>
+        <div>navbar etc...</div>
+        </Grid>
+    </Grid>
+  );
 };
 
 export const Route = createFileRoute('/_authenticated')({
