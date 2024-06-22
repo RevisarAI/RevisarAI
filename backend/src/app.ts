@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import authRouter from './routes/auth.router';
+import authRouter from './routes/auth.route';
+import apiRoute from './routes/api.route';
 import { connectDatalake, connectMetadata } from './db';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -39,6 +40,7 @@ const initApp = async () => {
 
   const specs = swaggerJsDoc(swaggerOptions);
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
+  app.use('/api', apiRoute);
 
   return app;
 };

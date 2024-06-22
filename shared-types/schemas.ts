@@ -23,7 +23,7 @@ export const ICreateUserSchema = IClientSchema.pick({
 export const ILoginFormDataSchema = z.object({
   email: z.string(),
   password: z.string(),
-  remember: z.boolean(),
+  remember: z.boolean().optional(),
 });
 
 export const IUserDetailsSchema = IClientSchema.omit({
