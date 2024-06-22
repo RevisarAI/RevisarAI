@@ -2,7 +2,6 @@ import { Drawer, List, ListItem, ListItemText, ListItemButton, ListItemIcon } fr
 import React from 'react';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 interface IMenuItem {
@@ -13,7 +12,6 @@ interface IMenuItem {
 
 const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: ''},
                                        {text: 'Reviews', icon: <MenuIcon/>, link: ''},
-                                       {text: 'Alerts', icon: <NotificationsActiveIcon/>, link: ''},
                                        {text: 'Settings', icon: <SettingsIcon/>, link: ''}];
 
 const Navbar: React.FC = () => {
