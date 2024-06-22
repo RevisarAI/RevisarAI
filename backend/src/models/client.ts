@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { IClient } from 'shared-types';
+import { IClient } from 'shared-types'
+import { metadata } from '../db'
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ import { IClient } from 'shared-types';
  *       refreshToken:
  *         type: string
  *         description: The refresh token for the client
- * 
+ *
  *   LoginClient:
  *     type: object
  *     required:
@@ -76,14 +76,14 @@ import { IClient } from 'shared-types';
  *       email: "user123@gmail.com"
  *       password: "password123"
  */
-const clientSchema = new mongoose.Schema<IClient>({
+const clientSchema = new metadata.Schema<IClient>({
   email: { type: String, required: true },
   fullName: { type: String, required: true },
   businessName: { type: String, required: true },
   businessDescription: { type: String, required: true },
   businessId: { type: String, required: true },
   password: { type: String, required: true, maxlength: 1000 },
-  tokens: [{ type: String }],
-});
+  tokens: [{ type: String }]
+})
 
-export default mongoose.model<IClient>('Clients', clientSchema);
+export default metadata.model<IClient>('Clients', clientSchema)

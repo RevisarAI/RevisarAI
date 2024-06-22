@@ -1,7 +1,7 @@
-import { Router } from "express";
-import authController from "../controllers/authController";
-import registrationMiddleware from "../middlewares/registrationMiddleware";
-import loginMiddleware from "../middlewares/loginMiddleware";
+import { Router } from 'express'
+import authController from '../controllers/auth.controller'
+import schemaValidationMiddleware from '../common/schema-validation.middleware'
+import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types'
 
 /**
  * @swagger
@@ -38,7 +38,7 @@ import loginMiddleware from "../middlewares/loginMiddleware";
  *     accessToken: 'dsgsdgsgsdg'
  *     refreshToken: 'sdjanfklknnlnkmlds'
  */
-const authRouter = Router();
+const authRouter = Router()
 
 /**
  * @swagger
@@ -72,7 +72,7 @@ const authRouter = Router();
  *        500:
  *          description: Internal server error while registering the user.
  */
-authRouter.post("/register", registrationMiddleware, authController.register);
+authRouter.post('/register', schemaValidationMiddleware({ body: ICreateUserSchema }), authController.register)
 
 /**
  * @swagger
@@ -98,25 +98,25 @@ authRouter.post("/register", registrationMiddleware, authController.register);
  *        400:
  *          description: Bad email or password.
  */
-authRouter.post("/login", loginMiddleware, authController.login);
+authRouter.post('/login', schemaValidationMiddleware({ body: ILoginFormDataSchema }), authController.login)
 
 /**
-* @swagger
-* /auth/refresh:
-*  get:
-*   summary: get a new access token using the refresh token
-*   tags: [Auth]
-*   description: need to provide the refresh token in the auth header
-*   security:
-*    - bearerAuth: []
-*   responses:
-*    200:
-*     description: The acess & refresh tokens
-*     content:
-*      application/json:
-*       schema:
-*         $ref: '#/components/schemas/Token'
-*/
-authRouter.get("/refresh", authController.refresh);
+ * @swagger
+ * /auth/refresh:
+ *  get:
+ *   summary: get a new access token using the refresh token
+ *   tags: [Auth]
+ *   description: need to provide the refresh token in the auth header
+ *   security:
+ *    - bearerAuth: []
+ *   responses:
+ *    200:
+ *     description: The acess & refresh tokens
+ *     content:
+ *      application/json:
+ *       schema:
+ *         $ref: '#/components/schemas/Token'
+ */
+authRouter.get('/refresh', authController.refresh)
 
-export default authRouter;
+export default authRouter
