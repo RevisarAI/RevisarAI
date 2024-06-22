@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import BatchController from '../controllers/batchController';
-import checkApiKey from '../common/apiKeyMiddleware';
+import checkApiKey from '../common/api-key.middleware';
 
 const batchRouter = Router();
 
