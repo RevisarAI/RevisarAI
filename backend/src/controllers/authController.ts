@@ -115,7 +115,7 @@ const refresh = async (req, res) => {
         if (!client.tokens.includes(token)) {
           client.tokens = [];
           await client.save();
-          return res.status(403).send();
+         res.status(403).send();
           return;
         }
 
