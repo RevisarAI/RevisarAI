@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
     const [selectedIndex, setSelectedIndex] = React.useState(0);
 
     const handleListItemClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
         index: number) => {
         setSelectedIndex(index);
       };
