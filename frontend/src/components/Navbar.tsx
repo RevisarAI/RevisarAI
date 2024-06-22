@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useAuth } from '@/utils/auth-context';
+import { useNavigate } from '@tanstack/react-router';
 
 interface IMenuItem {
     text: string,
@@ -12,18 +13,20 @@ interface IMenuItem {
     link: string,
 }
 
-const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: ''},
-                                       {text: 'Reviews', icon: <MenuIcon/>, link: ''},
-                                       {text: 'Settings', icon: <SettingsIcon/>, link: ''}];
+const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '/'},
+                                       {text: 'Reviews', icon: <MenuIcon/>, link: '/reviews'},
+                                       {text: 'Settings', icon: <SettingsIcon/>, link: '/settings'}];
 
 const Navbar: React.FC = () => {
     const [selectedIndex, setSelectedIndex] = React.useState(0);
     const auth = useAuth(); 
+    const navigate = useNavigate();
 
     const handleRedirect = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,
         index: number) => {
             setSelectedIndex(index);
+            navigate({ to: navbarItems[index].link || '/' });
       };
 
     return (<>
