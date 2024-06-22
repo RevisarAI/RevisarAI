@@ -35,11 +35,11 @@ const initDB = async (dbUrl: string, dbName: string, mongoose: Mongoose) => {
 }
 
 export const metadata = new Mongoose()
-export const datelake = new Mongoose()
+export const datalake = new Mongoose()
 
 export const connectMetadata = async () => {
   await initDB(config.metadataDBUrl, config.metadataDBName, metadata)
 }
 export const connectDatalake = async () => {
-  await initDB(config.datalakeDBUrl, config.datalakeDBName, datelake)
+  await initDB(config.datalakeDBUrl, config.datalakeDBName, datalake)
 }

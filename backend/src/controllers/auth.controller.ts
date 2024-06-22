@@ -1,4 +1,4 @@
-import clientModel from '../models/client'
+import clientModel from '../models/client.model'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { v4 as uuidv4 } from 'uuid'
