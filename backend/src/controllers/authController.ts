@@ -91,7 +91,7 @@ const refresh = async (req, res) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    res.status(401).send();
+    res.status(401).json({ message: "Token not provided" });
     return;
   }
 
