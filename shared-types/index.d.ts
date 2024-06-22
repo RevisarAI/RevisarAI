@@ -26,6 +26,19 @@ declare namespace sharedTypes {
   type IUserDetails = Omit<IClient, '_id' | 'password' | 'tokens'>;
 
   type ICreateUser = Pick<IClient, 'email' | 'fullName' | 'businessName' | 'businessDescription' | 'password'>;
+
+  interface IRawReview {
+    businessId: string;
+    value: string;
+    date: Date;
+  }
+
+  interface IReviewAnalaysis {
+    sentiment: string;
+    rating: number;
+    phrases: string[];
+  }
+  type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
 }
 
 export = sharedTypes;
