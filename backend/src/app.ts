@@ -15,8 +15,7 @@ const initApp = async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use('/auth', authRouter);
 
-  await connectDatalake();
-  await connectMetadata();
+  await Promise.all([connectDatalake(), connectMetadata()]);
 
   const swaggerOptions: swaggerJsDoc.Options = {
     definition: {
