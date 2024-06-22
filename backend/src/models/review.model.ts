@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
 import { IReview } from 'shared-types';
+import { datalake } from '../db';
 
-const reviewSchema = new mongoose.Schema<IReview>({
+const reviewSchema = new datalake.Schema<IReview>({
   value: {
     type: String,
     required: true,
@@ -28,4 +28,4 @@ const reviewSchema = new mongoose.Schema<IReview>({
   },
 });
 
-export default mongoose.model<IReview>('Review', reviewSchema);
+export default datalake.model<IReview>('reviews', reviewSchema);

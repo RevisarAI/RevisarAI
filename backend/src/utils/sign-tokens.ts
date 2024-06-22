@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { IUserDetails, IUserTokens } from 'shared-types';
+import { IUserTokens, IUserDetails } from 'shared-types';
+import config from '../config';
 
 const signTokens = async (client: IUserDetails): Promise<IUserTokens> => {
   // Take only public fields
@@ -12,10 +13,11 @@ const signTokens = async (client: IUserDetails): Promise<IUserTokens> => {
     businessId,
   };
 
-  const accessToken = await jwt.sign(clientDetails, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
+  const accessToken = await jwt.sign(clientDetails, config.accessTokenSecret, {
+    expiresIn: config.accessTokenExpiration,
   });
-  const refreshToken = await jwt.sign(clientDetails, process.env.REFRESH_TOKEN_SECRET, {});
+
+  const refreshToken = await jwt.sign(clientDetails, config.refreshTokenSecret, {});
   return { accessToken, refreshToken };
 };
 
