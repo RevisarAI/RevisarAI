@@ -5,11 +5,15 @@ const SiteLayout: React.FC = () => {
 };
 
 export const Route = createFileRoute('/_authenticated')({
-  beforeLoad: async () => {
-    // TODO: Redirect only if not authorized
-    throw redirect({
-      to: '/login',
-    });
+  beforeLoad: async ({ context, location }) => {
+    if (!context.auth.isAuthenticated) {
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    }
   },
   component: SiteLayout,
 });

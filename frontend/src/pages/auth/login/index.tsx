@@ -7,7 +7,7 @@ import { flushSync } from 'react-dom';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { GoogleLogin } from '@react-oauth/google';
 import { IUserDetails, ILoginFormData } from 'shared-types';
-import { useNavigate } from '@tanstack/react-router';
+import { getRouteApi, useNavigate } from '@tanstack/react-router';
 import StarSvg from '@/assets/star.svg';
 import {
   TextField,
@@ -30,6 +30,10 @@ const validateEmail = (email: string) => !isEmpty(email) && isEmail(email);
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+
+  const routeApi = getRouteApi('/_auth/login');
+  const search = routeApi.useSearch();
+
   const theme = useTheme();
 
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -55,7 +59,7 @@ const LoginPage: React.FC = () => {
           auth.setUser(payload);
         });
 
-        navigate({ to: '/' });
+        navigate({ to: search.redirect || '/' });
       } catch {
         setErrorOccurred(true);
       } finally {
