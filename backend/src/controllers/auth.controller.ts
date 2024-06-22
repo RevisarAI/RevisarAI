@@ -124,4 +124,45 @@ const refresh = async (req: Request, res: Response<IUserTokens | { message: stri
   });
 };
 
-export default { register, login, refresh };
+const logout = async (req: Request, res: Response<{ message: string }>) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    res.status(401).json({ message: 'Token not provided' });
+    return;
+  }
+
+  jwt.verify(token, config.refreshTokenSecret, async (err, clientInfo) => {
+    if (err) { 
+      res.status(403).json({ message: 'Invalid token' });
+      return;
+    }
+    const parsedClient = IUserDetailsSchema.parse(clientInfo);
+
+    try {
+      const client = await clientModel.findOne({ email: parsedClient.email });
+      if (client == null || !client.tokens) {
+        res.status(403).json({ message: 'Invalid token' });
+        return;
+      }
+
+      if (!client.tokens.includes(token)) {
+        console.error(client);
+        console.error(token);
+        client.tokens = [];
+        await client.save();
+        res.status(403).json({ message: 'Invalid token' });
+        return;
+      }
+      client.tokens.splice(client.tokens.indexOf(token), 1);
+      await client.save();
+      res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error while logging out' });
+    }
+  });
+};
+
+export default { register, login, refresh, logout };
+``;
