@@ -15,10 +15,12 @@ export interface IUserTokens {
   refreshToken: string;
 }
 
+export type IDataSourceType = 'api' | 'tripadvisor' | 'google';
 export interface IRawReview {
   businessId: string;
   value: string;
   date: Date;
+  dataSource: IDataSourceType;
 }
 
 export interface IReviewAnalaysis {
@@ -27,3 +29,22 @@ export interface IReviewAnalaysis {
   phrases: string[];
 }
 export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
+
+export interface IPieChartData {
+  id: number;
+  value: number;
+  label: string;
+}
+
+export interface ISentimentBarChartGroup {
+  date: string;
+  positive: number;
+  negative: number;
+  neutral: number;
+}
+
+export interface IWordFrequency {
+  text: string;
+  value: number;
+}
+export type Sentiment = 'positive' | 'negative' | 'neutral';

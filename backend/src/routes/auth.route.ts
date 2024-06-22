@@ -1,7 +1,7 @@
-import { Router } from 'express'
-import authController from '../controllers/auth.controller'
-import schemaValidationMiddleware from '../common/schema-validation.middleware'
-import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types'
+import { Router } from 'express';
+import authController from '../controllers/auth.controller';
+import schemaValidationMiddleware from '../common/schema-validation.middleware';
+import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types';
 
 /**
  * @swagger
@@ -38,7 +38,7 @@ import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types'
  *     accessToken: 'dsgsdgsgsdg'
  *     refreshToken: 'sdjanfklknnlnkmlds'
  */
-const authRouter = Router()
+const authRouter = Router();
 
 /**
  * @swagger
@@ -72,7 +72,7 @@ const authRouter = Router()
  *        500:
  *          description: Internal server error while registering the user.
  */
-authRouter.post('/register', schemaValidationMiddleware({ body: ICreateUserSchema }), authController.register)
+authRouter.post('/register', schemaValidationMiddleware({ body: ICreateUserSchema }), authController.register);
 
 /**
  * @swagger
@@ -98,7 +98,7 @@ authRouter.post('/register', schemaValidationMiddleware({ body: ICreateUserSchem
  *        400:
  *          description: Bad email or password.
  */
-authRouter.post('/login', schemaValidationMiddleware({ body: ILoginFormDataSchema }), authController.login)
+authRouter.post('/login', schemaValidationMiddleware({ body: ILoginFormDataSchema }), authController.login);
 
 /**
  * @swagger
@@ -117,6 +117,6 @@ authRouter.post('/login', schemaValidationMiddleware({ body: ILoginFormDataSchem
  *       schema:
  *         $ref: '#/components/schemas/Token'
  */
-authRouter.get('/refresh', authController.refresh)
+authRouter.get('/refresh', authController.refresh);
 
-export default authRouter
+export default authRouter;
