@@ -1,9 +1,15 @@
-import clientModel from '../models/client';
-import bcrypt from 'bcrypt';
-import { Request } from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import { signTokens } from '../utils/signTokens';
-import { ICreateUser, ILoginFormData, IUserDetails, IUserTokens } from 'shared-types';
+import clientModel from "../models/client";
+import bcrypt from "bcrypt";
+import { Request } from "express";
+import { v4 as uuidv4 } from "uuid";
+import { signTokens } from "../utils/signTokens";
+import {
+  ICreateUser,
+  ILoginFormData,
+  IUserDetails,
+  IUserTokens,
+} from "shared-types";
+import jwt from "jsonwebtoken";
 
 const register = async (
   req: Request<{}, IUserDetails & IUserTokens, ICreateUser>,
@@ -46,7 +52,7 @@ const register = async (
 };
 
 const login = async (
-  req: Request<{}, IUserTokens, Pick<ILoginFormData, 'email' | 'password'>>,
+  req: Request<{}, IUserTokens, Pick<ILoginFormData, "email" | "password">>,
   res
 ) => {
   const { email, password } = req.body;
@@ -55,18 +61,22 @@ const login = async (
     const client = await clientModel.findOne({ email });
 
     if (client == null) {
-      return res.status(400).json({ message: 'Bad email or password' });
+      return res.status(400).json({ message: "Bad email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, client.password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: 'Bad email or password' });
+      return res.status(400).json({ message: "Bad email or password" });
     }
 
     const { accessToken, refreshToken } = await signTokens(client);
 
-    client.tokens.push(refreshToken);
+    if (client.tokens == null) {
+      client.tokens = [refreshToken];
+    } else {
+      client.tokens.push(refreshToken);
+    }
 
     await client.save();
     res.status(200).send({ accessToken, refreshToken });
@@ -76,4 +86,50 @@ const login = async (
   }
 };
 
-export default { register, login };
+const refresh = async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    res.status(401).json({ message: "Token not provided" });
+    return;
+  }
+
+  jwt.verify(
+    token,
+    process.env.REFRESH_TOKEN_SECRET,
+    async (err, clientInfo) => {
+      if (err) {
+        res.status(403).json({ message: "Invalid token" })
+        return;
+      }
+
+      const clientEmail = clientInfo.email;
+
+      try {
+        const client = await clientModel.findOne({ email: clientEmail });
+        if (client == null) {
+          res.status(403).send();
+          return;
+        }
+        if (!client.tokens.includes(token)) {
+          client.tokens = [];
+          await client.save();
+         res.status(403).json({ message: "Invalid token" })
+          return;
+        }
+
+        const { accessToken, refreshToken } = await signTokens(client);
+
+        client.tokens[client.tokens.indexOf(token)] = refreshToken;
+
+        await client.save();
+        res.status(200).send({ accessToken, refreshToken });
+      } catch (error) {
+        res.status(500).send();
+      }
+    }
+  );
+};
+
+export default { register, login, refresh };
