@@ -100,7 +100,7 @@ const refresh = async (req, res) => {
     process.env.REFRESH_TOKEN_SECRET,
     async (err, clientInfo) => {
       if (err) {
-        res.status(403).send();
+        res.status(403).json({ message: "Invalid token" })
         return;
       }
 
@@ -115,7 +115,7 @@ const refresh = async (req, res) => {
         if (!client.tokens.includes(token)) {
           client.tokens = [];
           await client.save();
-         res.status(403).send();
+         res.status(403).json({ message: "Invalid token" })
           return;
         }
 
