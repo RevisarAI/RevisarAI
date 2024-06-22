@@ -148,8 +148,6 @@ const logout = async (req: Request, res: Response<{ message: string }>) => {
       }
 
       if (!client.tokens.includes(token)) {
-        console.error(client);
-        console.error(token);
         client.tokens = [];
         await client.save();
         res.status(403).json({ message: 'Invalid token' });
