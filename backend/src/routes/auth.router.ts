@@ -119,4 +119,20 @@ authRouter.post('/login', schemaValidationMiddleware({ body: ILoginFormDataSchem
  */
 authRouter.get('/refresh', authController.refresh);
 
+/**
+ * @swagger
+ * /auth/logout:
+ *  get:
+ *   summary: logs out a user
+ *   tags: [Auth]
+ *   security:
+ *    - bearerAuth: []
+ *   responses:
+ *    200:
+ *     description: logout completed successfully
+ *    500:
+ *     description: Internal server error while logging out the user
+ */
+authRouter.get('/logout', authController.logout);
+
 export default authRouter;
