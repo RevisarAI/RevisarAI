@@ -31,3 +31,8 @@ export const IUserDetailsSchema = IClientSchema.omit({
   password: true,
   tokens: true,
 });
+
+export const IBusinessDetails = IClientSchema.pick({
+  businessName: true,
+  businessDescription: true,
+});
