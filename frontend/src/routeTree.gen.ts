@@ -17,6 +17,7 @@ import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index
 import { Route as AuthenticatedHomeImport } from './routes/_authenticated/home'
 import { Route as AuthRegisterImport } from './routes/_auth/register'
 import { Route as AuthLoginImport } from './routes/_auth/login'
+import { Route as AuthCustomizeImport } from './routes/_auth/customize'
 
 // Create/Update Routes
 
@@ -50,6 +51,11 @@ const AuthLoginRoute = AuthLoginImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const AuthCustomizeRoute = AuthCustomizeImport.update({
+  path: '/customize',
+  getParentRoute: () => AuthRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -67,6 +73,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
+    }
+    '/_auth/customize': {
+      id: '/_auth/customize'
+      path: '/customize'
+      fullPath: '/customize'
+      preLoaderRoute: typeof AuthCustomizeImport
+      parentRoute: typeof AuthImport
     }
     '/_auth/login': {
       id: '/_auth/login'
@@ -102,7 +115,11 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
-  AuthRoute: AuthRoute.addChildren({ AuthLoginRoute, AuthRegisterRoute }),
+  AuthRoute: AuthRoute.addChildren({
+    AuthCustomizeRoute,
+    AuthLoginRoute,
+    AuthRegisterRoute,
+  }),
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedHomeRoute,
     AuthenticatedIndexRoute,
@@ -124,6 +141,7 @@ export const routeTree = rootRoute.addChildren({
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
+        "/_auth/customize",
         "/_auth/login",
         "/_auth/register"
       ]
@@ -134,6 +152,10 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/home",
         "/_authenticated/"
       ]
+    },
+    "/_auth/customize": {
+      "filePath": "_auth/customize.tsx",
+      "parent": "/_auth"
     },
     "/_auth/login": {
       "filePath": "_auth/login.tsx",
