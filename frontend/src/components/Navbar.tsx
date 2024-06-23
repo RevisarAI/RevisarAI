@@ -17,7 +17,7 @@ interface IMenuItem {
 
 const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '/home'},
                                        {text: 'Reviews', icon: <MenuIcon/>, link: '/reviews'},
-                                       {text: 'Settings', icon: <SettingsIcon/>, link: '/settings'}];
+                                       {text: 'Customize', icon: <SettingsIcon/>, link: '/settings'}];
 
 const Navbar: React.FC = () => {
     const [selectedIndex, setSelectedIndex] = React.useState(0);
