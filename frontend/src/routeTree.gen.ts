@@ -15,9 +15,9 @@ import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedHomeImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedCustomizeImport } from './routes/_authenticated/customize'
 import { Route as AuthRegisterImport } from './routes/_auth/register'
 import { Route as AuthLoginImport } from './routes/_auth/login'
-import { Route as AuthCustomizeImport } from './routes/_auth/customize'
 
 // Create/Update Routes
 
@@ -41,6 +41,11 @@ const AuthenticatedHomeRoute = AuthenticatedHomeImport.update({
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
+const AuthenticatedCustomizeRoute = AuthenticatedCustomizeImport.update({
+  path: '/customize',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
 const AuthRegisterRoute = AuthRegisterImport.update({
   path: '/register',
   getParentRoute: () => AuthRoute,
@@ -48,11 +53,6 @@ const AuthRegisterRoute = AuthRegisterImport.update({
 
 const AuthLoginRoute = AuthLoginImport.update({
   path: '/login',
-  getParentRoute: () => AuthRoute,
-} as any)
-
-const AuthCustomizeRoute = AuthCustomizeImport.update({
-  path: '/customize',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -74,13 +74,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
-    '/_auth/customize': {
-      id: '/_auth/customize'
-      path: '/customize'
-      fullPath: '/customize'
-      preLoaderRoute: typeof AuthCustomizeImport
-      parentRoute: typeof AuthImport
-    }
     '/_auth/login': {
       id: '/_auth/login'
       path: '/login'
@@ -94,6 +87,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/register'
       preLoaderRoute: typeof AuthRegisterImport
       parentRoute: typeof AuthImport
+    }
+    '/_authenticated/customize': {
+      id: '/_authenticated/customize'
+      path: '/customize'
+      fullPath: '/customize'
+      preLoaderRoute: typeof AuthenticatedCustomizeImport
+      parentRoute: typeof AuthenticatedImport
     }
     '/_authenticated/home': {
       id: '/_authenticated/home'
@@ -115,12 +115,9 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
-  AuthRoute: AuthRoute.addChildren({
-    AuthCustomizeRoute,
-    AuthLoginRoute,
-    AuthRegisterRoute,
-  }),
+  AuthRoute: AuthRoute.addChildren({ AuthLoginRoute, AuthRegisterRoute }),
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
+    AuthenticatedCustomizeRoute,
     AuthenticatedHomeRoute,
     AuthenticatedIndexRoute,
   }),
@@ -141,7 +138,6 @@ export const routeTree = rootRoute.addChildren({
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
-        "/_auth/customize",
         "/_auth/login",
         "/_auth/register"
       ]
@@ -149,13 +145,10 @@ export const routeTree = rootRoute.addChildren({
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
+        "/_authenticated/customize",
         "/_authenticated/home",
         "/_authenticated/"
       ]
-    },
-    "/_auth/customize": {
-      "filePath": "_auth/customize.tsx",
-      "parent": "/_auth"
     },
     "/_auth/login": {
       "filePath": "_auth/login.tsx",
@@ -164,6 +157,10 @@ export const routeTree = rootRoute.addChildren({
     "/_auth/register": {
       "filePath": "_auth/register.tsx",
       "parent": "/_auth"
+    },
+    "/_authenticated/customize": {
+      "filePath": "_authenticated/customize.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/home": {
       "filePath": "_authenticated/home.tsx",
