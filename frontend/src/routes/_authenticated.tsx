@@ -14,7 +14,7 @@ const SiteLayout: React.FC = () => {
         <Grid container item md={9} sx={{ backgroundColor: 'primary.light'}} direction="column" justifyContent="flex-start">
           <Grid item sx={{marginTop: '3vh', marginBottom: '3vh'}}>
             <Typography sx={{fontWeight: 'lighter'}}>
-              {router.location.pathname[1].toUpperCase() + router.location.pathname.slice(2)}
+              {router.location.pathname[1] + router.location.pathname.slice(2)}
               </Typography>
             </Grid>
           <Grid item><Outlet/></Grid>
