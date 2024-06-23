@@ -27,6 +27,11 @@ export interface IRawReview {
   dataSource: DataSourceEnum;
 }
 
+export interface IBatchReview {
+  value: string;
+  date: Date;
+}
+
 export interface IReviewAnalaysis {
   sentiment: SentimentEnum;
   rating: number;
