@@ -32,7 +32,7 @@ export const IUserDetailsSchema = IClientSchema.omit({
   tokens: true,
 });
 
-export const IBusinessDetails = IClientSchema.pick({
+export const IBusinessDetailsSchema = IClientSchema.pick({
   businessName: true,
   businessDescription: true,
 });
