@@ -26,6 +26,10 @@ const reviewSchema = new mongoose.Schema<IReview>({
     type: [String],
     required: true,
   },
+  dataSource: {
+    type: String,
+    required: true,
+  },
 });
 
 export default mongoose.model<IReview>('Review', reviewSchema);
