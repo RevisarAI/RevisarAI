@@ -32,6 +32,7 @@ export interface IBatchReview {
   date: Date;
 }
 
+export interface IReviewAnalaysis {
   sentiment: SentimentEnum;
   rating: number;
   phrases: string[];
