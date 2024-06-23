@@ -15,7 +15,7 @@ interface IMenuItem {
     link: string,
 }
 
-const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '/'},
+const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '/home'},
                                        {text: 'Reviews', icon: <MenuIcon/>, link: '/reviews'},
                                        {text: 'Settings', icon: <SettingsIcon/>, link: '/settings'}];
 
