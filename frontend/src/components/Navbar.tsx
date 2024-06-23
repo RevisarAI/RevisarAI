@@ -35,8 +35,7 @@ const Navbar: React.FC = () => {
         await authenticationService.logout(sessionStorage.getItem('refreshToken')!);
         clearTokens();
         auth.setUser(null);
-        auth.isAuthenticated = false;
-        navigate({ to: "/" });
+        navigate({ to: "/login", search: { redirect: '/' } });
       };
 
     return (<>
