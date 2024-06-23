@@ -9,7 +9,9 @@ const SiteLayout: React.FC = () => {
         <Navbar/>
         </Grid>
         <Grid container item md={9} sx={{ backgroundColor: 'primary.light'}} direction="column" justifyContent="flex-start">
-          <Grid item sx={{marginTop: '3vh', marginBottom: '3vh'}}><Typography sx={{fontWeight: 'lighter'}}>Page name</Typography></Grid>
+          <Grid item sx={{marginTop: '3vh', marginBottom: '3vh'}}>
+            <Typography sx={{fontWeight: 'lighter'}}>Page name</Typography>
+            </Grid>
           <Grid item><Outlet/></Grid>
         </Grid>
     </Grid>
