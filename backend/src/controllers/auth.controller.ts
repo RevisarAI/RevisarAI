@@ -2,7 +2,7 @@ import clientModel from '../models/client.model';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { signTokens } from '../utils/sign-tokens';
+import { extractBearerToken, signTokens } from '../utils/tokens';
 import { ICreateUser, ILoginFormData, IUserDetails, IUserTokens, IUserDetailsSchema } from 'shared-types';
 import jwt from 'jsonwebtoken';
 import config from '../config';
@@ -83,8 +83,7 @@ const login = async (
 };
 
 const refresh = async (req: Request, res: Response<IUserTokens | { message: string }>) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = extractBearerToken(req);
 
   if (!token) {
     res.status(401).json({ message: 'Token not provided' });
@@ -125,8 +124,7 @@ const refresh = async (req: Request, res: Response<IUserTokens | { message: stri
 };
 
 const logout = async (req: Request, res: Response<{ message: string }>) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = extractBearerToken(req);
 
   if (!token) {
     res.status(401).json({ message: 'Token not provided' });
@@ -134,7 +132,7 @@ const logout = async (req: Request, res: Response<{ message: string }>) => {
   }
 
   jwt.verify(token, config.refreshTokenSecret, async (err, clientInfo) => {
-    if (err) { 
+    if (err) {
       res.status(403).json({ message: 'Invalid token' });
       return;
     }

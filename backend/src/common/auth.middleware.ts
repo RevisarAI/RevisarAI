@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { IUserDetails } from 'shared-types';
 import createLogger from '../utils/logger';
 import config from '../config';
+import { extractBearerToken } from 'utils/tokens';
 
 const logger = createLogger('auth middleware');
 
@@ -20,8 +21,7 @@ declare global {
 export { Request as AuthRequest };
 
 const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
+  const token = extractBearerToken(req);
   if (!token) return res.status(httpStatus.UNAUTHORIZED).send('No token provided');
 
   try {
