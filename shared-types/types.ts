@@ -15,16 +15,20 @@ export interface IUserTokens {
   refreshToken: string;
 }
 
-export type IDataSourceType = 'api' | 'tripadvisor' | 'google';
+export enum DataSourceEnum {
+  API = 'api',
+  TRIPADVISOR = 'tripadvisor',
+  GOOGLE = 'google',
+}
 export interface IRawReview {
   businessId: string;
   value: string;
   date: Date;
-  dataSource: IDataSourceType;
+  dataSource: DataSourceEnum;
 }
 
 export interface IReviewAnalaysis {
-  sentiment: string;
+  sentiment: SentimentEnum;
   rating: number;
   phrases: string[];
 }
@@ -47,7 +51,12 @@ export interface IWordFrequency {
   text: string;
   value: number;
 }
-export type Sentiment = 'positive' | 'negative' | 'neutral';
+
+export enum SentimentEnum {
+  POSITIVE = 'positive',
+  NEGATIVE = 'negative',
+  NEUTRAL = 'neutral',
+}
 
 export interface IBusinessAnalysis {
   sentimentOverTime: ISentimentBarChartGroup[];
