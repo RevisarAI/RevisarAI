@@ -4,7 +4,7 @@ import { BaseController } from './base.controller';
 import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
-import { daysAgo } from 'utils/date';
+import { daysAgo } from '../utils/date';
 
 class ReviewController extends BaseController<IReview> {
   constructor() {

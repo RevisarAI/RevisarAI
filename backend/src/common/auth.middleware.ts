@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { IUserDetails } from 'shared-types';
 import createLogger from '../utils/logger';
 import config from '../config';
-import { extractBearerToken } from 'utils/tokens';
+import { extractBearerToken } from '../utils/tokens';
 
 const logger = createLogger('auth middleware');
 
