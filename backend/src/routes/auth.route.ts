@@ -2,6 +2,7 @@ import { Router } from 'express';
 import authController from '../controllers/auth.controller';
 import schemaValidationMiddleware from '../common/schema-validation.middleware';
 import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types';
+import authMiddleware from '../common/auth.middleware';
 
 /**
  * @swagger
@@ -60,13 +61,7 @@ const authRouter = Router();
  *          content:
  *            application/json:
  *              schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ClientTokens'
- *                 - type: object
- *                   properties:
- *                     businessId:
- *                       type: string
- *                       description: The ID of the business
+ *                - $ref: '#/components/schemas/ClientTokens'
  *        400:
  *          description: Email already exists.
  *        500:
@@ -134,5 +129,71 @@ authRouter.get('/refresh', authController.refresh);
  *     description: Internal server error while logging out the user
  */
 authRouter.get('/logout', authController.logout);
+
+/**
+ * @swagger
+ * /auth/google:
+ *   post:
+ *     summary: signs in a user with google sign in
+ *     tags: [auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - credentials
+ *             properties:
+ *               credentials:
+ *                 type: string
+ *             example:
+ *               credentials: fhsd7nf78yno24nfoagh87wyn4f
+ *     responses:
+ *       400:
+ *         description: Invalid credentials or google app permissions
+ *       200:
+ *         description: The new user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Token'
+ */
+authRouter.post('/google', authController.googleSignIn);
+
+/**
+ * @swagger
+ * /auth/google/:
+ *   put:
+ *     summary: provide additional details for a user first google sign in
+ *     tags: [auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *         type: object
+ *         required:
+ *          - businessName
+ *          - businessDescription
+ *         properties:
+ *          businessName:
+ *           type: string
+ *           description: The name of the business
+ *          businessDescription:
+ *           type: string
+ *           description: The description of the business
+ *         example:
+ *          businessName: "John's Bakery"
+ *          businessDescription: "A bakery that sells cakes and pastries"
+ */
+authRouter.put(
+  '/google',
+  authMiddleware,
+  schemaValidationMiddleware({ body: ICreateUserSchema.pick({ businessName: true, businessDescription: true }) }),
+  authController.googleAdditionalDetails
+);
 
 export default authRouter;
