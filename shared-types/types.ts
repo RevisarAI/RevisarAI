@@ -45,12 +45,12 @@ export interface IPieChartData {
   label: string;
 }
 
-export interface ISentimentBarChartGroup {
+export type ISentimentBarChartGroup = {
   date: string;
   positive: number;
   negative: number;
   neutral: number;
-}
+};
 
 export interface IWordFrequency {
   text: string;

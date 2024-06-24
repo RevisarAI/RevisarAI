@@ -35,7 +35,7 @@ class ReviewController extends BaseController<IReview> {
     for (let i = 1; i <= 7; i++) {
       const date = daysAgo(i);
       sentimentOverTime.set(date.toLocaleDateString(), {
-        date: date.toLocaleDateString(),
+        date: date.toLocaleDateString('en-GB'),
         positive: 0,
         negative: 0,
         neutral: 0,
@@ -53,7 +53,7 @@ class ReviewController extends BaseController<IReview> {
       dateData[review.sentiment]++;
     });
 
-    return Array.from(sentimentOverTime.values());
+    return Array.from(sentimentOverTime.values()).reverse();
   }
 
   private getWordsFrequencies(reviews: IReview[]): IWordFrequency[] {

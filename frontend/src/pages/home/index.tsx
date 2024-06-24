@@ -3,6 +3,7 @@ import { Grid, Typography } from '@mui/material';
 import DataSourceDistributionPanel from '@/components/DataSourceDistributionPanel';
 import { useQuery } from '@tanstack/react-query';
 import { reviewService } from '@/services/review-service';
+import SentimentOverTimePanel from '@/components/SentimentOverTimePanel';
 
 const HomePage: React.FC = () => {
   const auth = useAuth();
@@ -19,11 +20,18 @@ const HomePage: React.FC = () => {
             Welcome back, {auth.user?.fullName.split(' ')[0]}
           </Typography>
         </Grid>
-        <Grid item container columns={18}>
+        <Grid item container columns={18} spacing={2}>
           <Grid item md={7}>
             <DataSourceDistributionPanel
               height={200}
               data={status == 'success' ? data.dataSourceDistribution : []}
+              loading={status == 'pending'}
+            />
+          </Grid>
+          <Grid item md={11}>
+            <SentimentOverTimePanel
+              height={200}
+              data={status == 'success' ? data.sentimentOverTime : []}
               loading={status == 'pending'}
             />
           </Grid>
