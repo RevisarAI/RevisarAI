@@ -28,7 +28,7 @@ const RegisterPage: React.FC = () => {
   const auth = useAuth();
 
   const routeApi = getRouteApi('/_auth/register');
-  const { googleSignIn } = routeApi.useSearch();
+  const { googleSignIn, redirect } = routeApi.useSearch();
 
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,19 +55,18 @@ const RegisterPage: React.FC = () => {
       try {
         setErrorOccurred(false);
         setIsLoading(true);
-        debugger;
         const tokens = await (googleSignIn
           ? authenticationService.googleAdditionalDetails(value, sessionStorage.getItem('token')!)
           : authenticationService.register(value));
 
-        writeTokens(tokens, false);
+        writeTokens(tokens, googleSignIn);
 
         flushSync(() => {
           const payload = jwtDecode<JwtPayload & IUserDetails>(tokens.accessToken, {});
           auth.setUser(payload);
         });
 
-        navigate({ to: '/' });
+        navigate({ to: '/', search: { redirect } });
       } catch (err) {
         setErrorOccurred(true);
         console.error(err);
@@ -103,9 +102,9 @@ const RegisterPage: React.FC = () => {
     <Grid container direction="column" justifyContent="center" spacing={3}>
       <Grid item>
         <Typography variant="h4" textAlign="left">
-          Register
+          {googleSignIn ? 'Complete Registration' : 'Register'}
           <Typography variant="body1" style={{ opacity: '0.5' }} textAlign="left">
-            Let’s get to know each other!
+            {googleSignIn ? 'Just a few more details' : 'Let’s get to know each other!'}
           </Typography>
         </Typography>
       </Grid>
