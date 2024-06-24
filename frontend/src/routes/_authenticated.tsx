@@ -22,7 +22,7 @@ const SiteLayout: React.FC = () => {
       >
         <Grid item sx={{ marginTop: '3vh', marginBottom: '3vh' }}>
           <Typography sx={{ fontWeight: 'lighter' }}>
-            {router.location.pathname[1] + router.location.pathname.slice(2)}
+            {router.location.pathname.charAt(1).toUpperCase() + location.pathname.slice(2)}
           </Typography>
         </Grid>
         <Grid item>
