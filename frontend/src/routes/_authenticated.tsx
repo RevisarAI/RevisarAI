@@ -7,7 +7,7 @@ const SiteLayout: React.FC = () => {
   const router = useRouterState();
 
   return (
-    <Grid container spacing={'2vw'}>
+    <Grid container>
       <Grid container item md={3} height="100vh">
         <Navbar />
       </Grid>
@@ -15,6 +15,7 @@ const SiteLayout: React.FC = () => {
         container
         item
         md={9}
+        padding={'2vw'}
         sx={{ backgroundColor: 'primary.light' }}
         direction="column"
         justifyContent="flex-start"

@@ -16,9 +16,9 @@ export interface IUserTokens {
 }
 
 export enum DataSourceEnum {
-  API = 'api',
-  TRIPADVISOR = 'tripadvisor',
-  GOOGLE = 'google',
+  API = 'API',
+  TRIPADVISOR = 'TripAdvisor',
+  GOOGLE = 'Google',
 }
 export interface IRawReview {
   businessId: string;
