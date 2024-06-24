@@ -12,6 +12,7 @@ const ConfigSchema = z.object({
   refreshTokenSecret: z.string(),
   accessTokenSecret: z.string(),
   accessTokenExpiration: z.string(),
+  googleClientID: z.string(),
 });
 
 const config = ConfigSchema.parse({
@@ -23,6 +24,7 @@ const config = ConfigSchema.parse({
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
   accessTokenExpiration: process.env.ACCESS_TOKEN_EXPIRATION,
+  googleClientID: process.env.GOOGLE_CLIENT_ID,
 });
 
 export default config;
