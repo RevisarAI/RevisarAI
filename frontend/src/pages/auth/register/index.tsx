@@ -241,7 +241,7 @@ const RegisterPage: React.FC = () => {
         </Button>
       </Grid>
       <Snackbar open={errorOccurred} onClose={() => setErrorOccurred(false)} autoHideDuration={4000}>
-        <SnackbarContent message="Invalid email or password" style={{ backgroundColor: theme.palette.error.main }} />
+        <SnackbarContent message="Email is already in use" style={{ backgroundColor: theme.palette.error.main }} />
       </Snackbar>
     </Grid>
   );
