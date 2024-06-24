@@ -15,15 +15,56 @@ export interface IUserTokens {
   refreshToken: string;
 }
 
+export enum DataSourceEnum {
+  API = 'api',
+  TRIPADVISOR = 'tripadvisor',
+  GOOGLE = 'google',
+}
 export interface IRawReview {
   businessId: string;
+  value: string;
+  date: Date;
+  dataSource: DataSourceEnum;
+}
+
+export interface IBatchReview {
   value: string;
   date: Date;
 }
 
 export interface IReviewAnalaysis {
-  sentiment: string;
+  sentiment: SentimentEnum;
   rating: number;
   phrases: string[];
 }
 export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
+
+export interface IPieChartData {
+  id: number;
+  value: number;
+  label: string;
+}
+
+export interface ISentimentBarChartGroup {
+  date: string;
+  positive: number;
+  negative: number;
+  neutral: number;
+}
+
+export interface IWordFrequency {
+  text: string;
+  value: number;
+}
+
+export enum SentimentEnum {
+  POSITIVE = 'positive',
+  NEGATIVE = 'negative',
+  NEUTRAL = 'neutral',
+}
+
+export interface IBusinessAnalysis {
+  sentimentOverTime: ISentimentBarChartGroup[];
+  wordsFrequencies: IWordFrequency[];
+  dataSourceDistribution: IPieChartData[];
+}

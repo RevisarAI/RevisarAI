@@ -5,9 +5,12 @@
 * production: npm run start
 * development: npm run dev
 ### Environment variables (include examples)
-PORT | DB_URL | NODE_ENV
---- | --- | ---
-3000 | mongodb://127.0.0.1/reviews | development
+| Variable | Example |
+| --- | --- |
+| DATALAKE_DB_URL | localhost |
+| DATALAKE_DB_NAME | reviews |
+| PORT | 3000 |
+
 
 ## Backend
 ### Running

@@ -46,7 +46,9 @@ export class AuthenticationService {
   }
 
   async logout(refreshToken: string): Promise<void> {
-    // TODO: implement
+    return (await this,this.apiClient.get('/logout', {
+      headers: {"Authorization" : `Bearer ${refreshToken}`}
+    }));
   }
 }
 

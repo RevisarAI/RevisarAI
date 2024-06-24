@@ -2,12 +2,13 @@ import clientModel from '../models/client.model';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { signTokens } from '../utils/sign-tokens';
+import { extractBearerToken, signTokens } from '../utils/tokens';
 import { ICreateUser, ILoginFormData, IUserDetails, IUserTokens, IUserDetailsSchema } from 'shared-types';
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import config from '../config';
 import createLogger from '../utils/logger';
+import { AuthRequest } from 'common/auth.middleware';
 
 const logger = createLogger('auth.controller');
 
@@ -89,8 +90,7 @@ const login = async (
 };
 
 const refresh = async (req: Request, res: Response<IUserTokens | { message: string }>) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = extractBearerToken(req);
 
   if (!token) {
     res.status(401).json({ message: 'Token not provided' });
@@ -126,6 +126,43 @@ const refresh = async (req: Request, res: Response<IUserTokens | { message: stri
       return res.status(200).send({ accessToken, refreshToken });
     } catch (error) {
       return res.status(500).send();
+    }
+  });
+};
+
+const logout = async (req: Request, res: Response<{ message: string }>) => {
+  const token = extractBearerToken(req);
+
+  if (!token) {
+    res.status(401).json({ message: 'Token not provided' });
+    return;
+  }
+
+  jwt.verify(token, config.refreshTokenSecret, async (err, clientInfo) => {
+    if (err) {
+      res.status(403).json({ message: 'Invalid token' });
+      return;
+    }
+    const parsedClient = IUserDetailsSchema.parse(clientInfo);
+
+    try {
+      const client = await clientModel.findOne({ email: parsedClient.email });
+      if (client == null || !client.tokens) {
+        res.status(403).json({ message: 'Invalid token' });
+        return;
+      }
+
+      if (!client.tokens.includes(token)) {
+        client.tokens = [];
+        await client.save();
+        res.status(403).json({ message: 'Invalid token' });
+        return;
+      }
+      client.tokens.splice(client.tokens.indexOf(token), 1);
+      await client.save();
+      res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error while logging out' });
     }
   });
 };
@@ -168,8 +205,28 @@ const googleSignIn = async (req: Request<{}, {}, { credential: string }>, res: R
 };
 
 const googleAdditionalDetails = async (
-  req: AuthRequest<{}, {}, Omit<ICreateUser, 'email' | 'fullName' | 'password'>, void>,
+  req: AuthRequest<{}, {}, Pick<ICreateUser, 'businessName' | 'businessDescription'>, IUserTokens>,
   res: Response
-) => {};
+) => {
+  const { businessName, businessDescription, email } = req.user!;
+  if (businessDescription && businessName) {
+    return res.status(400).send('User already has additional details');
+  }
 
-export default { register, login, refresh, googleSignIn, googleAdditionalDetails };
+  const dbClient = await clientModel.findOne({ email });
+  if (dbClient == null) {
+    return res.status(403).send('given email is not registered to app');
+  }
+
+  dbClient.businessDescription = businessDescription;
+  dbClient.businessName = businessName;
+
+  const tokens = await signTokens(dbClient);
+
+  dbClient.tokens = [tokens.refreshToken];
+  await dbClient.save();
+
+  return res.status(200).send(tokens);
+};
+
+export default { register, login, refresh, logout, googleSignIn, googleAdditionalDetails };

@@ -1,32 +1,39 @@
-import "dotenv/config";
-import express, { Express } from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-import bodyParser from "body-parser";
-import batchRouter from "./routes/batchRoutes";
-import apiKeyRouter from "./routes/apiKeyRoutes";
+import express from 'express'
+import cors from 'cors'
+import bodyParser from 'body-parser'
+import { connectDatalake } from './db'
+import swaggerJsDoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
+import apiKeyRouter from './routes/api-key.router'
+import batchRouter from './routes/batch.router'
 
+const app = express()
 
-const app = express();
+const initApp = async () => {
+  app.use(cors())
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use('/batch', batchRouter)
+  app.use('/keys', apiKeyRouter)
 
-const initApp = () => {
-  app.use(cors());
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use("/batch", batchRouter);
-  app.use("/keys", apiKeyRouter)
+  await connectDatalake()
 
-  return new Promise<Express>((resolve, reject) => {
-    mongoose
-      .connect(process.env.DB_URL)
-      .then(() => {
-       
-        resolve(app);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
+  const swaggerOptions: swaggerJsDoc.Options = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Reviews Receiver API',
+        description: 'This is the API for Reviews Receiver service',
+        version: '1.0.0'
+      }
+    },
+    apis: ['./src/routes/*.ts', './src/models/*.ts']
+  }
 
-export = initApp;
+  const specs = swaggerJsDoc(swaggerOptions)
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs))
+
+  return app
+}
+
+export default initApp

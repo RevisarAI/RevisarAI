@@ -121,10 +121,26 @@ authRouter.get('/refresh', authController.refresh);
 
 /**
  * @swagger
+ * /auth/logout:
+ *  get:
+ *   summary: logs out a user
+ *   tags: [Auth]
+ *   security:
+ *    - bearerAuth: []
+ *   responses:
+ *    200:
+ *     description: logout completed successfully
+ *    500:
+ *     description: Internal server error while logging out the user
+ */
+authRouter.get('/logout', authController.logout);
+
+/**
+ * @swagger
  * /auth/google:
  *   post:
- *     summary: Signs in a user with google sign in
- *     tags: [Auth]
+ *     summary: signs in a user with google sign in
+ *     tags: [auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -149,5 +165,35 @@ authRouter.get('/refresh', authController.refresh);
  *               $ref: '#/components/schemas/Token'
  */
 authRouter.post('/google', authController.googleSignIn);
+
+/**
+ * @swagger
+ * /auth/google/:
+ *   put:
+ *     summary: provide additional details for a user first google sign in
+ *     tags: [auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *         type: object
+ *         required:
+ *          - businessName
+ *          - businessDescription
+ *         properties:
+ *          businessName:
+ *           type: string
+ *           description: The name of the business
+ *          businessDescription:
+ *           type: string
+ *           description: The description of the business
+ *         example:
+ *          businessName: "John's Bakery"
+ *          businessDescription: "A bakery that sells cakes and pastries"
+ */
+authRouter.put('/google', authController.googleAdditionalDetails);
 
 export default authRouter;
