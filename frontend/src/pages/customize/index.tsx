@@ -15,19 +15,19 @@ const CustomizePage: React.FC = () => {
 
   return (
     <>
-      <Grid container rowSpacing={2} justifyContent="center">
+      <Grid container justifyContent="center">
         <Grid item md={12}>
           <Typography variant="h6" sx={{ fontWeight: 'regular' }}>
             Customize your recommendations and settings
           </Typography>
         </Grid>
-        <Grid md={8} justifyContent="center">
-          <Box sx={{backgroundColor: 'white', borderRadius: '1vh'}}>
-            <Grid md={7} justifyContent="center" item>
-                <customizeForm.Field
-                name='businessName'
+        <Grid md={8} spacing={5} sx={{ paddingTop: '3vh', height: '60vh' }} direction="column">
+          <Box sx={{ backgroundColor: 'white', borderRadius: '1vh', height: '60vh', borderStyle: 'ridge', borderColor: '#c4c4c4' }}>
+            <Grid md={7} item>
+              <customizeForm.Field
+                name="businessName"
                 children={(field) => (
-                <TextField
+                  <TextField
                     fullWidth
                     id="businessName-input"
                     label="Business Name"
@@ -36,9 +36,26 @@ const CustomizePage: React.FC = () => {
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
-                />
+                  />
                 )}
-                ></customizeForm.Field>
+              ></customizeForm.Field>
+            </Grid>
+            <Grid md={7} item>
+              <customizeForm.Field
+                name="businessDescription"
+                children={(field) => (
+                  <TextField
+                    fullWidth
+                    id="businessDescription-input"
+                    label="Business Description"
+                    type="string"
+                    variant="outlined"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                )}
+              ></customizeForm.Field>
             </Grid>
           </Box>
         </Grid>
