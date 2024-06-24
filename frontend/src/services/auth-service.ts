@@ -22,7 +22,15 @@ export class AuthenticationService {
   }
 
   async googleSignIn(credential: string): Promise<IUserTokens> {
-    // TODO: implement
+    return (
+      await this.apiClient.post<IUserTokens>(
+        '/google',
+        { credential: credential },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    ).data;
   }
 
   async refreshAccessToken(refreshToken: string, signal?: AbortSignal): Promise<IUserTokens> {
