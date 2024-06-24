@@ -45,10 +45,10 @@ const register = async (req: Request<{}, IUserTokens, ICreateUser>, res: Respons
       password: hash,
       tokens: [tokens.refreshToken],
     }).save();
-    res.status(201).send(tokens);
+    return res.status(201).send(tokens);
   } catch (error) {
     console.error(error);
-    res.status(500).send();
+    return res.status(500).send();
   }
 };
 

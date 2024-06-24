@@ -67,12 +67,7 @@ const authRouter = Router();
  *        500:
  *          description: Internal server error while registering the user.
  */
-authRouter.post(
-  '/register',
-  authMiddleware,
-  schemaValidationMiddleware({ body: ICreateUserSchema }),
-  authController.register
-);
+authRouter.post('/register', schemaValidationMiddleware({ body: ICreateUserSchema }), authController.register);
 
 /**
  * @swagger
