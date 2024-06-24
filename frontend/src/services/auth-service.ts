@@ -33,11 +33,26 @@ export class AuthenticationService {
     ).data;
   }
 
+  async googleAdditionalDetails(
+    { businessName, businessDescription }: IUserDetails,
+    token: string
+  ): Promise<IUserTokens> {
+    return (
+      await this.apiClient.put(
+        '/google',
+        { businessName, businessDescription },
+        {
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        }
+      )
+    ).data;
+  }
+
   async refreshAccessToken(refreshToken: string, signal?: AbortSignal): Promise<IUserTokens> {
     // TODO: implement
   }
 
-  async register(newUser: ICreateUser): Promise<IUserDetails & IUserTokens> {
+  async register(newUser: ICreateUser): Promise<IUserTokens> {
     return (
       await this.apiClient.post('/register', newUser, {
         headers: { 'Content-Type': 'application/json' },
@@ -46,9 +61,12 @@ export class AuthenticationService {
   }
 
   async logout(refreshToken: string): Promise<void> {
-    return (await this,this.apiClient.get('/logout', {
-      headers: {"Authorization" : `Bearer ${refreshToken}`}
-    }));
+    return (
+      await this,
+      this.apiClient.get('/logout', {
+        headers: { Authorization: `Bearer ${refreshToken}` },
+      })
+    );
   }
 }
 

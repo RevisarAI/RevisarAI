@@ -2,6 +2,7 @@ import { Router } from 'express';
 import authController from '../controllers/auth.controller';
 import schemaValidationMiddleware from '../common/schema-validation.middleware';
 import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types';
+import authMiddleware from '../common/auth.middleware';
 
 /**
  * @swagger
@@ -60,19 +61,18 @@ const authRouter = Router();
  *          content:
  *            application/json:
  *              schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ClientTokens'
- *                 - type: object
- *                   properties:
- *                     businessId:
- *                       type: string
- *                       description: The ID of the business
+ *                - $ref: '#/components/schemas/ClientTokens'
  *        400:
  *          description: Email already exists.
  *        500:
  *          description: Internal server error while registering the user.
  */
-authRouter.post('/register', schemaValidationMiddleware({ body: ICreateUserSchema }), authController.register);
+authRouter.post(
+  '/register',
+  authMiddleware,
+  schemaValidationMiddleware({ body: ICreateUserSchema }),
+  authController.register
+);
 
 /**
  * @swagger
@@ -194,6 +194,11 @@ authRouter.post('/google', authController.googleSignIn);
  *          businessName: "John's Bakery"
  *          businessDescription: "A bakery that sells cakes and pastries"
  */
-authRouter.put('/google', authController.googleAdditionalDetails);
+authRouter.put(
+  '/google',
+  authMiddleware,
+  schemaValidationMiddleware({ body: ICreateUserSchema.pick({ businessName: true, businessDescription: true }) }),
+  authController.googleAdditionalDetails
+);
 
 export default authRouter;

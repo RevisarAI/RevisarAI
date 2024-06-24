@@ -9,15 +9,13 @@ import jwt from 'jsonwebtoken';
 import config from '../config';
 import createLogger from '../utils/logger';
 import { AuthRequest } from 'common/auth.middleware';
+import { isEmpty } from 'lodash';
 
 const logger = createLogger('auth.controller');
 
 const oauth2Client = new OAuth2Client();
 
-const register = async (
-  req: Request<{}, IUserDetails & IUserTokens, ICreateUser>,
-  res: Response<(IUserDetails & IUserTokens) | string>
-) => {
+const register = async (req: Request<{}, IUserTokens, ICreateUser>, res: Response<IUserTokens | string>) => {
   try {
     const emailExists = await clientModel.exists({ email: req.body.email });
     if (emailExists) {
@@ -36,7 +34,7 @@ const register = async (
       businessId: businessId,
     };
 
-    const { accessToken, refreshToken } = await signTokens(clientDetails);
+    const tokens = await signTokens(clientDetails);
 
     await new clientModel({
       email: req.body.email,
@@ -45,9 +43,9 @@ const register = async (
       businessDescription: req.body.businessDescription,
       businessId: businessId,
       password: hash,
-      tokens: [refreshToken],
+      tokens: [tokens.refreshToken],
     }).save();
-    res.status(201).send({ ...clientDetails, accessToken, refreshToken });
+    res.status(201).send(tokens);
   } catch (error) {
     console.error(error);
     res.status(500).send();
@@ -205,11 +203,12 @@ const googleSignIn = async (req: Request<{}, {}, { credential: string }>, res: R
 };
 
 const googleAdditionalDetails = async (
-  req: AuthRequest<{}, {}, Pick<ICreateUser, 'businessName' | 'businessDescription'>, IUserTokens>,
+  req: AuthRequest<{}, IUserTokens, Pick<ICreateUser, 'businessName' | 'businessDescription'>>,
   res: Response
 ) => {
-  const { businessName, businessDescription, email } = req.user!;
-  if (businessDescription && businessName) {
+  const { businessName, businessDescription } = req.body;
+  const { email, businessDescription: existingDescription, businessName: existingName } = req.user!;
+  if (!isEmpty(existingDescription) && !isEmpty(existingName)) {
     return res.status(400).send('User already has additional details');
   }
 
@@ -221,7 +220,7 @@ const googleAdditionalDetails = async (
   dbClient.businessDescription = businessDescription;
   dbClient.businessName = businessName;
 
-  const tokens = await signTokens(dbClient);
+  const tokens = await signTokens(IUserDetailsSchema.parse(dbClient));
 
   dbClient.tokens = [tokens.refreshToken];
   await dbClient.save();

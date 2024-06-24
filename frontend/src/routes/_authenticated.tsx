@@ -2,6 +2,7 @@ import { Outlet, createFileRoute, redirect, useRouterState } from '@tanstack/rea
 
 import { Grid, Typography } from '@mui/material';
 import Navbar from '@/components/Navbar';
+import { isEmpty } from 'validator';
 
 const SiteLayout: React.FC = () => {
   const router = useRouterState();
@@ -39,6 +40,14 @@ export const Route = createFileRoute('/_authenticated')({
         to: '/login',
         search: {
           redirect: location.href,
+        },
+      });
+    } else if (isEmpty(context.auth.user!.businessName) || isEmpty(context.auth.user!.businessDescription)) {
+      throw redirect({
+        to: '/register',
+        search: {
+          redirect: location.href,
+          googleSignIn: true,
         },
       });
     }
