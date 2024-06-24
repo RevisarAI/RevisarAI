@@ -1,17 +1,16 @@
-import { Outlet, createFileRoute, redirect, useRouterState } from '@tanstack/react-router';
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 
-import { Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import Navbar from '@/components/Navbar';
 
 const SiteLayout: React.FC = () => {
-  const router = useRouterState();
-
   return (
-    <Grid container spacing={'2vw'}>
+    <Grid container>
       <Grid container item md={3} height="100vh">
         <Navbar />
       </Grid>
       <Grid
+        padding={'2vw'}
         container
         item
         md={9}
@@ -19,11 +18,6 @@ const SiteLayout: React.FC = () => {
         direction="column"
         justifyContent="flex-start"
       >
-        <Grid item sx={{ marginTop: '3vh', marginBottom: '3vh' }}>
-          <Typography sx={{ fontWeight: 'lighter' }}>
-            {router.location.pathname[1] + router.location.pathname.slice(2)}
-          </Typography>
-        </Grid>
         <Grid item>
           <Outlet />
         </Grid>
