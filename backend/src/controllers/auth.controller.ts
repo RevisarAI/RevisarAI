@@ -19,7 +19,7 @@ const register = async (req: Request<{}, IUserTokens, ICreateUser>, res: Respons
   try {
     const emailExists = await clientModel.exists({ email: req.body.email });
     if (emailExists) {
-      res.status(400).send('Email already exists');
+      return res.status(400).send('Email already exists');
     }
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(req.body.password, salt);
