@@ -34,8 +34,8 @@ const initDB = async (dbUrl: string, dbName: string, mongoose: Mongoose) => {
   dbClient.addListener('commandFailed', (event) => logger.error(JSON.stringify(event, replacer)));
 };
 
-export const datalake = new Mongoose();
+export const metadatadb = new Mongoose();
 
-export const connectDatalake = async () => {
-  await initDB(config.datalakeDBUrl, config.datalakeDBName, datalake);
+export const connectMetadatadb = async () => {
+  await initDB(config.datalakeDBUrl, config.datalakeDBName, metadatadb);
 };
