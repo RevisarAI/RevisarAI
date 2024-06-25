@@ -24,7 +24,7 @@ reviews = [{
 
 url = "http://localhost:3000/batch"
 
-response = requests.post(url, json={"reviews": reviews}, headers={"x-api-key": API_KEY})
+response = requests.post(url, json={"reviews": reviews, "t": 1}, headers={"x-api-key": API_KEY})
 
 # Printing the response information
 print("Response Status Code:", response.status_code)
