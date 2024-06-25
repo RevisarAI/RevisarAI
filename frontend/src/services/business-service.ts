@@ -12,3 +12,5 @@ export class BusinessService {
     return (await this,this.apiClient.put('/', business));
   }
 }
+
+export const businessService = new BusinessService();

@@ -4,6 +4,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { IBusinessDetails } from 'shared-types';
 import { isEmpty } from 'validator';
+import { businessService } from '@/services/business-service';
 
 const CustomizePage: React.FC = () => {
   const theme = useTheme();
@@ -19,8 +20,14 @@ const CustomizePage: React.FC = () => {
       businessDescription: auth.user?.businessDescription || '',
     },
     onSubmit: async ({ value }) => {
-      setIsLoading(true);
-      console.log(value);
+      try {
+        setIsLoading(true);
+        await businessService.updateClientInfo(value);
+      } catch {
+        setErrorOccurred(true);
+      } finally {
+        setIsLoading(false);
+      }
     },
     validators: {
       onSubmit({ value }) {
