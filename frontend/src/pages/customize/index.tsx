@@ -69,10 +69,10 @@ const CustomizePage: React.FC = () => {
             </Stack>
             <Stack direction="row" justifyContent="flex-end" paddingRight={8} spacing={1}>
               <Button
-                sx={{ width: '13vw' }}
-                variant="contained"
+                sx={{ width: '13vw', color: 'primary.main' }}
+                variant="outlined"
                 disabled={isLoading}
-                color="info"
+                color="primary"
                 style={{ borderRadius: '5vh' }}
                 onClick={(e) => {
                   e.preventDefault();
