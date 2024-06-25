@@ -29,3 +29,4 @@ response = requests.post(url, json={"reviews": reviews}, headers={"x-api-key": A
 # Printing the response information
 print("Response Status Code:", response.status_code)
 print("Response Headers:", response.headers)
+print("Response Text:", response.text)
