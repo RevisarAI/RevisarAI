@@ -1,4 +1,4 @@
-import { Grid, Typography, TextField, Box } from '@mui/material';
+import { Grid, Typography, TextField, Box, Paper } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { IBusinessDetails } from 'shared-types';
 
@@ -21,44 +21,51 @@ const CustomizePage: React.FC = () => {
             Customize your recommendations and settings
           </Typography>
         </Grid>
-        <Grid md={8} spacing={5} sx={{ paddingTop: '3vh', height: '60vh' }} direction="column">
-          <Box sx={{ backgroundColor: 'white', borderRadius: '1vh', height: '60vh', borderStyle: 'ridge', borderColor: '#c4c4c4' }}>
-            <Grid md={7} item>
-              <customizeForm.Field
-                name="businessName"
-                children={(field) => (
-                  <TextField
-                    fullWidth
-                    id="businessName-input"
-                    label="Business Name"
-                    type="string"
-                    variant="outlined"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                )}
-              ></customizeForm.Field>
+          <Paper
+          elevation={1}
+            sx={{
+              backgroundColor: 'white',
+              borderRadius: '1vh',
+              height: '60vh',
+            }}
+          >
+            <Grid container sx={{ height: '60vh' }} direction="column" justifyContent='center'>
+              <Grid md={7} item>
+                <customizeForm.Field
+                  name="businessName"
+                  children={(field) => (
+                    <TextField
+                      fullWidth
+                      id="businessName-input"
+                      label="Business Name"
+                      type="string"
+                      variant="outlined"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  )}
+                ></customizeForm.Field>
+              </Grid>
+              <Grid md={7} item>
+                <customizeForm.Field
+                  name="businessDescription"
+                  children={(field) => (
+                    <TextField
+                      fullWidth
+                      id="businessDescription-input"
+                      label="Business Description"
+                      type="string"
+                      variant="outlined"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  )}
+                ></customizeForm.Field>
+              </Grid>
             </Grid>
-            <Grid md={7} item>
-              <customizeForm.Field
-                name="businessDescription"
-                children={(field) => (
-                  <TextField
-                    fullWidth
-                    id="businessDescription-input"
-                    label="Business Description"
-                    type="string"
-                    variant="outlined"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                )}
-              ></customizeForm.Field>
-            </Grid>
-          </Box>
-        </Grid>
+          </Paper>
       </Grid>
     </>
   );
