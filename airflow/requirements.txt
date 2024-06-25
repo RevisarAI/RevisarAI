@@ -1,0 +1,1 @@
+apache-airflow-providers-mongo==4.1.1
