@@ -9,7 +9,7 @@ class ReviewsProducer {
 
   public constructor() {
     this.kafkaProducer = this.createKafkaProducer();
-    this.logger = createLogger('consumer');
+    this.logger = createLogger('producer');
   }
 
   private createKafkaProducer(): Producer {
