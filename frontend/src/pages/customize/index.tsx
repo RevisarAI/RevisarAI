@@ -1,3 +1,4 @@
+import { useAuth } from '@/utils/auth-context';
 import { Grid, Typography, TextField, Paper, Stack, Button, CircularProgress, Snackbar, SnackbarContent, useTheme } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
@@ -6,13 +7,15 @@ import { isEmpty } from 'validator';
 
 const CustomizePage: React.FC = () => {
   const theme = useTheme();
+  const auth = useAuth();
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
   const customizeForm = useForm<IBusinessDetails>({
     defaultValues: {
-      businessName: '',
-      businessDescription: '',
+      businessName: auth.user?.businessName || '',
+      businessDescription: auth.user?.businessDescription || '',
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
@@ -21,7 +24,7 @@ const CustomizePage: React.FC = () => {
     validators: {
       onSubmit({ value }) {
         const requiredFields = ['businessName', 'businessDescription'] as Array<keyof typeof value>;
-        if(requiredFields.some((field) => isEmpty(value[field].toString())) && value.businessDescription.length <= 200) {
+        if(requiredFields.some((field) => isEmpty(value[field].toString())) || value.businessDescription.length > 200) {
           setErrorOccurred(true);
           return 'Missing or invalid values';
         }
@@ -77,6 +80,7 @@ const CustomizePage: React.FC = () => {
                     multiline
                     rows={7}
                     helperText="Up to 200 characters"
+                    error={field.state.value.length > 200}
                   />
                 )}
               ></customizeForm.Field>
