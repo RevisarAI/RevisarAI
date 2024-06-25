@@ -14,6 +14,7 @@ const CustomizePage: React.FC = () => {
 
   const customizeForm = useForm<IBusinessDetails>({
     defaultValues: {
+      businessId: auth.user?.businessId || '',
       businessName: auth.user?.businessName || '',
       businessDescription: auth.user?.businessDescription || '',
     },
