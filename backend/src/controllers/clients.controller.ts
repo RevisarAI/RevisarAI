@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { IClient } from "shared-types";
 import { BaseController } from "./base.controller";
 import clientModel from "../models/client.model";

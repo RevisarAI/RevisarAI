@@ -1,4 +1,4 @@
-import { clientsController } from '../controllers/client.controller';
+import { clientsController } from '../controllers/clients.controller';
 import { Router } from 'express';
 
 /**
