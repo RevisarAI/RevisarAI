@@ -33,6 +33,7 @@ export const IUserDetailsSchema = IClientSchema.omit({
 });
 
 export const IBusinessDetailsSchema = IClientSchema.pick({
+  businessId: true,
   businessName: true,
   businessDescription: true,
 });
