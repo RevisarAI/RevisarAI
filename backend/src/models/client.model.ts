@@ -77,10 +77,10 @@ import { metadata } from '../db';
  *       password: "password123"
  */
 const clientSchema = new metadata.Schema<IClient>({
-  email: { type: String, required: true },
-  fullName: { type: String, required: true },
-  businessName: { type: String, required: true },
-  businessDescription: { type: String, required: true },
+  email: { type: String, required: true, lowercase: true },
+  fullName: { type: String, required: true, lowercase: true },
+  businessName: { type: String },
+  businessDescription: { type: String },
   businessId: { type: String, required: true },
   password: { type: String, required: true, maxlength: 1000 },
   tokens: [{ type: String }],

@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <List sx={{ backgroundColor: '#F4F3FA', height: '100%', width: '100%' }}>
+      <List sx={{ backgroundColor: '#F4F3FA', height: '100%', width: '100%', padding: 0 }}>
         <ListItem>
           <ListItemIcon>
             <img src={LogoSVG} />

@@ -16,9 +16,9 @@ export interface IUserTokens {
 }
 
 export enum DataSourceEnum {
-  API = 'api',
-  TRIPADVISOR = 'tripadvisor',
-  GOOGLE = 'google',
+  API = 'API',
+  TRIPADVISOR = 'TripAdvisor',
+  GOOGLE = 'Google',
 }
 export interface IRawReview {
   businessId: string;
@@ -45,12 +45,12 @@ export interface IPieChartData {
   label: string;
 }
 
-export interface ISentimentBarChartGroup {
+export type ISentimentBarChartGroup = {
   date: string;
   positive: number;
   negative: number;
   neutral: number;
-}
+};
 
 export interface IWordFrequency {
   text: string;

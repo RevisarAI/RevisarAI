@@ -31,6 +31,9 @@ declare module '@tanstack/react-router' {
 }
 
 const theme = createTheme({
+  typography: {
+    fontFamily: 'roboto',
+  },
   palette: {
     primary: {
       main: '#294174',

@@ -25,9 +25,19 @@ const validatePasswords = (password: string, confirmPassword: string) => passwor
 const RegisterPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const auth = useAuth();
+
+  const routeApi = getRouteApi('/_auth/register');
+  const { googleSignIn, redirect } = routeApi.useSearch();
 
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const googleInitialValues = {
+    email: auth.user?.email,
+    fullName: auth.user?.fullName,
+    businessId: auth.user?.businessId,
+  };
 
   const registerForm = useForm<IClient & { confirmPassword: string }>({
     defaultValues: {
@@ -38,23 +48,28 @@ const RegisterPage: React.FC = () => {
       businessName: '',
       businessDescription: '',
       businessId: '',
+      ...(googleSignIn && googleInitialValues),
     },
+
     onSubmit: async ({ value }) => {
       try {
         setErrorOccurred(false);
         setIsLoading(true);
-        const tokens = await authenticationService.register(value);
+        const tokens = await (googleSignIn
+          ? authenticationService.googleAdditionalDetails(value, sessionStorage.getItem('token')!)
+          : authenticationService.register(value));
 
-        writeTokens(tokens, false);
+        writeTokens(tokens, googleSignIn);
 
         flushSync(() => {
           const payload = jwtDecode<JwtPayload & IUserDetails>(tokens.accessToken, {});
           auth.setUser(payload);
         });
 
-        navigate({ to: '/' });
-      } catch {
+        navigate({ to: '/', search: { redirect } });
+      } catch (err) {
         setErrorOccurred(true);
+        console.error(err);
       } finally {
         setIsLoading(false);
       }
@@ -64,6 +79,13 @@ const RegisterPage: React.FC = () => {
         const requiredFields = ['email', 'password', 'fullName', 'businessName', 'businessDescription'] as Array<
           keyof typeof value
         >;
+        if (googleSignIn) {
+          if (isEmpty(value.businessDescription) || isEmpty(value.businessName)) {
+            return 'Missing business info';
+          }
+
+          return;
+        }
         if (
           !validateEmail(value.email) ||
           !validatePasswords(value.password, value.confirmPassword) ||
@@ -80,9 +102,9 @@ const RegisterPage: React.FC = () => {
     <Grid container direction="column" justifyContent="center" spacing={3}>
       <Grid item>
         <Typography variant="h4" textAlign="left">
-          Register
+          {googleSignIn ? 'Complete Registration' : 'Register'}
           <Typography variant="body1" style={{ opacity: '0.5' }} textAlign="left">
-            Let’s get to know each other!
+            {googleSignIn ? 'Just a few more details' : 'Let’s get to know each other!'}
           </Typography>
         </Typography>
       </Grid>
@@ -91,6 +113,7 @@ const RegisterPage: React.FC = () => {
           name="email"
           children={(field) => (
             <TextField
+              disabled={googleSignIn}
               fullWidth
               id="email-input"
               label="Email"
@@ -108,6 +131,7 @@ const RegisterPage: React.FC = () => {
           name="fullName"
           children={(field) => (
             <TextField
+              disabled={googleSignIn}
               fullWidth
               id="fullName-input"
               label="Full Name"
@@ -162,12 +186,13 @@ const RegisterPage: React.FC = () => {
           name="password"
           children={(field) => (
             <TextField
+              disabled={googleSignIn}
               fullWidth
               id="password-input"
               label="Password"
               type="password"
               variant="outlined"
-              value={field.state.value}
+              value={googleSignIn ? '**********' : field.state.value}
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
             />
@@ -179,12 +204,13 @@ const RegisterPage: React.FC = () => {
           name="confirmPassword"
           children={(field) => (
             <TextField
+              disabled={googleSignIn}
               fullWidth
               id="confirmPassword-input"
               label="Confirm Password"
               type="password"
               variant="outlined"
-              value={field.state.value}
+              value={googleSignIn ? '**********' : field.state.value}
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
             />
@@ -209,13 +235,13 @@ const RegisterPage: React.FC = () => {
             <CircularProgress size={20} color="inherit" />
           ) : (
             <Typography variant="button" style={{ textTransform: 'none' }}>
-              Register
+              {googleSignIn ? 'Finish Registration' : 'Register'}
             </Typography>
           )}
         </Button>
       </Grid>
       <Snackbar open={errorOccurred} onClose={() => setErrorOccurred(false)} autoHideDuration={4000}>
-        <SnackbarContent message="Invalid email or password" style={{ backgroundColor: theme.palette.error.main }} />
+        <SnackbarContent message="Email is already in use" style={{ backgroundColor: theme.palette.error.main }} />
       </Snackbar>
     </Grid>
   );

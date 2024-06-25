@@ -4,17 +4,22 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { extractBearerToken, signTokens } from '../utils/tokens';
 import { ICreateUser, ILoginFormData, IUserDetails, IUserTokens, IUserDetailsSchema } from 'shared-types';
+import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import config from '../config';
+import createLogger from '../utils/logger';
+import { AuthRequest } from 'common/auth.middleware';
+import { isEmpty } from 'lodash';
 
-const register = async (
-  req: Request<{}, IUserDetails & IUserTokens, ICreateUser>,
-  res: Response<(IUserDetails & IUserTokens) | string>
-) => {
+const logger = createLogger('auth.controller');
+
+const oauth2Client = new OAuth2Client();
+
+const register = async (req: Request<{}, IUserTokens, ICreateUser>, res: Response<IUserTokens | string>) => {
   try {
     const emailExists = await clientModel.exists({ email: req.body.email });
     if (emailExists) {
-      res.status(400).send('Email already exists');
+      return res.status(400).send('Email already exists');
     }
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(req.body.password, salt);
@@ -29,7 +34,7 @@ const register = async (
       businessId: businessId,
     };
 
-    const { accessToken, refreshToken } = await signTokens(clientDetails);
+    const tokens = await signTokens(clientDetails);
 
     await new clientModel({
       email: req.body.email,
@@ -38,12 +43,12 @@ const register = async (
       businessDescription: req.body.businessDescription,
       businessId: businessId,
       password: hash,
-      tokens: [refreshToken],
+      tokens: [tokens.refreshToken],
     }).save();
-    res.status(201).send({ ...clientDetails, accessToken, refreshToken });
+    return res.status(201).send(tokens);
   } catch (error) {
     console.error(error);
-    res.status(500).send();
+    return res.status(500).send();
   }
 };
 
@@ -160,5 +165,67 @@ const logout = async (req: Request, res: Response<{ message: string }>) => {
   });
 };
 
-export default { register, login, refresh, logout };
-``;
+const googleSignIn = async (req: Request<{}, {}, { credential: string }>, res: Response) => {
+  try {
+    const ticket = await oauth2Client.verifyIdToken({
+      idToken: req.body.credential,
+      audience: config.googleClientID,
+    });
+    const payload = ticket.getPayload();
+    const email = payload?.email;
+    if (email === null) {
+      return res.status(400).send('Invalid credentials or permissions');
+    }
+
+    logger.debug(`successful google signing: ${email}`);
+
+    // Attempt to query existing user, otherwise create a new user
+    const client =
+      (await clientModel.findOne({ email })) ??
+      (await clientModel.create({
+        email,
+        password: '0',
+        fullName: `${payload?.given_name} ${payload?.family_name}`,
+        businessId: uuidv4(),
+        businessDescription: '',
+        businessName: '',
+      }));
+    const tokens = await signTokens(client);
+
+    client.tokens = [tokens.refreshToken];
+    client.save();
+
+    return res.status(200).send(tokens);
+  } catch (err) {
+    logger.error(err);
+    return res.status(500).send((err as Error).message);
+  }
+};
+
+const googleAdditionalDetails = async (
+  req: AuthRequest<{}, IUserTokens, Pick<ICreateUser, 'businessName' | 'businessDescription'>>,
+  res: Response
+) => {
+  const { businessName, businessDescription } = req.body;
+  const { email, businessDescription: existingDescription, businessName: existingName } = req.user!;
+  if (!isEmpty(existingDescription) && !isEmpty(existingName)) {
+    return res.status(400).send('User already has additional details');
+  }
+
+  const dbClient = await clientModel.findOne({ email });
+  if (dbClient == null) {
+    return res.status(403).send('given email is not registered to app');
+  }
+
+  dbClient.businessDescription = businessDescription;
+  dbClient.businessName = businessName;
+
+  const tokens = await signTokens(IUserDetailsSchema.parse(dbClient));
+
+  dbClient.tokens = [tokens.refreshToken];
+  await dbClient.save();
+
+  return res.status(200).send(tokens);
+};
+
+export default { register, login, refresh, logout, googleSignIn, googleAdditionalDetails };

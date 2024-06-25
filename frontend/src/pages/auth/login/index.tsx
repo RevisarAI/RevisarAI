@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
     validators: {
       onSubmit({ value }) {
         const requiredFields = ['email', 'password'] as Array<keyof typeof value>;
-        if (!validateEmail(value.email) || requiredFields.some((field) => isEmpty(value[field].toString()))) {
+        if (!validateEmail(value.email) || requiredFields.some((field) => isEmpty(value[field]?.toString() || ''))) {
           setErrorOccurred(true);
           return 'Missing or invalid values';
         }
@@ -103,7 +103,7 @@ const LoginPage: React.FC = () => {
   };
 
   const openRegisterPage = () => {
-    navigate({ to: '/register' });
+    navigate({ to: '/register', search });
   };
 
   return (
