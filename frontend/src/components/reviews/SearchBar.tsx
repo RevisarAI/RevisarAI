@@ -14,7 +14,7 @@ const ReviewsSearchBar: React.FC<ReviewsSearchBarProps> = ({ value, onChange }) 
 
   return (
     <Paper square={false} sx={{ borderRadius: '5vh', bgcolor: theme.palette.grey[200] }} component="form">
-      <Grid container direction="row" height="7vh" alignItems="center" justifyContent="center" paddingLeft={1}>
+      <Grid container direction="row" height="5vh" alignItems="center" justifyContent="center" paddingLeft={1}>
         <Grid item md={1}>
           <IconButton aria-label="menu">
             <SearchIcon />
