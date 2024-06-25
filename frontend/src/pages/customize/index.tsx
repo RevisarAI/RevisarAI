@@ -58,6 +58,9 @@ const CustomizePage: React.FC = () => {
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
+                    multiline
+                    rows={7}
+                    helperText="Up to 200 characters"
                   />
                 )}
               ></customizeForm.Field>
