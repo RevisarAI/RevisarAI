@@ -1,8 +1,10 @@
-import { Grid, Typography, TextField, Paper, Stack } from '@mui/material';
+import { Grid, Typography, TextField, Paper, Stack, Button, CircularProgress } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
+import { useState } from 'react';
 import { IBusinessDetails } from 'shared-types';
 
 const CustomizePage: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const customizeForm = useForm<IBusinessDetails>({
     defaultValues: {
       businessName: '',
@@ -64,6 +66,46 @@ const CustomizePage: React.FC = () => {
                   />
                 )}
               ></customizeForm.Field>
+            </Stack>
+            <Stack direction="row" justifyContent="flex-end" paddingRight={8} spacing={1}>
+              <Button
+                sx={{ width: '13vw' }}
+                variant="contained"
+                disabled={isLoading}
+                color="info"
+                style={{ borderRadius: '5vh' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  customizeForm.validateAllFields('submit');
+                  customizeForm.handleSubmit();
+                }}
+              >
+                <Typography variant="button" style={{ textTransform: 'none' }}>
+                  Reset to previous values
+                </Typography>
+              </Button>
+              <Button
+                sx={{ width: '5vw' }}
+                variant="contained"
+                disabled={isLoading}
+                color="primary"
+                style={{ borderRadius: '5vh' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  customizeForm.validateAllFields('submit');
+                  customizeForm.handleSubmit();
+                }}
+              >
+                {isLoading ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <Typography variant="button" style={{ textTransform: 'none' }}>
+                    Save
+                  </Typography>
+                )}
+              </Button>
             </Stack>
           </Paper>
         </Grid>
