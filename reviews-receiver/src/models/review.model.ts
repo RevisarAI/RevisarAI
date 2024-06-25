@@ -1,5 +1,5 @@
-import { datalake } from '../db'
-import { IRawReview } from 'shared-types'
+import { datalake } from '../db';
+import { IRawReview } from 'shared-types';
 
 /**
  * @swagger
@@ -30,7 +30,7 @@ import { IRawReview } from 'shared-types'
 const reviewSchema = new datalake.Schema<IRawReview>({
   businessId: { type: String, required: true },
   value: { type: String, required: true },
-  date: { type: Date, required: true }
-})
+  date: { type: Date, required: true },
+});
 
-export default datalake.model<IRawReview>('Review', reviewSchema)
+export default datalake.model<IRawReview>('Review', reviewSchema);
