@@ -1,18 +1,32 @@
-import { Grid, Typography, TextField, Paper, Stack, Button, CircularProgress } from '@mui/material';
+import { Grid, Typography, TextField, Paper, Stack, Button, CircularProgress, Snackbar, SnackbarContent, useTheme } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { IBusinessDetails } from 'shared-types';
+import { isEmpty } from 'validator';
 
 const CustomizePage: React.FC = () => {
+  const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
+
   const customizeForm = useForm<IBusinessDetails>({
     defaultValues: {
       businessName: '',
       businessDescription: '',
     },
     onSubmit: async ({ value }) => {
+      setIsLoading(true);
       console.log(value);
     },
+    validators: {
+      onSubmit({ value }) {
+        const requiredFields = ['businessName', 'businessDescription'] as Array<keyof typeof value>;
+        if(requiredFields.some((field) => isEmpty(value[field].toString())) && value.businessDescription.length <= 200) {
+          setErrorOccurred(true);
+          return 'Missing or invalid values';
+        }
+    },
+  }
   });
 
   return (
@@ -109,6 +123,9 @@ const CustomizePage: React.FC = () => {
             </Stack>
           </Paper>
         </Grid>
+        <Snackbar open={errorOccurred} onClose={() => setErrorOccurred(false)} autoHideDuration={4000}>
+        <SnackbarContent message="Missing or invalid values" style={{ backgroundColor: theme.palette.error.main }} />
+      </Snackbar>
       </Grid>
     </>
   );
