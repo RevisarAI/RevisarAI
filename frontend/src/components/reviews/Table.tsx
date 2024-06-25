@@ -44,8 +44,8 @@ const HighlightedText: React.FC<{ text: string; sentiment: SentimentEnum; style?
 }) => (
   <span
     style={{
-      paddingRight: `0.2rem`,
-      paddingLeft: `0.2rem`,
+      paddingRight: '0.25rem',
+      paddingLeft: '0.25rem',
       borderColor: sentimentColors[sentiment].border,
       borderWidth: '0.1rem',
       borderStyle: 'solid',
@@ -76,7 +76,7 @@ const renderSentimentText: Column['render'] = (value: IReview['value'], { phrase
           return val;
         }
       })}
-      ;
+      <span>{value.substring(lastIndex)}</span>
     </Typography>
   );
 };
