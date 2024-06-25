@@ -95,8 +95,7 @@ const CustomizePage: React.FC = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  customizeForm.validateAllFields('submit');
-                  customizeForm.handleSubmit();
+                  customizeForm.reset();
                 }}
               >
                 <Typography variant="button" style={{ textTransform: 'none' }}>
