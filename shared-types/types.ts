@@ -37,7 +37,7 @@ export interface IReviewAnalaysis {
   rating: number;
   phrases: string[];
 }
-export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
+export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId | string };
 
 export interface IPieChartData {
   id: number;
