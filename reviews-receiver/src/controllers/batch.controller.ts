@@ -15,7 +15,7 @@ class BatchController {
 
     reviews = reviews.map((review: IBatchReview) => ({ ...review, businessId, dataSource: 'API' }));
     try {
-      this.reviewsProducer.produce(reviews);
+      await this.reviewsProducer.produce(reviews);
       res.status(201).send();
     } catch (err) {
       res.status(500).send();
