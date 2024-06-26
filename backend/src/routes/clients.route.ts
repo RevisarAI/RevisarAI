@@ -13,17 +13,17 @@ const router = Router();
 /**
  * @swagger
  * paths:
- *   /api/clients/:
+ *   /api/clients/businesses:
  *     put:
- *       summary: Update client's info
+ *       summary: Update client's info by business id
  *       tags: [Client]
  *       security:
  *         - bearerAuth: []
- *       description: This endpoint allows the client to update his info
+ *       description: This endpoint allows the client to update his info by business id
  *       responses:
  *         200:
  *           description: The client's details are updated 
  */
-router.put('/', clientsController.putById.bind(clientsController));
+router.put('/businesses', clientsController.updateByBusinessId.bind(clientsController));
 
 export default router;
