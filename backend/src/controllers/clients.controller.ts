@@ -5,7 +5,7 @@ import { BaseController } from "./base.controller";
 import clientModel from "../models/client.model";
 import httpStatus from 'http-status';
 import { isEmpty } from 'lodash';
-import { signTokens } from '../utils/sign-tokens';
+import { signTokens } from '../utils/tokens';
 
 class ClientsController extends BaseController<IClient> {
   constructor() {
