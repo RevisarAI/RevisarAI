@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "1c7ebe32457039cb2e98141e746e081d2a10282fd407e02e538ef72638955b08"
+API_KEY = "fe5d4e82668855fa9b5b30bbfe1e765b05cc00d707c9884481a58793db84d562"
 
 reviews = [{
     "value": "The system seems interesting, but it's a bit too early to tell how effective it will be. I'm waiting to see more functionalities before I can really recommend it.",

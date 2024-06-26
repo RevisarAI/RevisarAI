@@ -1,16 +1,10 @@
-import {
-  IReview,
-  ISentimentBarChartGroup,
-  IWordFrequency,
-  IPieChartData,
-  Sentiment,
-  IBusinessAnalysis,
-} from 'shared-types';
+import { IReview, ISentimentBarChartGroup, IWordFrequency, IPieChartData, IBusinessAnalysis } from 'shared-types';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
 import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
+import { daysAgo } from '../utils/date';
 
 class ReviewController extends BaseController<IReview> {
   constructor() {
@@ -19,9 +13,8 @@ class ReviewController extends BaseController<IReview> {
 
   async getAnalysis(req: AuthRequest, res: Response) {
     const { businessId } = req.user!;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const today = daysAgo(0);
+    const sevenDaysAgo = daysAgo(7);
 
     const reviews = await this.model.find({
       date: { $gte: sevenDaysAgo, $lt: today },
@@ -36,29 +29,31 @@ class ReviewController extends BaseController<IReview> {
     return res.status(httpStatus.OK).send(analysis);
   }
 
-  private getSentimentOverTime(reviews: IReview[]): ISentimentBarChartGroup[] {
+  private initializeSentimentOverTimeMap(): Map<string, ISentimentBarChartGroup> {
     const sentimentOverTime = new Map<string, ISentimentBarChartGroup>();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Initialize the map with all dates from the last week
     for (let i = 1; i <= 7; i++) {
-      const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+      const date = daysAgo(i);
       sentimentOverTime.set(date.toLocaleDateString(), {
-        date: date.toLocaleDateString(),
+        date: date.toLocaleDateString('en-GB'),
         positive: 0,
         negative: 0,
         neutral: 0,
       });
     }
 
+    return sentimentOverTime;
+  }
+
+  private getSentimentOverTime(reviews: IReview[]): ISentimentBarChartGroup[] {
+    const sentimentOverTime = this.initializeSentimentOverTimeMap();
+
     reviews.forEach((review) => {
       const dateData = sentimentOverTime.get(review.date.toLocaleDateString())!;
-      dateData[review.sentiment as Sentiment]++;
+      dateData[review.sentiment]++;
     });
 
-    return Array.from(sentimentOverTime.values());
+    return Array.from(sentimentOverTime.values()).reverse();
   }
 
   private getWordsFrequencies(reviews: IReview[]): IWordFrequency[] {
@@ -75,7 +70,7 @@ class ReviewController extends BaseController<IReview> {
 
     return Array.from(wordFrequency.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
+      .slice(0, 20)
       .map(([text, value]) => ({ text, value }));
   }
 

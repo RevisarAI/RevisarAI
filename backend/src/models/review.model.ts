@@ -1,4 +1,4 @@
-import { IReview } from 'shared-types';
+import { IReview, DataSourceEnum, SentimentEnum } from 'shared-types';
 import { datalake } from '../db';
 
 /**
@@ -64,6 +64,7 @@ const reviewSchema = new datalake.Schema<IReview>({
   },
   sentiment: {
     type: String,
+    enum: Object.values(SentimentEnum),
     required: true,
   },
   rating: {
@@ -76,6 +77,7 @@ const reviewSchema = new datalake.Schema<IReview>({
   },
   dataSource: {
     type: String,
+    enum: Object.values(DataSourceEnum),
     required: true,
   },
 });
