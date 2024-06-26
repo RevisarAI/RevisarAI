@@ -15,8 +15,8 @@ const TableRowSkeleton = ({ height }: TableRowSkeletonProps) => {
       </TableCell>
       <TableCell>
         <Stack spacing={1} flexGrow={1}>
-          {range(Math.floor(Math.random() * 4) + 2).map(() => (
-            <Skeleton variant="rectangular" height={20} width={randomTextLineWidth()} />
+          {range(Math.floor(Math.random() * 4) + 2).map((_, i) => (
+            <Skeleton key={i} variant="rectangular" height={20} width={randomTextLineWidth()} />
           ))}
         </Stack>
       </TableCell>
