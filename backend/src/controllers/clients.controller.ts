@@ -5,6 +5,7 @@ import { BaseController } from "./base.controller";
 import clientModel from "../models/client.model";
 import httpStatus from 'http-status';
 import { isEmpty } from 'lodash';
+import { signTokens } from '../utils/sign-tokens';
 
 class ClientsController extends BaseController<IClient> {
   constructor() {
@@ -29,8 +30,15 @@ class ClientsController extends BaseController<IClient> {
       client.set(f, req.body[f]);
     });
 
+    const { accessToken, refreshToken } = await signTokens(client);
+    if (client.tokens == null) {
+      client.tokens = [refreshToken];
+    } else {
+      client.tokens.push(refreshToken);
+    }
+
     await client.save();
-    return res.status(httpStatus.OK).send(client);
+    return res.status(httpStatus.OK).send({ accessToken, refreshToken });
   }
 }
 
