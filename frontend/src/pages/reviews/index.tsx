@@ -35,6 +35,7 @@ const generateReview = (review: IReview): IReview => ({
   dataSource: Object.values(DataSourceEnum)[Math.floor(Math.random() * 3)],
 });
 
+// TODO: Replace with actual query
 const staticReviews: IReview[] = [
   { ...staticReview, value: 'yes game-changer' },
   { ...staticReview, value: staticReview.value.repeat(2) },
