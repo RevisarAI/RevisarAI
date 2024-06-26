@@ -37,7 +37,7 @@ const generateReview = (review: IReview): IReview => ({
 
 const staticReviews: IReview[] = [
   { ...staticReview, value: 'yes game-changer' },
-  { ...staticReview, value: staticReview.value.repeat(4) },
+  { ...staticReview, value: staticReview.value.repeat(2) },
   ...range(30).map(() => generateReview(staticReview)),
 ];
 

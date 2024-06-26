@@ -1,9 +1,8 @@
 import { MoreVert as MoreVertIcon, SvgIconComponent } from '@mui/icons-material';
-import { Dialog, DialogTitle, Divider, Grid, IconButton, Popover, Tooltip, Typography, Zoom } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { TypeAnimation } from 'react-type-animation';
+import { Divider, Grid, IconButton, Popover, Tooltip, Typography, Zoom } from '@mui/material';
+import { useState } from 'react';
 import { ContentCopy as ClipboardIcon, Check as CopiedIcon, Quickreply as QuickReplyIcon } from '@mui/icons-material';
-import { random } from 'lodash';
+import ReviewResponse from './ReviewResponse';
 
 export interface ReviewAction {
   label: string;
@@ -12,38 +11,9 @@ export interface ReviewAction {
   onClick: (reviewText: string) => void | Promise<void>;
 }
 
-const splitStringWithDelays = (longString: string, minDelay = 30, maxDelay = 150): Array<string | number> => {
-  const getRandomDelay = () => random(minDelay, maxDelay);
-
-  const getRandomLength = (maxLength: number) => random(1, maxLength);
-
-  const result = [];
-  let currentIndex = 0;
-
-  while (currentIndex < longString.length) {
-    const remainingLength = longString.length - currentIndex;
-    const randomLength = getRandomLength(Math.max(10, remainingLength / 10));
-
-    const substring = longString.slice(0, currentIndex + randomLength);
-
-    result.push(substring, getRandomDelay());
-
-    currentIndex += randomLength;
-  }
-
-  return result;
-};
-
-const lorem =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nibh nunc, laoreet vel ex non, ultrices ullamcorper nibh. Donec cursus neque egestas dui congue, ac dapibus orci pellentesque. Nulla a porta tellus. Ut scelerisque blandit dolor. Nulla sit amet mauris suscipit, mattis massa id, cursus tellus. Nam pulvinar interdum euismod. Maecenas sed eleifend nunc, sed congue arcu. Sed egestas nulla et purus sollicitudin hendrerit.';
-
 const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [showResponseDialog, setShowResponseDialog] = useState<boolean>(false);
-  const [finishedWritingResponse, setFinishedWritingResponse] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const loadingSequence = ['Loading', 100, 'Loading.', 100, 'Loading..', 100, 'Loading...'];
 
   const actions: ReviewAction[] = [
     {
@@ -61,11 +31,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
     {
       icon: QuickReplyIcon,
       label: 'Generate response',
-      onClick: () => {
-        setShowResponseDialog(true);
-        setLoading(true);
-        setTimeout(() => setLoading(false), 3500);
-      },
+      onClick: () => setShowResponseDialog(true),
     },
   ];
 
@@ -131,26 +97,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
           ))}
         </Grid>
       </Popover>
-      <Dialog
-        PaperProps={{ sx: { borderRadius: '1rem' } }}
-        fullWidth
-        onClose={() => setShowResponseDialog(false)}
-        open={showResponseDialog}
-      >
-        <DialogTitle>{loading ? 'Generating a response...' : 'Generated response for review'}</DialogTitle>
-        <Typography padding={3} paddingTop={0} minHeight="40vh" variant="body1">
-          {loading ? (
-            ''
-          ) : (
-            <TypeAnimation
-              style={{ whiteSpace: 'pre - line' }}
-              sequence={[...splitStringWithDelays(lorem), () => setFinishedWritingResponse(true)]}
-              repeat={0}
-              speed={75}
-            />
-          )}
-        </Typography>
-      </Dialog>
+      <ReviewResponse open={showResponseDialog} onClose={() => setShowResponseDialog(false)} reviewText={reviewText} />
     </>
   );
 };
