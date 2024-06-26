@@ -1,8 +1,9 @@
 import { MoreVert as MoreVertIcon, SvgIconComponent } from '@mui/icons-material';
 import { Dialog, DialogTitle, Divider, Grid, IconButton, Popover, Tooltip, Typography, Zoom } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { ContentCopy as ClipboardIcon, Check as CopiedIcon, Quickreply as QuickReplyIcon } from '@mui/icons-material';
+import { random } from 'lodash';
 
 export interface ReviewAction {
   label: string;
@@ -11,9 +12,42 @@ export interface ReviewAction {
   onClick: (reviewText: string) => void | Promise<void>;
 }
 
+const splitStringWithDelays = (longString: string, minDelay = 50, maxDelay = 300): Array<string | number> => {
+  const getRandomDelay = () => random(minDelay, maxDelay);
+
+  const getRandomLength = (maxLength: number) => random(1, maxLength);
+
+  const result = [];
+  let currentIndex = 0;
+
+  while (currentIndex < longString.length) {
+    const remainingLength = longString.length - currentIndex;
+    const randomLength = getRandomLength(Math.max(10, remainingLength / 10));
+
+    const substring = longString.slice(0, currentIndex + randomLength);
+
+    result.push(substring, getRandomDelay());
+
+    currentIndex += randomLength;
+  }
+
+  return result;
+};
+
+const lorem =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nibh nunc, laoreet vel ex non, ultrices ullamcorper nibh. Donec cursus neque egestas dui congue, ac dapibus orci pellentesque. Nulla a porta tellus. Ut scelerisque blandit dolor. Nulla sit amet mauris suscipit, mattis massa id, cursus tellus. Nam pulvinar interdum euismod. Maecenas sed eleifend nunc, sed congue arcu. Sed egestas nulla et purus sollicitudin hendrerit.';
+
 const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [showResponseDialog, setShowResponseDialog] = useState<boolean>(false);
+  const [finishedWritingResponse, setFinishedWritingResponse] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const loadingSequence = ['Loading', 100, 'Loading.', 100, 'Loading..', 100, 'Loading...'];
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 3500);
+  });
 
   const actions: ReviewAction[] = [
     {
@@ -31,7 +65,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
     {
       icon: QuickReplyIcon,
       label: 'Generate response',
-      onClick: (text) => {
+      onClick: () => {
         setShowResponseDialog(true);
       },
     },
@@ -70,8 +104,9 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
       >
         <Grid container direction="row" justifyContent="center" alignItems="center">
           {actions.map((action, index) => (
-            <>
+            <span key={index}>
               <Tooltip
+                key={action.label}
                 arrow
                 TransitionComponent={Zoom}
                 TransitionProps={{ timeout: 200 }}
@@ -80,7 +115,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
               >
                 <IconButton
                   key={action.label}
-                  disabled={isClicked(index)}
+                  disabled={isClicked(index) && !!action.clickedIcon}
                   onClick={async () => {
                     await action.onClick(reviewText);
                     setActionsClickedState((prev) => prev.map((val, i) => (i === index ? true : val)));
@@ -90,7 +125,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
                 </IconButton>
               </Tooltip>
               {index !== actions.length - 1 && <Divider orientation="vertical" flexItem />}
-            </>
+            </span>
           ))}
         </Grid>
       </Popover>
@@ -100,14 +135,19 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
         onClose={() => setShowResponseDialog(false)}
         open={showResponseDialog}
       >
-        <DialogTitle>Generated response for review</DialogTitle>
+        <DialogTitle>{loading ? 'Generating a response...' : 'Generated response for review'}</DialogTitle>
         <Typography padding={3} paddingTop={0} minHeight="40vh" variant="body1">
-          <TypeAnimation
-            sequence={[
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nibh nunc, laoreet vel ex non, ultrices ullamcorper nibh. Donec cursus neque egestas dui congue, ac dapibus orci pellentesque. Nulla a porta tellus. Ut scelerisque blandit dolor. Nulla sit amet mauris suscipit, mattis massa id, cursus tellus. Nam pulvinar interdum euismod. Maecenas sed eleifend nunc, sed congue arcu. Sed egestas nulla et purus sollicitudin hendrerit. Aliquam tortor orci, lacinia nec tempus et, egestas pulvinar odio. Donec condimentum risus sit amet nulla placerat, id interdum ipsum fermentum. Cras non tellus sapien. Vestibulum efficitur laoreet nunc, sed dapibus nulla fermentum vitae. Suspendisse cursus nec massa ac ullamcorper. Mauris hendrerit ligula at sollicitudin ultrices. Praesent nisi est, ullamcorper sit amet ligula sed, tristique faucibus felis. Nulla interdum sapien arcu, at maximus diam aliquet facilisis. Mauris sit amet congue ante. In bibendum libero massa, varius porta leo pellentesque ut. Nulla facilisi. Praesent et lobortis lectus. Aenean elit nunc, eleifend eu eleifend mattis, tincidunt laoreet mauris. Quisque laoreet urna ut metus tristique mollis. Nullam arcu urna, suscipit ut aliquet ut, lobortis vitae ante. Sed tincidunt arcu sit amet imperdiet varius.',
-            ]}
-            speed={70}
-          ></TypeAnimation>
+          {loading ? (
+            ''
+          ) : (
+            <TypeAnimation
+              style={{ whiteSpace: 'pre - line' }}
+              cursor={!finishedWritingResponse}
+              sequence={[...splitStringWithDelays(lorem), () => setFinishedWritingResponse(true)]}
+              repeat={0}
+              speed={75}
+            />
+          )}
         </Typography>
       </Dialog>
     </>

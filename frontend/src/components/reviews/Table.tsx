@@ -33,10 +33,10 @@ export const SentimentText: Column['render'] = (value: IReview['value'], { phras
         const index = value.toLowerCase().indexOf(phrase.toLowerCase());
         if (index >= 0) {
           const val = (
-            <>
+            <span key={index}>
               {value.substring(lastIndex, index)}
               <HighlightedText key={index} text={value.substring(index, index + phrase.length)} sentiment={sentiment} />
-            </>
+            </span>
           );
           lastIndex = index + phrase.length;
           return val;
@@ -83,20 +83,18 @@ const ReviewsTable: React.FC<ReviewsTableProps> = ({ rows, columns, loading = fa
             <TableBody>
               {loading
                 ? range(10).map((index) => <TableRowSkeleton key={index} height={10} />)
-                : rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    return (
-                      <TableRow hover key={row._id?.toString()}>
-                        {columns.map((column) => {
-                          const value = row[column.id !== 'actions' ? column.id : 'value'];
-                          return (
-                            <TableCell key={`${row._id!}-${column.id}`} align={column.align}>
-                              {column.render(value, row)}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
+                : rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                    <TableRow hover key={row._id?.toString()}>
+                      {columns.map((column) => {
+                        const value = row[column.id !== 'actions' ? column.id : 'value'];
+                        return (
+                          <TableCell key={`${row._id!}-${column.id}`} align={column.align}>
+                            {column.render(value, row)}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
