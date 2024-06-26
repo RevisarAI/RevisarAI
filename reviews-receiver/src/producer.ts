@@ -1,4 +1,4 @@
-import { IRawReview } from './../../shared-types/types';
+import { IRawReview } from 'shared-types';
 import { Producer, Kafka } from 'kafkajs';
 import winston from 'winston';
 import createLogger from './utils/logger';
