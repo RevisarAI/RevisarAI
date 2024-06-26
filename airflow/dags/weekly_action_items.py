@@ -18,8 +18,8 @@ def weekly_action_items():
             clients_collection = connection.metadata.clients
 
             print(f"Connected to MongoDB - {connection.server_info()}")
-            today = calendar.day_name[date.today().weekday()] 
-            result = list(clients_collection.find({"actionsRefreshWeekday": today}))
+            today = calendar.day_name[date.today().weekday()]
+            result = list(clients_collection.find({"actionsRefreshWeekday": today}, {"tokens": 0, "password": 0, "__v": 0}))
             output = json.loads(json_util.dumps(result))
 
             for client in output:
@@ -36,12 +36,12 @@ def weekly_action_items():
         clients_list = json.loads(clients)
 
         for client in clients_list:
-            key = f'{request_date}-{client["businessId"]}'
+            key = f'{request_date}-{client["_id"]}'
             yield (
                 json.dumps(key), 
                 json.dumps(
                     {
-                        "businessId": client["businessId"], 
+                        "client": client, 
                         "date": request_date
                     }
                 ),
