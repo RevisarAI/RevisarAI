@@ -40,7 +40,8 @@ class ReviewsProducer {
 
       this.logger.info(`Sent ${reviews.length} messages successfully`);
     } catch (error) {
-      this.logger.error('Failed to send messages', { error });
+      this.logger.error('Failed to send messages', error);
+      throw error;
     } finally {
       await this.kafkaProducer.disconnect();
     }
