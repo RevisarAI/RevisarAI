@@ -43,7 +43,9 @@ class ReviewsProducer {
       this.logger.error('Failed to send messages', error);
       throw error;
     } finally {
-      await this.kafkaProducer.disconnect();
+      await this.kafkaProducer.disconnect().catch((error) => {
+        this.logger.error('Failed to disconnect from Kafka', error);
+      });
     }
   }
 }
