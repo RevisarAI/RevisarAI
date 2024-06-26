@@ -2,9 +2,12 @@ import { useAuth } from '@/utils/auth-context';
 import { Grid, Typography, TextField, Paper, Stack, Button, CircularProgress, Snackbar, SnackbarContent, useTheme } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
-import { IBusinessDetails } from 'shared-types';
+import { IBusinessDetails, IUserDetails } from 'shared-types';
 import { isEmpty } from 'validator';
-import { businessService } from '@/services/business-service';
+import { clientsService } from '@/services/clients-service';
+import { writeTokens } from '@/utils/local-storage';
+import { flushSync } from 'react-dom';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 const CustomizePage: React.FC = () => {
   const theme = useTheme();
@@ -22,7 +25,21 @@ const CustomizePage: React.FC = () => {
     onSubmit: async ({ value }) => {
       try {
         setIsLoading(true);
-        await businessService.updateClientInfo(value);
+
+        const tokens = await clientsService.updateClientInfo(value);
+
+        auth.setUser({
+          ...auth.user!,
+          ...value,
+        });
+
+      writeTokens(tokens, true);
+
+      flushSync(() => {
+        const payload = jwtDecode<JwtPayload & IUserDetails>(tokens.accessToken, {});
+        auth.setUser(payload);
+      });
+
       } catch {
         setErrorOccurred(true);
       } finally {
