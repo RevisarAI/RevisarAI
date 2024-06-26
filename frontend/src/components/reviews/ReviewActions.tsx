@@ -12,7 +12,7 @@ export interface ReviewAction {
   onClick: (reviewText: string) => void | Promise<void>;
 }
 
-const splitStringWithDelays = (longString: string, minDelay = 50, maxDelay = 300): Array<string | number> => {
+const splitStringWithDelays = (longString: string, minDelay = 30, maxDelay = 150): Array<string | number> => {
   const getRandomDelay = () => random(minDelay, maxDelay);
 
   const getRandomLength = (maxLength: number) => random(1, maxLength);
@@ -45,10 +45,6 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
 
   const loadingSequence = ['Loading', 100, 'Loading.', 100, 'Loading..', 100, 'Loading...'];
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 3500);
-  });
-
   const actions: ReviewAction[] = [
     {
       icon: ClipboardIcon,
@@ -67,6 +63,8 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
       label: 'Generate response',
       onClick: () => {
         setShowResponseDialog(true);
+        setLoading(true);
+        setTimeout(() => setLoading(false), 3500);
       },
     },
   ];
@@ -119,6 +117,10 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
                   onClick={async () => {
                     await action.onClick(reviewText);
                     setActionsClickedState((prev) => prev.map((val, i) => (i === index ? true : val)));
+                    setTimeout(
+                      () => setActionsClickedState((prev) => prev.map((val, i) => (i === index ? false : val))),
+                      2000
+                    );
                   }}
                 >
                   {isClicked(index) && action.clickedIcon ? <action.clickedIcon /> : <action.icon />}
@@ -142,7 +144,6 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
           ) : (
             <TypeAnimation
               style={{ whiteSpace: 'pre - line' }}
-              cursor={!finishedWritingResponse}
               sequence={[...splitStringWithDelays(lorem), () => setFinishedWritingResponse(true)]}
               repeat={0}
               speed={75}
