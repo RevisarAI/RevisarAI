@@ -2,6 +2,7 @@ import { IRawReview } from 'shared-types';
 import { Producer, Kafka } from 'kafkajs';
 import winston from 'winston';
 import createLogger from './utils/logger';
+import config from './config';
 
 class ReviewsProducer {
   private kafkaProducer: Producer;
@@ -13,7 +14,7 @@ class ReviewsProducer {
   }
 
   private createKafkaProducer(): Producer {
-    const brokers = process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094'];
+    const brokers = config.kafka_brokers?.split(',') || ['localhost:9094'];
 
     const kafka = new Kafka({
       clientId: 'reviews-receiver',
