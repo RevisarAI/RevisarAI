@@ -68,3 +68,13 @@ export interface IBusinessAnalysis {
   wordsFrequencies: IWordFrequency[];
   dataSourceDistribution: IPieChartData[];
 }
+
+export enum WeekdaysEnum {
+  SUNDAY = 'Sunday',
+  MONDAY = 'Monday',
+  TUESDAY = 'Tuesday',
+  WEDNESDAY = 'Wednesday',
+  THURSDAY = 'Thursday',
+  FRIDAY = 'Friday',
+  SATURDAY = 'Saturday',
+}

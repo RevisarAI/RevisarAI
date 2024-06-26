@@ -8,7 +8,7 @@ import json
 @dag(schedule_interval='@daily', start_date=datetime(2024, 1, 1), catchup=False)
 def weekly_action_items():
 
-    @task.python()
+    @task.python(retries=5)
     def get_clients():
         import calendar
 
@@ -20,7 +20,14 @@ def weekly_action_items():
             print(f"Connected to MongoDB - {connection.server_info()}")
             today = calendar.day_name[date.today().weekday()] 
             result = list(clients_collection.find({"actionsRefreshWeekday": today}))
-            return json.loads(json_util.dumps(result))
+            output = json.loads(json_util.dumps(result))
+
+            for client in output:
+                client["_id"] = client["_id"]["$oid"]
+
+            print(output)
+
+            return output
         except Exception as e:
             print(f"Error connecting to MongoDB: {repr(e)}")
             raise e
@@ -31,7 +38,7 @@ def weekly_action_items():
         try:
             hook = HttpHook(http_conn_id='action_items_service')
             connection = hook.get_conn()
-            connection.post('/generate', data=json.dumps(current_client))
+            connection.post(hook.url_from_endpoint('/generate'), data=json.dumps(current_client))
             print(f"Created action items for client: {current_client['email']}")
         except Exception as e:
             print(f"Error creating action items for client: {current_client['email']} Exception: {repr(e)}")
