@@ -1,5 +1,6 @@
 import { Types as mongooseTypes } from 'mongoose';
 import { z } from 'zod';
+import { WeekdaysEnum } from './types';
 
 export const IClientSchema = z.object({
   _id: z.instanceof(mongooseTypes.ObjectId).optional(),
@@ -10,6 +11,7 @@ export const IClientSchema = z.object({
   businessId: z.string(),
   password: z.string(),
   tokens: z.array(z.string()).optional(),
+  actionsRefreshWeekday: z.nativeEnum(WeekdaysEnum).optional(),
 });
 
 export const ICreateUserSchema = IClientSchema.pick({

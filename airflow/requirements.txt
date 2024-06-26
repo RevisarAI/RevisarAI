@@ -1,0 +1,2 @@
+apache-airflow-providers-mongo==4.1.1
+apache-airflow-providers-apache-kafka==1.4.1
