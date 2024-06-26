@@ -1,4 +1,4 @@
-import { IBatchReview } from 'shared-types';
+import { IBatchReview, DataSourceEnum } from 'shared-types';
 import { Request, Response } from 'express';
 import ReviewsProducer from '../producer';
 
@@ -13,7 +13,7 @@ class BatchController {
     let { reviews } = req.body;
     const { businessId } = req.body;
 
-    reviews = reviews.map((review: IBatchReview) => ({ ...review, businessId, dataSource: 'API' }));
+    reviews = reviews.map((review: IBatchReview) => ({ ...review, businessId, dataSource: DataSourceEnum.API }));
     try {
       await this.reviewsProducer.produce(reviews);
       res.status(201).send();
