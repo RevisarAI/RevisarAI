@@ -1,4 +1,4 @@
-import { datalake } from '../db'
+import { metadatadb } from '../db';
 
 /**
  * @swagger
@@ -27,17 +27,17 @@ import { datalake } from '../db'
  */
 
 interface ApiKeyDocument extends Document {
-  key: string
-  businessId: string
-  createdAt: Date
+  key: string;
+  businessId: string;
+  createdAt: Date;
 }
 
-const apiKeySchema = new datalake.Schema<ApiKeyDocument>({
+const apiKeySchema = new metadatadb.Schema<ApiKeyDocument>({
   key: { type: String, required: true, unique: true },
   businessId: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-})
+  createdAt: { type: Date, default: Date.now },
+});
 
-const ApiKey = datalake.model<ApiKeyDocument>('ApiKey', apiKeySchema)
+const ApiKey = metadatadb.model<ApiKeyDocument>('ApiKey', apiKeySchema);
 
-export default ApiKey
+export default ApiKey;

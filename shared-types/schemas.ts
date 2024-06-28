@@ -50,3 +50,15 @@ export const IWeeklyActionItemsSchema = z.object({
   date: z.date(),
   businessId: z.string(),
 });
+
+export const IBatchReviewList = z.object({
+  businessId: z.string(),
+  reviews: z
+    .array(
+      z.object({
+        value: z.string(),
+        date: z.string(),
+      })
+    )
+    .nonempty(),
+});
