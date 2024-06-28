@@ -1,8 +1,10 @@
-import { Router } from 'express'
-import BatchController from '../controllers/batch.controller'
-import checkApiKey from '../common/api-key.middleware'
+import { Router } from 'express';
+import BatchController from '../controllers/batch.controller';
+import checkApiKey from '../common/api-key.middleware';
+import schemaValidationMiddleware from '../common/schema-validation.middleware';
+import { IBatchReviewList } from 'shared-types';
 
-const batchRouter = Router()
+const batchRouter = Router();
 
 /**
  * @swagger
@@ -56,6 +58,6 @@ const batchRouter = Router()
  *        description: The API key
  *        example: '1c7ebe32457039cb2e98141e746e081d2a10282fd407e02e538ef72638955b08'
  */
-batchRouter.post('/', checkApiKey, BatchController.post.bind(BatchController))
+batchRouter.post('/', checkApiKey, schemaValidationMiddleware({ body: IBatchReviewList }), BatchController.post);
 
-export default batchRouter
+export default batchRouter;
