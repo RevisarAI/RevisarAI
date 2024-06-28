@@ -1,10 +1,12 @@
 import OpenAI from 'openai';
-import { IRawReview, IReview, IReviewAnalaysis } from 'shared-types';
+import { IActionItem, IActionItemSchema, IReviewMinimal, IWeeklyActionItemsRequestSchema } from 'shared-types';
 import createLogger from './utils/logger';
-import reviewModel from './models/review.model';
 import winston from 'winston';
-
+import config from './config';
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
+import weeklyActionItemsModel from './models/weekly-action-items.model';
+import reviewModel from 'models/review.model';
+import { z } from 'zod';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
@@ -14,12 +16,12 @@ export class ReviewsConsumer {
   public constructor() {
     this.kafkaConsumer = this.createKafkaConsumer();
     this.logger = createLogger('consumer');
-    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.openai = new OpenAI({ apiKey: config.openaiApiKey });
   }
 
   public async startConsumer(): Promise<void> {
     await this.kafkaConsumer.connect();
-    await this.kafkaConsumer.subscribe({ topic: 'reviews', fromBeginning: false });
+    await this.kafkaConsumer.subscribe({ topic: config.topic, fromBeginning: false });
 
     await this.kafkaConsumer.run({
       autoCommit: false,
@@ -28,32 +30,45 @@ export class ReviewsConsumer {
         const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`;
         this.logger.info(`- ${prefix} ${message.key}#${message.value}`);
 
-        const review: IRawReview = JSON.parse(message.value!.toString());
-        this.logger.info(`Sending review to Openai... Review: ${review.value}`);
+        const request = IWeeklyActionItemsRequestSchema.parse(JSON.parse(message.value!.toString()));
+        const requestDate = new Date(request.date);
+        const weekBeforeRequest = new Date(requestDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        const lastWeekReviews = await reviewModel
+          .find({
+            businessId: request.client.businessId,
+            date: { $gte: weekBeforeRequest, $lt: requestDate },
+          })
+          .sort({ importance: -1 })
+          .limit(20);
+
+        const minialLastWeekReviews: IReviewMinimal[] = lastWeekReviews.map((review) => ({
+          _id: review._id,
+          value: review.value,
+        }));
+
+        const prompt = `
+          Based on the list of reviews, extract the 5 most important action items for the next week. Each action item should include an explanation with references and ids from the list of reviews. Provide the result in a list with JSON format: {"value": string, "reason": string}.
+          Reviews:
+          ${JSON.stringify(minialLastWeekReviews)}}
+        `;
+
+        this.logger.info(`Generating action items with Openai for client: ${request.client.businessId}...`);
         const response = await this.openai.chat.completions.create({
           model: 'gpt-3.5-turbo',
           messages: [
-            {
-              role: 'system',
-              content:
-                'You analyze reviews. Read the review, determine the sentiment (positive, negative, or neutral), provide a rating out of 10, and extract concise, relevant phrases that succinctly explain the sentiment exactly as they appear in the review. Only use phrases that are verbatim from the review text without rephrasing or summarizing. In the phrases, use as few words as possible, if possible even just a couple of keywords. Consider the overall tone, language used, and any specific praises or criticisms mentioned. In addition add importance rating between 0 to 100 - the rating is based on importance and the potential for generating actionable items from the review. Be as specific as possible.',
-            },
-            { role: 'user', content: message.value!.toString() },
-            {
-              role: 'system',
-              content:
-                'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "importance": "importance_rating", "phrases": [...] }',
-            },
+            { role: 'system', content: 'You are an expert analyst.' },
+            { role: 'user', content: prompt },
           ],
         });
+        const actionItems: IActionItem[] = z.array(IActionItemSchema).parse(response.choices[0].message.content);
+        this.logger.info(`Generated action items: ${JSON.stringify(actionItems)}`);
 
-        const reviewAnalysis: IReviewAnalaysis = JSON.parse(response.choices[0].message.content!);
-
-        this.logger.info(
-          `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`
-        );
-        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
-        await reviewModel.create(reviewWithAnalysis);
+        await weeklyActionItemsModel.create({
+          actionItems,
+          date: requestDate,
+          businessId: request.client.businessId,
+        });
 
         this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
       },
@@ -65,17 +80,17 @@ export class ReviewsConsumer {
   }
 
   private createKafkaConsumer(): Consumer {
-    const brokers = process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094'];
+    const brokers = config.brokers.split(',');
 
     const kafka = new Kafka({
-      clientId: 'reviews-loader',
+      clientId: 'weekly-action-items-consumer',
       brokers,
       retry:
         process.env.NODE_ENV === 'production'
           ? { initialRetryTime: 100, retries: 8 }
           : { initialRetryTime: 300, retries: 2 },
     });
-    const consumer = kafka.consumer({ groupId: 'review-analysis-group' });
+    const consumer = kafka.consumer({ groupId: config.consumerGroup });
     return consumer;
   }
 }
@@ -86,7 +101,6 @@ const initConsumer = async () => {
 
   const errorTypes = ['unhandledRejection', 'uncaughtException'];
   const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
-
   errorTypes.forEach((type) => {
     process.on(type, async (e) => {
       try {

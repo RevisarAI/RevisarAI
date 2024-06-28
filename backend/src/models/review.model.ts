@@ -1,4 +1,4 @@
-import { IReview, DataSourceEnum, SentimentEnum } from 'shared-types';
+import { IReview, ReviewMongoseSchema } from 'shared-types';
 import { datalake } from '../db';
 
 /**
@@ -49,37 +49,6 @@ import { datalake } from '../db';
  *         phrases: ["amazing"]
  *         dataSource: "google"
  */
-const reviewSchema = new datalake.Schema<IReview>({
-  value: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    required: true,
-  },
-  businessId: {
-    type: String,
-    required: true,
-  },
-  sentiment: {
-    type: String,
-    enum: Object.values(SentimentEnum),
-    required: true,
-  },
-  rating: {
-    type: Number,
-    required: true,
-  },
-  phrases: {
-    type: [String],
-    required: true,
-  },
-  dataSource: {
-    type: String,
-    enum: Object.values(DataSourceEnum),
-    required: true,
-  },
-});
+const reviewSchema = new datalake.Schema<IReview>(ReviewMongoseSchema.schema);
 
-export default datalake.model<IReview>('reviews', reviewSchema);
+export default datalake.model<IReview>(ReviewMongoseSchema.name, reviewSchema);
