@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "fe5d4e82668855fa9b5b30bbfe1e765b05cc00d707c9884481a58793db84d562"
+API_KEY = "aa526610d8ae711f622754de16dde1481e7882c4c79221d3450ebdd85f7a3753"
 
 reviews = [{
     "value": "The system seems interesting, but it's a bit too early to tell how effective it will be. I'm waiting to see more functionalities before I can really recommend it.",
@@ -24,4 +24,9 @@ reviews = [{
 
 url = "http://localhost:3000/batch"
 
-requests.post(url, json={"reviews": reviews}, headers={"x-api-key": API_KEY})
+response = requests.post(url, json={"reviews": reviews, "t": 1}, headers={"x-api-key": API_KEY})
+
+# Printing the response information
+print("Response Status Code:", response.status_code)
+print("Response Headers:", response.headers)
+print("Response Text:", response.text)

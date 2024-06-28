@@ -70,7 +70,7 @@ class ReviewController extends BaseController<IReview> {
 
     return Array.from(wordFrequency.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
+      .slice(0, 20)
       .map(([text, value]) => ({ text, value }));
   }
 

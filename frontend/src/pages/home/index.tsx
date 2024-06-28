@@ -1,9 +1,10 @@
 import { useAuth } from '@/utils/auth-context';
 import { Grid, Typography } from '@mui/material';
-import DataSourceDistributionPanel from '@/components/DataSourceDistributionPanel';
 import { useQuery } from '@tanstack/react-query';
 import { reviewService } from '@/services/review-service';
-import SentimentOverTimePanel from '@/components/SentimentOverTimePanel';
+import SentimentOverTimePanel from '@/components/panels/SentimentOverTimePanel';
+import DataSourceDistributionPanel from '@/components/panels/DataSourceDistributionPanel';
+import WordCloudPanel from '@/components/panels/WordCloudPanel';
 
 const HomePage: React.FC = () => {
   const auth = useAuth();
@@ -33,6 +34,17 @@ const HomePage: React.FC = () => {
               height={200}
               data={status == 'success' ? data.sentimentOverTime : []}
               loading={status == 'pending'}
+            />
+          </Grid>
+        </Grid>
+        <Grid item container columns={18} spacing={2}>
+          <Grid item md={11}></Grid>
+          <Grid item md={7}>
+            <WordCloudPanel
+              height={250}
+              data={status == 'success' ? data.wordsFrequencies : []}
+              loading={status == 'pending'}
+              colors={['#143059', '#2F6B9A', '#82a6c2']}
             />
           </Grid>
         </Grid>
