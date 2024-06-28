@@ -26,5 +26,5 @@ initApp().then((app: Express) => {
     };
     https.createServer(httpsConf, app).listen(PORT);
   }
-  logger.debug(`The Reviews Loader is listnening on ${SERVER_URL}`);
+  logger.debug(`The action items generator is listnening on ${SERVER_URL}`);
 });

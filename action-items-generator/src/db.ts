@@ -1,14 +1,13 @@
 import env from 'dotenv';
 import mongoose from 'mongoose';
 import createLogger from './utils/logger';
+import config from './config';
 
 env.config();
 const logger = createLogger('db');
 
-const { DB_URL } = process.env as Record<string, string>;
-
 const initDB = async (): Promise<mongoose.mongo.Db> => {
-  const url = `mongodb://${DB_URL}`;
+  const url = `mongodb://${config.dbUrl}/${config.dbName}`;
 
   logger.debug(`Connecting to ${process.env.NODE_ENV} DB at ${url}`);
 

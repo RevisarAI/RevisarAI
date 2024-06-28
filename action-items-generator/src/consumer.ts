@@ -5,7 +5,7 @@ import winston from 'winston';
 import config from './config';
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
 import weeklyActionItemsModel from './models/weekly-action-items.model';
-import reviewModel from 'models/review.model';
+import reviewModel from './models/review.model';
 import { z } from 'zod';
 
 export class ReviewsConsumer {
@@ -42,35 +42,47 @@ export class ReviewsConsumer {
           .sort({ importance: -1 })
           .limit(20);
 
-        const minialLastWeekReviews: IReviewMinimal[] = lastWeekReviews.map((review) => ({
-          _id: review._id,
-          value: review.value,
-        }));
+        if (lastWeekReviews.length === 0) {
+          this.logger.info(`No reviews found for client: ${request.client.businessId}`);
+          this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
+        } else {
+          const minialLastWeekReviews: IReviewMinimal[] = lastWeekReviews.map((review) => ({
+            _id: review._id,
+            value: review.value,
+          }));
 
-        const prompt = `
-          Based on the list of reviews, extract the 5 most important action items for the next week. Each action item should include an explanation with references and ids from the list of reviews. Provide the result in a list with JSON format: {"value": string, "reason": string}.
+          const prompt = `
+          Based on the list of reviews, extract the 5 most important action items for the next week. Each action item should include an explanation with references and ids from the list of reviews.
           Reviews:
           ${JSON.stringify(minialLastWeekReviews)}}
         `;
 
-        this.logger.info(`Generating action items with Openai for client: ${request.client.businessId}...`);
-        const response = await this.openai.chat.completions.create({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: 'You are an expert analyst.' },
-            { role: 'user', content: prompt },
-          ],
-        });
-        const actionItems: IActionItem[] = z.array(IActionItemSchema).parse(response.choices[0].message.content);
-        this.logger.info(`Generated action items: ${JSON.stringify(actionItems)}`);
+          this.logger.info(`Generating action items with Openai for client: ${request.client.businessId}...`);
+          const response = await this.openai.chat.completions.create({
+            model: 'gpt-3.5-turbo',
+            messages: [
+              { role: 'system', content: 'You are an expert analyst.' },
+              { role: 'user', content: prompt },
+              {
+                role: 'system',
+                content:
+                  'Output in JSON: [{"value": string, "reason": string}] without the code block like ```json```.',
+              },
+            ],
+          });
+          const actionItems: IActionItem[] = z
+            .array(IActionItemSchema)
+            .parse(JSON.parse(response.choices[0].message.content!));
+          this.logger.info(`Generated action items: ${JSON.stringify(actionItems)}`);
 
-        await weeklyActionItemsModel.create({
-          actionItems,
-          date: requestDate,
-          businessId: request.client.businessId,
-        });
+          await weeklyActionItemsModel.create({
+            actionItems,
+            date: requestDate,
+            businessId: request.client.businessId,
+          });
 
-        this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
+          this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
+        }
       },
     });
   }
