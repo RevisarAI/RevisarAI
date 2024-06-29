@@ -107,9 +107,11 @@ const columns: readonly ReviewColumn[] = [
 const ReviewsPage: React.FC = () => {
   const paperHeightVH = 85;
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const rowsPerPage = 10;
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -150,6 +152,9 @@ const ReviewsPage: React.FC = () => {
                 <ReviewsTable
                   loading={loading}
                   columns={columns}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={(_, newPage) => setPage(newPage)}
                   rows={staticReviews.filter((r) => r.value.includes(search))}
                 />
               </Grid>

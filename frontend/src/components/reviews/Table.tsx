@@ -49,23 +49,21 @@ export const SentimentText: Column['render'] = (value: IReview['value'], { phras
 
 interface ReviewsTableProps {
   rows: IReview[];
+  page: number;
   columns: readonly Column[];
   loading?: boolean;
+  rowsPerPage: number;
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
 }
 
-const ReviewsTable: React.FC<ReviewsTableProps> = ({ rows, columns, loading = false }) => {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
+const ReviewsTable: React.FC<ReviewsTableProps> = ({
+  rows,
+  columns,
+  loading = false,
+  rowsPerPage,
+  onPageChange,
+  page,
+}) => {
   return (
     <Paper sx={{ maxHeight: 'inherit', height: '100%', width: '100%', overflow: 'hidden' }}>
       <Stack height="100%" direction="column" justifyContent="space-between">
@@ -83,7 +81,7 @@ const ReviewsTable: React.FC<ReviewsTableProps> = ({ rows, columns, loading = fa
             <TableBody>
               {loading
                 ? range(10).map((index) => <TableRowSkeleton key={index} height={10} />)
-                : rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                : rows.map((row) => (
                     <TableRow hover key={row._id?.toString()}>
                       {columns.map((column) => {
                         const value = row[column.id !== 'actions' ? column.id : 'value'];
@@ -99,13 +97,12 @@ const ReviewsTable: React.FC<ReviewsTableProps> = ({ rows, columns, loading = fa
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
           component="div"
           count={rows.length}
+          rowsPerPageOptions={[rowsPerPage]}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          onPageChange={onPageChange}
         />
       </Stack>
     </Paper>
