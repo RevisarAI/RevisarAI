@@ -1,4 +1,12 @@
-import { IReview, ISentimentBarChartGroup, IWordFrequency, IPieChartData, IBusinessAnalysis } from 'shared-types';
+import {
+  IReview,
+  ISentimentBarChartGroup,
+  IWordFrequency,
+  IPieChartData,
+  IBusinessAnalysis,
+  IGenerateReviewReply,
+  IReviewReply,
+} from 'shared-types';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
 import { AuthRequest } from 'common/auth.middleware';
@@ -27,6 +35,15 @@ class ReviewController extends BaseController<IReview> {
       dataSourceDistribution: this.getDataSourceDistribution(reviews),
     };
     return res.status(httpStatus.OK).send(analysis);
+  }
+
+  async generateResponseForReview(req: AuthRequest<{}, IReviewReply, IGenerateReviewReply>, res: Response) {
+    // TODO: implement this function with calls to OpenAPI
+    const { reviewText, prompt, previousReplies } = req.body;
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    res.status(httpStatus.OK).send({
+      text: `This should return a generated response for the review: ${reviewText} with ${previousReplies.length} previous replies and the prompt "${prompt}"`,
+    });
   }
 
   private initializeSentimentOverTimeMap(): Map<string, ISentimentBarChartGroup> {

@@ -120,4 +120,7 @@ const router = Router();
  */
 router.get('/analysis', reviewController.getAnalysis.bind(reviewController));
 
+// TODO: add swagger and document this route
+router.post('/reply', reviewController.generateResponseForReview.bind(reviewController));
+
 export default router;
