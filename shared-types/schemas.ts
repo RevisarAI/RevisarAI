@@ -31,3 +31,13 @@ export const IUserDetailsSchema = IClientSchema.omit({
   password: true,
   tokens: true,
 });
+
+export const IGenerateReviewReplySchema = z.object({
+  reviewText: z.string(),
+  prompt: z.string().default(''),
+  previousReplies: z.array(z.string()).optional().default([]),
+});
+
+export const IReviewReplySchema = z.object({
+  text: z.string(),
+});

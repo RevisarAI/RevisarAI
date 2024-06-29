@@ -1,5 +1,12 @@
 import { Types as mongooseTypes } from 'mongoose';
-import { IClientSchema, ICreateUserSchema, ILoginFormDataSchema, IUserDetailsSchema } from './schemas';
+import {
+  IClientSchema,
+  ICreateUserSchema,
+  IGenerateReviewReplySchema,
+  ILoginFormDataSchema,
+  IReviewReplySchema,
+  IUserDetailsSchema,
+} from './schemas';
 import { z } from 'zod';
 
 export type IClient = z.infer<typeof IClientSchema>;
@@ -9,6 +16,10 @@ export type IUserDetails = z.infer<typeof IUserDetailsSchema>;
 export type ICreateUser = z.infer<typeof ICreateUserSchema>;
 
 export type ILoginFormData = z.infer<typeof ILoginFormDataSchema>;
+
+export type IGenerateReviewReply = z.infer<typeof IGenerateReviewReplySchema>;
+
+export type IReviewReply = z.infer<typeof IReviewReplySchema>;
 
 export interface IUserTokens {
   accessToken: string;
@@ -45,12 +56,12 @@ export interface IPieChartData {
   label: string;
 }
 
-export type ISentimentBarChartGroup = {
+export interface ISentimentBarChartGroup {
   date: string;
   positive: number;
   negative: number;
   neutral: number;
-};
+}
 
 export interface IWordFrequency {
   text: string;
