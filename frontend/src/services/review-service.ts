@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IBusinessAnalysis } from 'shared-types';
+import { IBusinessAnalysis, IGenerateReviewReply, IReviewReply } from 'shared-types';
 import { createApiClient } from './api-client';
 
 interface IGetBusinessAnalysisParams {
@@ -14,6 +14,10 @@ export class ReviewsService {
 
   async getBusinessAnalysis({ signal }: IGetBusinessAnalysisParams): Promise<IBusinessAnalysis> {
     return (await this.apiClient.get<IBusinessAnalysis>('/analysis', { signal })).data;
+  }
+
+  async generateReviewReply({ reviewText, prompt, previousReplies = [] }: IGenerateReviewReply): Promise<IReviewReply> {
+    return (await this.apiClient.post<IReviewReply>('/reply', { reviewText, prompt, previousReplies })).data;
   }
 }
 

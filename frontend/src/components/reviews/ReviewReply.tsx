@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 import { ContentCopy as ClipboardIcon, Check as CopiedIcon } from '@mui/icons-material';
 import { GridLoader } from 'react-spinners';
 import { TypeAnimation } from 'react-type-animation';
+import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '@mui/material/styles';
+import { reviewService } from '@/services/review-service';
 
 const splitStringWithDelays = (longString: string, minDelay = 50, maxDelay = 300): Array<string | number> => {
   const getRandomDelay = () => random(minDelay, maxDelay);
@@ -25,39 +27,50 @@ const splitStringWithDelays = (longString: string, minDelay = 50, maxDelay = 300
   return result;
 };
 
-interface ReviewResponseProps {
+interface ReviewReplyProps {
   reviewText: string;
   open: boolean;
   onClose: () => void;
 }
 
-// TODO: replace lorem ipsum
-const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'.repeat(10);
+const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) => {
+  // Do not render anything when the dialog is closed
+  if (!open) {
+    return;
+  }
 
-const ReviewResponse: React.FC<ReviewResponseProps> = ({ reviewText, open, onClose }) => {
-  const [responseText, setResponseText] = useState<string>('');
-  const [finishedWritingResponse, setFinishedWritingResponse] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [writingReply, setWritingReply] = useState<boolean>(false);
+  const [previousReplies, setPreviousReplies] = useState<string[]>([]);
   const [prompt, setPrompt] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const [typeAnimationKey, setTypeAnimationKey] = useState<number>(0);
 
   const theme = useTheme();
 
-  // TODO: replace with actual query
-  setTimeout(() => {
-    setResponseText(lorem);
-    setLoading(false);
-  }, 3500);
+  const query = useQuery({
+    queryKey: ['generateReply', reviewText], // Unique query for each review
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      const reply = await reviewService.generateReviewReply({ reviewText, prompt, previousReplies });
+      setPreviousReplies((prev) => [...prev, reply.text]);
+      setPrompt('');
+      setWritingReply(true);
+      return reply;
+    },
+  });
+
+  const { isFetching: loading, isError: error, data: reply } = query;
+  const replyText = reply?.text || '';
 
   // Listen and rerender the TypeAnimation component
   useEffect(() => {
     setTypeAnimationKey((prev) => prev + 1);
-  }, [loading, finishedWritingResponse]);
+  }, [loading, writingReply]);
 
-  const copyResponse = () => {
+  const copyReply = () => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(responseText).then(() => {
+      navigator.clipboard.writeText(replyText).then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       });
@@ -65,10 +78,6 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({ reviewText, open, onClo
       console.error('Clipboard API not available');
     }
   };
-
-  if (!open) {
-    return;
-  }
 
   return (
     <Dialog PaperProps={{ sx: { borderRadius: '1rem' } }} fullWidth onClose={onClose} open={open}>
@@ -82,55 +91,70 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({ reviewText, open, onClo
         justifyContent="space-between"
       >
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h5">{loading ? 'Generating a response...' : 'Generated response'}</Typography>
-          {finishedWritingResponse && (
+          <Typography variant="h5">
+            {loading || error ? 'Generating a reply message...' : 'Generated reply message'}
+          </Typography>
+          {/* Allow copy if finished loading and writing a reply */}
+          {!writingReply && !loading && (
             <Tooltip
               arrow
               TransitionComponent={Zoom}
               TransitionProps={{ timeout: 100 }}
-              title={<Typography variant="body2">Copy response</Typography>}
+              title={<Typography variant="body2">Copy reply</Typography>}
               placement="top"
             >
-              <IconButton disabled={copied} onClick={copyResponse}>
+              <IconButton disabled={copied} onClick={copyReply}>
                 {copied ? <CopiedIcon /> : <ClipboardIcon />}
               </IconButton>
             </Tooltip>
           )}
         </Stack>
-        {loading || true ? (
-          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <GridLoader color={theme.palette.primary.main} />
-          </div>
-        ) : (
+        {loading ? (
+          <>
+            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <GridLoader color={theme.palette.primary.main} />
+            </div>
+            {/* Div for centering */}
+            <div></div>
+          </>
+        ) : error ? (
+          <Typography variant="body1" color={theme.palette.error.main}>
+            Failed with error "{error}". Please try again later.
+          </Typography>
+        ) : writingReply ? (
           <Typography
             maxHeight="40vh"
             minHeight="20vh"
             variant="body1"
             style={{ overflow: 'auto', whiteSpace: 'pre-line' }}
           >
-            )
-            {!finishedWritingResponse ? (
-              <TypeAnimation
-                key={typeAnimationKey}
-                style={{ whiteSpace: 'pre - line' }}
-                sequence={[...splitStringWithDelays(responseText), () => setFinishedWritingResponse(true)]}
-                repeat={0}
-                speed={80}
-              />
-            ) : (
-              responseText
-            )}
+            <TypeAnimation
+              key={typeAnimationKey}
+              style={{ whiteSpace: 'pre - line' }}
+              sequence={[...splitStringWithDelays(replyText), () => setWritingReply(false)]}
+              repeat={0}
+              speed={80}
+            />
           </Typography>
-        )}
-        {!loading && finishedWritingResponse && (
+        ) : (
           <>
+            <Typography
+              maxHeight="40vh"
+              minHeight="20vh"
+              variant="body1"
+              style={{ overflow: 'auto', whiteSpace: 'pre-line' }}
+            >
+              {replyText}
+            </Typography>
+            {/* Regenerate with prompt Grid */}
             <Grid container direction="row" height="5vh" alignItems="center" justifyContent="center" paddingBottom={2}>
               <Grid item md>
                 <TextField
                   variant="standard"
                   fullWidth
-                  placeholder={'Enter a prompt or regenerate response automatically'}
+                  placeholder={'Prompt or regenerate new reply automatically'}
                   InputProps={{
+                    // Input icon
                     endAdornment: (
                       <Tooltip
                         arrow
@@ -139,7 +163,9 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({ reviewText, open, onClo
                         title={<Typography variant="body2">Regenerate{prompt.length > 0 && ' with prompt'}</Typography>}
                         placement="top"
                       >
-                        <IconButton type="button">{prompt.length === 0 ? <RefreshIcon /> : <SendIcon />}</IconButton>
+                        <IconButton type="button" onClick={() => query.refetch()}>
+                          {prompt.length === 0 ? <RefreshIcon /> : <SendIcon />}
+                        </IconButton>
                       </Tooltip>
                     ),
                   }}
@@ -155,4 +181,4 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({ reviewText, open, onClo
   );
 };
 
-export default ReviewResponse;
+export default ReviewReply;

@@ -2,7 +2,7 @@ import { MoreVert as MoreVertIcon, SvgIconComponent } from '@mui/icons-material'
 import { Divider, Grid, IconButton, Popover, Tooltip, Typography, Zoom } from '@mui/material';
 import { useState } from 'react';
 import { ContentCopy as ClipboardIcon, Check as CopiedIcon, Quickreply as QuickReplyIcon } from '@mui/icons-material';
-import ReviewResponse from './ReviewResponse';
+import ReviewReply from './ReviewReply';
 
 export interface ReviewAction {
   label: string;
@@ -30,7 +30,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
     },
     {
       icon: QuickReplyIcon,
-      label: 'Generate response',
+      label: 'Generate reply',
       onClick: () => setShowResponseDialog(true),
     },
   ];
@@ -97,7 +97,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
           ))}
         </Grid>
       </Popover>
-      <ReviewResponse open={showResponseDialog} onClose={() => setShowResponseDialog(false)} reviewText={reviewText} />
+      <ReviewReply open={showResponseDialog} onClose={() => setShowResponseDialog(false)} reviewText={reviewText} />
     </>
   );
 };
