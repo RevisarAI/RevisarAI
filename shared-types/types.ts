@@ -3,6 +3,7 @@ import {
   IClientSchema,
   ICreateUserSchema,
   IGenerateReviewReplySchema,
+  IGetReviewsBodySchema,
   ILoginFormDataSchema,
   IReviewReplySchema,
   IUserDetailsSchema,
@@ -20,6 +21,8 @@ export type ILoginFormData = z.infer<typeof ILoginFormDataSchema>;
 export type IGenerateReviewReply = z.infer<typeof IGenerateReviewReplySchema>;
 
 export type IReviewReply = z.infer<typeof IReviewReplySchema>;
+
+export type IGetReviewsParams = z.infer<typeof IGetReviewsBodySchema>;
 
 export interface IUserTokens {
   accessToken: string;
@@ -54,6 +57,12 @@ export interface IPieChartData {
   id: number;
   value: number;
   label: string;
+}
+
+export interface IGetAllReviewsResponse {
+  reviews: IReview[];
+  currentPage: number;
+  totalReviews: number;
 }
 
 export interface ISentimentBarChartGroup {

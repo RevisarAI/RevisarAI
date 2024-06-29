@@ -6,6 +6,10 @@ import {
   IBusinessAnalysis,
   IGenerateReviewReply,
   IReviewReply,
+  IGetReviewsParams,
+  IGetAllReviewsResponse,
+  DataSourceEnum,
+  SentimentEnum,
 } from 'shared-types';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
@@ -43,6 +47,37 @@ class ReviewController extends BaseController<IReview> {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     res.status(httpStatus.OK).send({
       text: `This should return a generated response for the review: ${reviewText} with ${previousReplies.length} previous replies and the prompt "${prompt}"`,
+    });
+  }
+
+  async getPaginated(req: AuthRequest<{}, {}, {}, IGetReviewsParams>, res: Response<IGetAllReviewsResponse>) {
+    const { limit, page, before } = req.query;
+    // TODO: implement this function
+    // ! Please notice that page parameter starts from 1 ! //
+    const staticReview: IReview = {
+      _id: '6676fb5e6f4000161b4c276b',
+      value:
+        'This platform is a game-changer! Having all my customer reviews in one place with clear insights is fantastic. The sentiment analysis helped me identify areas to improve, and the action items are super helpful. Highly recommend!',
+      date: new Date('2024-06-21T16:22:36.562Z'),
+      businessId: '56d4cc71-f5b4-4df8-9d31-8d09218ecbdb',
+      sentiment: SentimentEnum.POSITIVE,
+      rating: 9,
+      phrases: [
+        'game-changer',
+        'clear insights',
+        'helped me identify areas to improve',
+        'action items are super helpful',
+        'highly recommend',
+      ],
+      dataSource: DataSourceEnum.GOOGLE,
+    };
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return res.status(httpStatus.OK).send({
+      reviews: Array.from({ length: 1 }).map(() => staticReview),
+      currentPage: 1,
+      totalReviews: limit * 100,
     });
   }
 

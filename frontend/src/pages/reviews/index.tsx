@@ -1,6 +1,6 @@
 import { Grid, IconButton, Paper, Tooltip, Typography, Zoom as ZoomTransition } from '@mui/material';
 import ReviewsSearchBar from '@/components/reviews/SearchBar';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Tune as TuneIcon } from '@mui/icons-material';
 import { DataSourceEnum, IReview, SentimentEnum } from 'shared-types';
 import ReviewsTable, { Column as ReviewColumn, SentimentText } from '@/components/reviews/Table';
@@ -10,24 +10,8 @@ import TripAdvisorSvg from '@/assets/TripAdvisor.svg';
 import GoogleSvg from '@/assets/Google.svg';
 import HighlightedText from '@/components/reviews/HighlightedText';
 import ReviewActions from '@/components/reviews/ReviewActions';
-
-const staticReview: IReview = {
-  _id: '6676fb5e6f4000161b4c276b',
-  value:
-    'This platform is a game-changer! Having all my customer reviews in one place with clear insights is fantastic. The sentiment analysis helped me identify areas to improve, and the action items are super helpful. Highly recommend!',
-  date: new Date('2024-06-21T16:22:36.562Z'),
-  businessId: '56d4cc71-f5b4-4df8-9d31-8d09218ecbdb',
-  sentiment: SentimentEnum.POSITIVE,
-  rating: 9,
-  phrases: [
-    'game-changer',
-    'clear insights',
-    'helped me identify areas to improve',
-    'action items are super helpful',
-    'highly recommend',
-  ],
-  dataSource: DataSourceEnum.GOOGLE,
-};
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { reviewService } from '@/services/review-service';
 
 const generateReview = (review: IReview): IReview => ({
   ...review,
@@ -36,12 +20,6 @@ const generateReview = (review: IReview): IReview => ({
 });
 
 // TODO: Replace with actual query
-const staticReviews: IReview[] = [
-  { ...staticReview, value: 'yes game-changer' },
-  { ...staticReview, value: staticReview.value.repeat(2) },
-  ...range(30).map(() => generateReview(staticReview)),
-];
-
 const dataSourceIcons: Record<DataSourceEnum, string> = {
   API: ApiSvg,
   TripAdvisor: TripAdvisorSvg,
@@ -107,16 +85,26 @@ const columns: readonly ReviewColumn[] = [
 const ReviewsPage: React.FC = () => {
   const paperHeightVH = 85;
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [page, setPage] = useState(0);
+  const [initialRenderTimestamp] = useState(() => new Date().toISOString());
 
   const rowsPerPage = 10;
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 600);
-  }, []);
+
+  const query = useInfiniteQuery({
+    queryKey: ['reviews'],
+    queryFn: async ({ signal, pageParam = 1 }) =>
+      reviewService.getReviews({ page: pageParam, limit: rowsPerPage, before: initialRenderTimestamp }, signal),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      if (lastPage.reviews.length === 0) {
+        return undefined;
+      }
+      return lastPageParam + 1;
+    },
+  });
+
+  const { isFetching: loading, isError: error, data } = query;
+  const currentPageResponse = data?.pages[page];
 
   return (
     <>
@@ -154,8 +142,14 @@ const ReviewsPage: React.FC = () => {
                   columns={columns}
                   rowsPerPage={rowsPerPage}
                   page={page}
-                  onPageChange={(_, newPage) => setPage(newPage)}
-                  rows={staticReviews.filter((r) => r.value.includes(search))}
+                  count={currentPageResponse?.totalReviews}
+                  onPageChange={(_, newPage) => {
+                    setPage(newPage);
+                    if (newPage > data!.pages.length - 1) {
+                      query.fetchNextPage();
+                    }
+                  }}
+                  rows={(currentPageResponse?.reviews || []).filter((r) => r.value.includes(search))}
                 />
               </Grid>
             </Grid>

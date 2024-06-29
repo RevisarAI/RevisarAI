@@ -1,6 +1,15 @@
 import { Types as mongooseTypes } from 'mongoose';
 import { z } from 'zod';
 
+export const IPaginationSchema = z.object({
+  page: z.number().int().positive().default(1),
+  limit: z.number().int().positive().default(10),
+});
+
+export const IGetReviewsBodySchema = IPaginationSchema.extend({
+  before: z.string().default(new Date().toISOString()),
+});
+
 export const IClientSchema = z.object({
   _id: z.instanceof(mongooseTypes.ObjectId).optional(),
   email: z.string(),
