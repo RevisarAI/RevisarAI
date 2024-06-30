@@ -1,4 +1,4 @@
-import { IClient } from 'shared-types';
+import { IClient, WeekdaysEnum } from 'shared-types';
 import { metadata } from '../db';
 
 /**
@@ -84,6 +84,7 @@ const clientSchema = new metadata.Schema<IClient>({
   businessId: { type: String, required: true },
   password: { type: String, required: true, maxlength: 1000 },
   tokens: [{ type: String }],
+  actionsRefreshWeekday: { type: String, default: WeekdaysEnum.SUNDAY, enum: Object.values(WeekdaysEnum) },
 });
 
 export default metadata.model<IClient>('Clients', clientSchema);
