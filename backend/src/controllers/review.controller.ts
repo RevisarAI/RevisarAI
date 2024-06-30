@@ -56,7 +56,7 @@ class ReviewController extends BaseController<IReview> {
     try {
       const reviews = (await this.model
         .find({ businessId: req.user!.businessId, date: { $lt: before } })
-        .limit(Number(limit))
+        .limit(limit)
         .skip(Number(page - 1) * Number(limit))) as IReview[];
 
       return res.status(httpStatus.OK).send({
