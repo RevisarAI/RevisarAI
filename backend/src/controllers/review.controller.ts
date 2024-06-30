@@ -58,7 +58,7 @@ class ReviewController extends BaseController<IReview> {
 
     try {
       const reviews = (await this.model
-        .find({ businessId: req.user!.businessId, date: { $lt: before } })
+        .find({ businessId: req.user!.businessId, date: { $lt: before }, value: { $regex: search } })
         .limit(limit)
         .skip((page - 1) * limit)) as IReview[];
 
