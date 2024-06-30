@@ -6,6 +6,7 @@ import { ContentCopy as ClipboardIcon, Check as CopiedIcon } from '@mui/icons-ma
 import { GridLoader } from 'react-spinners';
 import { TypeAnimation } from 'react-type-animation';
 import { useQuery } from '@tanstack/react-query';
+import { Close as CloseIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { reviewService } from '@/services/review-service';
 
@@ -86,10 +87,23 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
         display="flex"
         direction="column"
         padding={5}
+        paddingTop={3}
         paddingBottom={4}
         spacing={3}
         justifyContent="space-between"
       >
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            left: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h5">
             {loading || error ? 'Generating a reply message...' : 'Generated reply message'}

@@ -85,6 +85,7 @@ const columns: readonly ReviewColumn[] = [
 const ReviewsPage: React.FC = () => {
   const paperHeightVH = 85;
   const [search, setSearch] = useState('');
+  const [totalReviews, setTotalReviews] = useState(-1);
   const [page, setPage] = useState(0);
   const [initialRenderTimestamp] = useState(() => new Date().toISOString());
 
@@ -92,8 +93,14 @@ const ReviewsPage: React.FC = () => {
 
   const query = useInfiniteQuery({
     queryKey: ['reviews'],
-    queryFn: async ({ signal, pageParam = 1 }) =>
-      reviewService.getReviews({ page: pageParam, limit: rowsPerPage, before: initialRenderTimestamp }, signal),
+    queryFn: async ({ signal, pageParam = 1 }) => {
+      const response = await reviewService.getReviews(
+        { page: pageParam, limit: rowsPerPage, before: initialRenderTimestamp },
+        signal
+      );
+      setTotalReviews(response.totalReviews);
+      return response;
+    },
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => {
       if (lastPage.reviews.length === 0) {
@@ -142,7 +149,7 @@ const ReviewsPage: React.FC = () => {
                   columns={columns}
                   rowsPerPage={rowsPerPage}
                   page={page}
-                  count={currentPageResponse?.totalReviews}
+                  count={totalReviews}
                   onPageChange={(_, newPage) => {
                     setPage(newPage);
                     if (newPage > data!.pages.length - 1) {

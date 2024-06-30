@@ -54,30 +54,44 @@ class ReviewController extends BaseController<IReview> {
     const { limit, page, before } = req.query;
     // TODO: implement this function
     // ! Please notice that page parameter starts from 1 ! //
-    const staticReview: IReview = {
-      _id: '6676fb5e6f4000161b4c276b',
-      value:
-        'This platform is a game-changer! Having all my customer reviews in one place with clear insights is fantastic. The sentiment analysis helped me identify areas to improve, and the action items are super helpful. Highly recommend!',
-      date: new Date('2024-06-21T16:22:36.562Z'),
-      businessId: '56d4cc71-f5b4-4df8-9d31-8d09218ecbdb',
-      sentiment: SentimentEnum.POSITIVE,
-      rating: 9,
-      phrases: [
-        'game-changer',
-        'clear insights',
-        'helped me identify areas to improve',
-        'action items are super helpful',
-        'highly recommend',
-      ],
-      dataSource: DataSourceEnum.GOOGLE,
-    };
 
+    // Simulated a loading
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
+    // Return static random data
     return res.status(httpStatus.OK).send({
-      reviews: Array.from({ length: 1 }).map(() => staticReview),
       currentPage: 1,
       totalReviews: limit * 100,
+      reviews: Array.from({ length: Math.floor(1 + Math.random() * limit) }).map(() => {
+        const randomRating = Math.floor(1 + Math.random() * 10);
+        return {
+          value:
+            'This platform is a game-changer! Having all my customer reviews in one place with clear insights is fantastic. The sentiment analysis helped me identify areas to improve, and the action items are super helpful. Highly recommend!',
+          phrases: [
+            'game-changer',
+            'clear insights',
+            'helped me identify areas to improve',
+            'action items are super helpful',
+            'highly recommend',
+          ],
+          _id: Math.random().toString(36).substring(7),
+          date: new Date(),
+          businessId: req.user!.businessId,
+          sentiment:
+            randomRating > 7
+              ? SentimentEnum.POSITIVE
+              : randomRating < 4
+                ? SentimentEnum.NEGATIVE
+                : SentimentEnum.NEUTRAL,
+          rating: randomRating,
+          dataSource:
+            Math.random() > 0.5
+              ? DataSourceEnum.GOOGLE
+              : Math.random() > 0.5
+                ? DataSourceEnum.TRIPADVISOR
+                : DataSourceEnum.API,
+        };
+      }),
     });
   }
 

@@ -80,28 +80,22 @@ const ReviewsTable: React.FC<ReviewsTableProps> = ({
                 ))}
               </TableRow>
             </TableHead>
-            {loading ? (
-              <TableBody>
-                {range(10).map((index) => (
-                  <TableRowSkeleton key={index} height={10} />
-                ))}
-              </TableBody>
-            ) : (
-              <TableBody>
-                {[...rows].map((row) => (
-                  <TableRow hover key={row._id?.toString()}>
-                    {columns.map((column) => {
-                      const value = row[column.id !== 'actions' ? column.id : 'value'];
-                      return (
-                        <TableCell key={`${row._id!}-${column.id}`} align={column.align}>
-                          {column.render(value, row)}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableBody>
-            )}
+            <TableBody>
+              {loading
+                ? range(10).map((index) => <TableRowSkeleton key={index} height={10} />)
+                : rows.map((row) => (
+                    <TableRow hover key={row._id?.toString()}>
+                      {columns.map((column) => {
+                        const value = row[column.id !== 'actions' ? column.id : 'value'];
+                        return (
+                          <TableCell key={`${row._id!}-${column.id}`} align={column.align}>
+                            {column.render(value, row)}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+            </TableBody>
           </Table>
         </TableContainer>
         <TablePagination

@@ -3,8 +3,8 @@ import { SentimentEnum } from 'shared-types';
 
 const sentimentColors: Record<SentimentEnum, Record<'border' | 'fill', string>> = {
   positive: {
-    fill: '#e5eefd',
-    border: '#6489bd',
+    fill: '#defce2',
+    border: '#76de83',
   },
   negative: {
     fill: '#fae3e3',
