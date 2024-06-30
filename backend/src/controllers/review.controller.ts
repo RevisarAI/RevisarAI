@@ -48,8 +48,11 @@ class ReviewController extends BaseController<IReview> {
 
   async generateResponseForReview(req: AuthRequest<{}, IReviewReply, IGenerateReviewReply>, res: Response) {
     const { reviewText, prompt, previousReplies } = req.body;
-    const formattedPreviousReplies = previousReplies.map((reply, i) => `${i}. "${reply}"`).join('\n');
-    const previousRepliesMessage = `Replies that did not satisfy the customer: ${formattedPreviousReplies}`;
+    const formattedPreviousReplies = previousReplies
+      .slice(-7) // Take the latest 7 replies
+      .map((reply, i) => `${i}. "${reply}"`)
+      .join('\n');
+    const previousRepliesMessage = `Replies that did not satisfy the customer:\n${formattedPreviousReplies}`;
     const promptMessage = `The customer asked for the reply to focus on "${prompt}"`;
 
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
