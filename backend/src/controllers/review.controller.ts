@@ -11,16 +11,21 @@ import {
   DataSourceEnum,
   SentimentEnum,
 } from 'shared-types';
+import OpenAI from 'openai';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
 import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
+import config from 'config';
 
 class ReviewController extends BaseController<IReview> {
+  private openai: OpenAI;
+
   constructor() {
     super(ReviewModel);
+    this.openai = new OpenAI({ apiKey: config.openaiApiKey });
   }
 
   async getAnalysis(req: AuthRequest, res: Response) {
@@ -42,9 +47,41 @@ class ReviewController extends BaseController<IReview> {
   }
 
   async generateResponseForReview(req: AuthRequest<{}, IReviewReply, IGenerateReviewReply>, res: Response) {
-    // TODO: implement this function with calls to OpenAPI
     const { reviewText, prompt, previousReplies } = req.body;
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const formattedPreviousReplies = previousReplies.map((reply, i) => `${i}. "${reply}"`).join('\n');
+    const previousRepliesMessage = `Replies that did not satisfy the customer: ${formattedPreviousReplies}`;
+    const promptMessage = `The customer asked for the reply to focus on "${prompt}"`;
+
+    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      {
+        role: 'system',
+        content: `You are a customer success advisor and your job is to write replies to customer reviews
+and so your job is provide the customer with the best overall experience, so that he keeps using the company's products.
+You are given a customer's review. Read the review and try to write a straight reply that expresses the company's thoughts on the review and actions that will be taken to improve if necessary.
+Appreciate positive reviews and try to understand and show will to improve for the negative ones.
+The reply should not exceed 200 words and should be written in a more friendly than formal tone.`,
+      },
+      { role: 'user', content: reviewText },
+    ];
+
+    if (previousReplies.length > 0) {
+      messages.push({ role: 'assistant', content: previousRepliesMessage });
+    }
+
+    if (prompt.length > 0) {
+      messages.push({ role: 'system', content: promptMessage });
+    }
+
+    messages.push({
+      role: 'system',
+      content: 'Output in JSON: { "reply": "reply_content" }',
+    });
+
+    await this.openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages,
+    });
+
     res.status(httpStatus.OK).send({
       text: `This should return a generated response for the review: ${reviewText} with ${previousReplies.length} previous replies and the prompt "${prompt}"`,
     });
