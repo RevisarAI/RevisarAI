@@ -17,6 +17,9 @@ import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
+import createLogger from '../utils/logger';
+
+const logger = createLogger('review.controller');
 
 class ReviewController extends BaseController<IReview> {
   constructor() {
@@ -65,6 +68,7 @@ class ReviewController extends BaseController<IReview> {
         reviews,
       });
     } catch (error) {
+      logger.error('Error fetching reviews', error);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
     }
   }
