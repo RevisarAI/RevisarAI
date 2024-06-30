@@ -122,7 +122,6 @@ const router = Router();
  *           items:
  *             type: string
  *             description: The phrase extracted from the review
- *           description: The phrases extracted from the review
  *         date:
  *           type: string
  *           format: date
