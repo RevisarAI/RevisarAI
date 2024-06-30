@@ -1,8 +1,8 @@
-import { Grid, IconButton, Paper, Tooltip, Typography, Zoom as ZoomTransition } from '@mui/material';
+import { Grid, IconButton, Paper, Stack, Tooltip, Typography, Zoom as ZoomTransition } from '@mui/material';
 import ReviewsSearchBar from '@/components/reviews/SearchBar';
 import { useMemo, useState } from 'react';
 import { Tune as TuneIcon } from '@mui/icons-material';
-import { DataSourceEnum, IReview, SentimentEnum } from 'shared-types';
+import { DataSourceEnum, IReview } from 'shared-types';
 import ReviewsTable, { Column as ReviewColumn, SentimentText } from '@/components/reviews/Table';
 import { debounce } from 'lodash';
 import ApiSvg from '@/assets/Api.svg';
@@ -24,7 +24,24 @@ const columns: readonly ReviewColumn[] = [
     id: 'rating',
     label: 'Rating',
     minWidth: 5,
-    render: (value: IReview['rating']) => <Typography variant="body1">{value}/10</Typography>,
+    render: (value: IReview['rating'], { date }: IReview) => (
+      <Tooltip
+        arrow
+        TransitionComponent={ZoomTransition}
+        TransitionProps={{ timeout: 200 }}
+        title={
+          <Stack direction="column">
+            <Typography variant="body2">Review from:</Typography>
+            <Typography variant="body2">
+              {new Date(date).toLocaleDateString()} {new Date(date).toLocaleTimeString()}
+            </Typography>
+          </Stack>
+        }
+        placement="top"
+      >
+        <Typography variant="body1">{value}/10</Typography>
+      </Tooltip>
+    ),
     align: 'center',
   },
   {
@@ -60,7 +77,7 @@ const columns: readonly ReviewColumn[] = [
         TransitionComponent={ZoomTransition}
         TransitionProps={{ timeout: 200 }}
         title={<Typography variant="body2">{value}</Typography>}
-        placement="bottom"
+        placement="top"
       >
         <img height="50vh" src={dataSourceIcons[value]}></img>
       </Tooltip>
@@ -123,36 +140,40 @@ const ReviewsPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Grid container direction="column" rowSpacing={4}>
-        <Grid item>
-          <Typography variant="h6" sx={{ fontWeight: 'regular' }}>
-            Reviews
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Paper square={false}>
-            <Grid padding={2} container direction="column" height={`${paperHeightVH}vh`} justifyContent="space-evenly">
-              <Grid
-                item
-                md={1}
-                style={{ maxHeight: `${paperHeightVH * 0.1}vh` }}
-                container
-                direction="row"
-                alignItems="center"
-                justifyContent="start"
-              >
-                <Grid item md={8}>
-                  <ReviewsSearchBar onChange={handleInputChange} />
-                </Grid>
-                <Grid item md={1} textAlign="center">
-                  {/* TODO: implement filter logic */}
-                  <IconButton disabled>
-                    <TuneIcon fontSize="large" />
-                  </IconButton>
-                </Grid>
+    <Grid container direction="column" rowSpacing={4}>
+      <Grid item>
+        <Typography variant="h6" sx={{ fontWeight: 'regular' }}>
+          Reviews
+        </Typography>
+      </Grid>
+      <Grid item>
+        <Paper square={false}>
+          <Grid padding={2} container direction="column" height={`${paperHeightVH}vh`} justifyContent="space-evenly">
+            <Grid
+              item
+              md={1}
+              style={{ maxHeight: `${paperHeightVH * 0.1}vh` }}
+              container
+              direction="row"
+              alignItems="center"
+              justifyContent="start"
+            >
+              <Grid item md={8}>
+                <ReviewsSearchBar onChange={handleInputChange} disabled={error} />
               </Grid>
-              <Grid item md={10} style={{ maxHeight: `${paperHeightVH * 0.8}vh` }}>
+              <Grid item md={1} textAlign="center">
+                {/* TODO: implement filter logic */}
+                <IconButton disabled>
+                  <TuneIcon fontSize="large" />
+                </IconButton>
+              </Grid>
+            </Grid>
+            <Grid item md={10} style={{ maxHeight: `${paperHeightVH * 0.8}vh` }}>
+              {error ? (
+                <Typography variant="body1">
+                  An unknown error occurred. Try to refresh the page or try again later
+                </Typography>
+              ) : (
                 <ReviewsTable
                   loading={loading}
                   columns={columns}
@@ -167,12 +188,12 @@ const ReviewsPage: React.FC = () => {
                   }}
                   rows={currentPageResponse?.reviews || []}
                 />
-              </Grid>
+              )}
             </Grid>
-          </Paper>
-        </Grid>
+          </Grid>
+        </Paper>
       </Grid>
-    </>
+    </Grid>
   );
 };
 
