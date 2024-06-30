@@ -53,16 +53,20 @@ class ReviewController extends BaseController<IReview> {
   async getPaginated(req: AuthRequest<{}, {}, {}, IGetReviewsParams>, res: Response<IGetAllReviewsResponse>) {
     const { limit, page, before, search } = req.query;
 
-    const reviews = (await this.model
-      .find({ businessId: req.user!.businessId, date: { $lt: before } })
-      .limit(Number(limit))
-      .skip(Number(page - 1) * Number(limit))) as IReview[];
+    try {
+      const reviews = (await this.model
+        .find({ businessId: req.user!.businessId, date: { $lt: before } })
+        .limit(Number(limit))
+        .skip(Number(page - 1) * Number(limit))) as IReview[];
 
-    return res.status(httpStatus.OK).send({
-      currentPage: Number(page),
-      totalReviews: await this.model.countDocuments({ businessId: req.user!.businessId }),
-      reviews,
-    });
+      return res.status(httpStatus.OK).send({
+        currentPage: Number(page),
+        totalReviews: await this.model.countDocuments({ businessId: req.user!.businessId }),
+        reviews,
+      });
+    } catch (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+    }
   }
 
   private initializeSentimentOverTimeMap(): Map<string, ISentimentBarChartGroup> {

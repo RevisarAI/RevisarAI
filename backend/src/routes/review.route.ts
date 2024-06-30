@@ -123,6 +123,46 @@ router.get('/analysis', reviewController.getAnalysis.bind(reviewController));
 // TODO: add swagger and document this route
 router.post('/reply', reviewController.generateResponseForReview.bind(reviewController));
 
+/**
+ * @swagger
+ * paths:
+ *   /api/reviews:
+ *     get:
+ *       summary: Get reviews
+ *       tags: [Review]
+ *       security:
+ *         - bearerAuth: []
+ *       description: This endpoint returns the reviews paginated.
+ *       parameters:
+ *         - in: query
+ *           name: page
+ *           schema:
+ *             type: number
+ *           description: The page number
+ *         - in: query
+ *           name: limit
+ *           schema:
+ *             type: number
+ *           description: The number of items per page
+ *         - in: query
+ *           name: before
+ *           schema:
+ *             type: string
+ *             format: date
+ *           description: The date before which the reviews were created
+ *         - in: query
+ *           name: search
+ *           schema:
+ *             type: string
+ *           description: The search query
+ *       responses:
+ *         200:
+ *           description: The reviews paginated
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/IGetAllReviewsResponse'
+ */
 router.get('/', reviewController.getPaginated.bind(reviewController));
 
 export default router;
