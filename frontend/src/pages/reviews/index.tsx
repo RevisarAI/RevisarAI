@@ -1,10 +1,10 @@
 import { Grid, IconButton, Paper, Tooltip, Typography, Zoom as ZoomTransition } from '@mui/material';
 import ReviewsSearchBar from '@/components/reviews/SearchBar';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Tune as TuneIcon } from '@mui/icons-material';
 import { DataSourceEnum, IReview, SentimentEnum } from 'shared-types';
 import ReviewsTable, { Column as ReviewColumn, SentimentText } from '@/components/reviews/Table';
-import { range } from 'lodash';
+import { debounce } from 'lodash';
 import ApiSvg from '@/assets/Api.svg';
 import TripAdvisorSvg from '@/assets/TripAdvisor.svg';
 import GoogleSvg from '@/assets/Google.svg';
@@ -13,13 +13,6 @@ import ReviewActions from '@/components/reviews/ReviewActions';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { reviewService } from '@/services/review-service';
 
-const generateReview = (review: IReview): IReview => ({
-  ...review,
-  sentiment: Object.values(SentimentEnum)[Math.floor(Math.random() * 3)],
-  dataSource: Object.values(DataSourceEnum)[Math.floor(Math.random() * 3)],
-});
-
-// TODO: Replace with actual query
 const dataSourceIcons: Record<DataSourceEnum, string> = {
   API: ApiSvg,
   TripAdvisor: TripAdvisorSvg,
@@ -92,10 +85,10 @@ const ReviewsPage: React.FC = () => {
   const rowsPerPage = 10;
 
   const query = useInfiniteQuery({
-    queryKey: ['reviews'],
+    queryKey: ['reviews', search],
     queryFn: async ({ signal, pageParam = 1 }) => {
       const response = await reviewService.getReviews(
-        { page: pageParam, limit: rowsPerPage, before: initialRenderTimestamp },
+        { page: pageParam, limit: rowsPerPage, before: initialRenderTimestamp, search },
         signal
       );
       setTotalReviews(response.totalReviews);
@@ -110,8 +103,24 @@ const ReviewsPage: React.FC = () => {
     },
   });
 
-  const { isFetching: loading, isError: error, data } = query;
+  const handleInputChange = useMemo(
+    () =>
+      debounce((newValue: string) => {
+        // If the search changes, the pages refresh
+        setSearch(newValue);
+        setPage(0);
+      }, 300),
+    []
+  );
+
+  const { isFetching: loading, isError: error, data, isFetchingNextPage, hasNextPage, fetchNextPage } = query;
   const currentPageResponse = data?.pages[page];
+
+  const handleNextPage = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
 
   return (
     <>
@@ -134,7 +143,7 @@ const ReviewsPage: React.FC = () => {
                 justifyContent="start"
               >
                 <Grid item md={8}>
-                  <ReviewsSearchBar value={search} onChange={setSearch} />
+                  <ReviewsSearchBar onChange={handleInputChange} />
                 </Grid>
                 <Grid item md={1} textAlign="center">
                   {/* TODO: implement filter logic */}
@@ -153,10 +162,10 @@ const ReviewsPage: React.FC = () => {
                   onPageChange={(_, newPage) => {
                     setPage(newPage);
                     if (newPage > data!.pages.length - 1) {
-                      query.fetchNextPage();
+                      handleNextPage();
                     }
                   }}
-                  rows={(currentPageResponse?.reviews || []).filter((r) => r.value.includes(search))}
+                  rows={currentPageResponse?.reviews || []}
                 />
               </Grid>
             </Grid>

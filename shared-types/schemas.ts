@@ -8,6 +8,7 @@ export const IPaginationSchema = z.object({
 
 export const IGetReviewsBodySchema = IPaginationSchema.extend({
   before: z.string().default(new Date().toISOString()),
+  search: z.string().optional().default(''),
 });
 
 export const IClientSchema = z.object({

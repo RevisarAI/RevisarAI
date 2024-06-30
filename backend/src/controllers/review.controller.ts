@@ -51,8 +51,10 @@ class ReviewController extends BaseController<IReview> {
   }
 
   async getPaginated(req: AuthRequest<{}, {}, {}, IGetReviewsParams>, res: Response<IGetAllReviewsResponse>) {
-    const { limit, page, before } = req.query;
+    const { limit, page, before, search } = req.query;
     // TODO: implement this function
+    // It should query all reviews before `before` with their value filtered by `search`
+    // It return paginated results with `limit` and `page`
     // ! Please notice that page parameter starts from 1 ! //
 
     // Simulated a loading
@@ -62,36 +64,23 @@ class ReviewController extends BaseController<IReview> {
     return res.status(httpStatus.OK).send({
       currentPage: 1,
       totalReviews: limit * 100,
-      reviews: Array.from({ length: Math.floor(1 + Math.random() * limit) }).map(() => {
-        const randomRating = Math.floor(1 + Math.random() * 10);
-        return {
-          value:
-            'This platform is a game-changer! Having all my customer reviews in one place with clear insights is fantastic. The sentiment analysis helped me identify areas to improve, and the action items are super helpful. Highly recommend!',
-          phrases: [
-            'game-changer',
-            'clear insights',
-            'helped me identify areas to improve',
-            'action items are super helpful',
-            'highly recommend',
-          ],
-          _id: Math.random().toString(36).substring(7),
-          date: new Date(),
-          businessId: req.user!.businessId,
-          sentiment:
-            randomRating > 7
-              ? SentimentEnum.POSITIVE
-              : randomRating < 4
-                ? SentimentEnum.NEGATIVE
-                : SentimentEnum.NEUTRAL,
-          rating: randomRating,
-          dataSource:
-            Math.random() > 0.5
-              ? DataSourceEnum.GOOGLE
-              : Math.random() > 0.5
-                ? DataSourceEnum.TRIPADVISOR
-                : DataSourceEnum.API,
-        };
-      }),
+      reviews: Array.from({ length: Math.floor(1 + Math.random() * limit) }).map(() => ({
+        value:
+          'This platform is a game-changer! Having all my customer reviews in one place with clear insights is fantastic. The sentiment analysis helped me identify areas to improve, and the action items are super helpful. Highly recommend!',
+        phrases: [
+          'game-changer',
+          'clear insights',
+          'helped me identify areas to improve',
+          'action items are super helpful',
+          'highly recommend',
+        ],
+        _id: Math.random().toString(36).substring(7),
+        date: new Date(),
+        businessId: req.user!.businessId,
+        sentiment: Object.values(SentimentEnum)[Math.floor(Math.random() * 3)],
+        rating: Math.floor(1 + Math.random() * 10),
+        dataSource: Object.values(DataSourceEnum)[Math.floor(Math.random() * 3)],
+      })),
     });
   }
 

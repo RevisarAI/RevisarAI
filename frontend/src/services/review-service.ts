@@ -23,10 +23,11 @@ export class ReviewsService {
   }
 
   async getReviews(
-    { page = 1, limit = 10, before }: IGetReviewsParams,
+    { page = 1, limit = 10, before, search }: IGetReviewsParams,
     signal: AbortSignal
   ): Promise<IGetAllReviewsResponse> {
-    return (await this.apiClient.get<IGetAllReviewsResponse>('/', { params: { page, limit, before }, signal })).data;
+    return (await this.apiClient.get<IGetAllReviewsResponse>('/', { params: { page, limit, before, search }, signal }))
+      .data;
   }
 
   async generateReviewReply({ reviewText, prompt, previousReplies = [] }: IGenerateReviewReply): Promise<IReviewReply> {
