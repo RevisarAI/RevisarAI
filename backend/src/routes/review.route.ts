@@ -98,6 +98,68 @@ const router = Router();
  *           items:
  *             $ref: '#/components/schemas/PieChartData'
  *           description: The distribution of data sources
+ * 
+ *     IReview:
+ *       type: object
+ *       required:
+ *         - _id
+ *         - value
+ *         - phrases
+ *         - date
+ *         - businessId
+ *         - sentiment
+ *         - rating
+ *         - dataSource
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the review
+ *         value:
+ *           type: string
+ *           description: The review text
+ *         phrases:
+ *           type: array
+ *           items:
+ *             type: string
+ *             description: The phrase extracted from the review
+ *           description: The phrases extracted from the review
+ *         date:
+ *           type: string
+ *           format: date
+ *           description: The date of the review
+ *         businessId:
+ *           type: string
+ *           description: The unique identifier of the business
+ *         sentiment:
+ *           type: string
+ *           description: The sentiment of the review
+ *         rating:
+ *           type: number
+ *           description: The rating of the review
+ *         dataSource:
+ *           type: string
+ *           description: The data source of the review
+ *
+ *
+ *     IGetAllReviewsResponse:
+ *       type: object
+ *       required:
+ *         - currentPage
+ *         - totalReviews
+ *         - reviews
+ *       properties:
+ *         currentPage:
+ *           type: number
+ *           description: The current page
+ *         totalReviews:
+ *           type: number
+ *           description: The total number of reviews
+ *         reviews:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/IReview'
+ *           description: The reviews
+ *
  */
 
 /**
@@ -162,6 +224,9 @@ router.post('/reply', reviewController.generateResponseForReview.bind(reviewCont
  *             application/json:
  *               schema:
  *                 $ref: '#/components/schemas/IGetAllReviewsResponse'
+ *         500:
+ *           description: Internal Server Error
+ *
  */
 router.get('/', reviewController.getPaginated.bind(reviewController));
 
