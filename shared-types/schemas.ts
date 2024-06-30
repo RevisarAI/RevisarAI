@@ -51,3 +51,15 @@ export const IGenerateReviewReplySchema = z.object({
 export const IReviewReplySchema = z.object({
   text: z.string(),
 });
+
+export const IBatchReviewList = z.object({
+  businessId: z.string(),
+  reviews: z
+    .array(
+      z.object({
+        value: z.string(),
+        date: z.string(),
+      })
+    )
+    .nonempty(),
+});

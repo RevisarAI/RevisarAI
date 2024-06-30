@@ -1,9 +1,9 @@
-import { Router } from 'express'
-import ApiKey from '../models/api-key.model'
-import crypto from 'crypto'
-import { Request, Response } from 'express'
+import { Router } from 'express';
+import ApiKey from '../models/api-key.model';
+import crypto from 'crypto';
+import { Request, Response } from 'express';
 
-const apiKeyRouter = Router()
+const apiKeyRouter = Router();
 
 /**
  * @swagger
@@ -38,22 +38,22 @@ const apiKeyRouter = Router()
 // TODO: set up the route to generate a new API key in seperate service
 
 apiKeyRouter.post('/', async (req: Request, res: Response) => {
-  const { businessId } = req.body
+  const { businessId } = req.body;
 
   if (!businessId) {
-    res.status(400).json({ message: 'businessId is required' })
-    return
+    res.status(400).json({ message: 'businessId is required' });
+    return;
   }
 
   try {
-    const apiKey = crypto.randomBytes(32).toString('hex')
+    const apiKey = crypto.randomBytes(32).toString('hex');
 
-    const newApiKey = new ApiKey({ key: apiKey, businessId })
-    await newApiKey.save()
-    res.status(201).json({ apiKey })
+    const newApiKey = new ApiKey({ key: apiKey, businessId });
+    await newApiKey.save();
+    res.status(201).json({ apiKey });
   } catch (err) {
-    res.status(500).send({ message: 'Internal server error' })
+    res.status(500).send({ message: 'Internal server error' });
   }
-})
+});
 
-export default apiKeyRouter
+export default apiKeyRouter;
