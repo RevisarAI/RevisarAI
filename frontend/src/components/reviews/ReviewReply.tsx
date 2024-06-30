@@ -166,6 +166,7 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
                 <TextField
                   variant="standard"
                   fullWidth
+                  inputProps={{ maxLength: 65 }}
                   placeholder={'Prompt or regenerate new reply automatically'}
                   InputProps={{
                     // Input icon
