@@ -55,13 +55,12 @@ class ReviewController extends BaseController<IReview> {
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       {
         role: 'system',
-        content: `You are a customer success advisor and your job is to write replies to customer reviews
-and so your job is provide the customer with the best overall experience, so that he keeps using the company's products.
-You are given a customer's review. Read the review and try to write a straight reply that expresses the company's thoughts on the review and actions that will be taken to improve if necessary.
-Appreciate positive reviews and try to understand and show will to improve for the negative ones.
-The reply should not exceed 200 words and should be written in a more friendly than formal tone.`,
+        content: `You are a customer success advisor and write replies to customer reviews.
+You should provide the customer with the best overall experience, so that he keeps using the company's products.
+You are given a customer's review. Read the review and write a straight reply that expresses the company's thoughts on the review.
+Appreciate positive reviews and try to understand and show will to improve in the near future for the negative ones.
+The reply should not exceed 200 words and should be written in a more friendly yet polite tone.`,
       },
-      { role: 'user', content: reviewText },
     ];
 
     if (previousReplies.length > 0) {
@@ -72,18 +71,23 @@ The reply should not exceed 200 words and should be written in a more friendly t
       messages.push({ role: 'system', content: promptMessage });
     }
 
-    messages.push({
-      role: 'system',
-      content: 'Output in JSON: { "reply": "reply_content" }',
-    });
+    messages.push(
+      { role: 'user', content: reviewText },
+      {
+        role: 'system',
+        content: 'Output in JSON: { "text": "reply_content" }',
+      }
+    );
 
-    await this.openai.chat.completions.create({
+    const response = await this.openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages,
     });
 
+    const { text }: IReviewReply = JSON.parse(response.choices[0].message.content!);
+
     res.status(httpStatus.OK).send({
-      text: `This should return a generated response for the review: ${reviewText} with ${previousReplies.length} previous replies and the prompt "${prompt}"`,
+      text,
     });
   }
 
