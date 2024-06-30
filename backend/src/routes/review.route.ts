@@ -98,7 +98,7 @@ const router = Router();
  *           items:
  *             $ref: '#/components/schemas/PieChartData'
  *           description: The distribution of data sources
- * 
+ *
  *     IReview:
  *       type: object
  *       required:
