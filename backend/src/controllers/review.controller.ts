@@ -18,7 +18,7 @@ import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
-import config from 'config';
+import config from '../config';
 
 class ReviewController extends BaseController<IReview> {
   private openai: OpenAI;
@@ -50,10 +50,10 @@ class ReviewController extends BaseController<IReview> {
     const { reviewText, prompt, previousReplies } = req.body;
     const formattedPreviousReplies = previousReplies
       .slice(-7) // Take the latest 7 replies
-      .map((reply, i) => `${i}. "${reply}"`)
+      .map((reply, i) => `${i + 1}. "${reply}"`)
       .join('\n');
-    const previousRepliesMessage = `Replies that did not satisfy the customer:\n${formattedPreviousReplies}`;
-    const promptMessage = `The customer asked for the reply to focus on "${prompt}"`;
+    const previousRepliesMessage = `Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
+    const promptMessage = `I want the reply to focus on "${prompt}"`;
 
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       {
@@ -62,16 +62,18 @@ class ReviewController extends BaseController<IReview> {
 You should provide the customer with the best overall experience, so that he keeps using the company's products.
 You are given a customer's review. Read the review and write a straight reply that expresses the company's thoughts on the review.
 Appreciate positive reviews and try to understand and show will to improve in the near future for the negative ones.
-The reply should not exceed 200 words and should be written in a more friendly yet polite tone.`,
+The reply should not exceed 120 words but should end up with less than 120 words and should be written in a more friendly yet polite tone.
+The customer may provide a prompt by the customer to focus on a specific aspect of the review.
+The customer may also provide a list of previous replies that did not satisfy him.`,
       },
     ];
 
     if (previousReplies.length > 0) {
-      messages.push({ role: 'assistant', content: previousRepliesMessage });
+      messages.push({ role: 'user', content: previousRepliesMessage });
     }
 
     if (prompt.length > 0) {
-      messages.push({ role: 'system', content: promptMessage });
+      messages.push({ role: 'user', content: promptMessage });
     }
 
     messages.push(
@@ -89,7 +91,7 @@ The reply should not exceed 200 words and should be written in a more friendly y
 
     const { text }: IReviewReply = JSON.parse(response.choices[0].message.content!);
 
-    res.status(httpStatus.OK).send({
+    return res.status(httpStatus.OK).send({
       text,
     });
   }
