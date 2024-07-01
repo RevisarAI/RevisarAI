@@ -22,8 +22,8 @@ const navbarItems: Array<IMenuItem> = [
   { text: 'Settings', icon: <SettingsIcon />, link: '/settings' },
 ];
 
-const currentPath = window.location.pathname.split('/')[1]; // Value after first `/`
-const initialIndex = navbarItems.findIndex(({ link }) => link === `/${currentPath}`);
+const currPathPrefix = window.location.pathname.split('/')[1]; // Value after first `/`
+const initialIndex = navbarItems.findIndex(({ link }) => link === `/${currPathPrefix}`);
 
 const Navbar: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = React.useState(initialIndex);
