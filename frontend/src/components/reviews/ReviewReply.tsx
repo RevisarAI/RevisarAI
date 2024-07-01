@@ -168,6 +168,11 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
                   variant="standard"
                   fullWidth
                   inputProps={{ maxLength: 65 }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      query.refetch();
+                    }
+                  }}
                   placeholder={'Prompt or regenerate new reply automatically'}
                   InputProps={{
                     // Input icon
