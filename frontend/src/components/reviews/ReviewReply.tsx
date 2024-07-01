@@ -35,11 +35,6 @@ interface ReviewReplyProps {
 }
 
 const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) => {
-  // Do not render anything when the dialog is closed
-  if (!open) {
-    return;
-  }
-
   const [writingReply, setWritingReply] = useState<boolean>(false);
   const [previousReplies, setPreviousReplies] = useState<string[]>([]);
   const [prompt, setPrompt] = useState<string>('');
@@ -51,6 +46,7 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
   const query = useQuery({
     queryKey: ['generateReply', reviewText], // Unique query for each review
     refetchOnMount: false,
+    enabled: open,
     refetchOnWindowFocus: false,
     queryFn: async () => {
       const reply = await reviewService.generateReviewReply({ reviewText, prompt, previousReplies });
@@ -68,6 +64,11 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
   useEffect(() => {
     setTypeAnimationKey((prev) => prev + 1);
   }, [loading, writingReply]);
+
+  // Do not render anything when the dialog is closed
+  if (!open) {
+    return;
+  }
 
   const copyReply = () => {
     if (navigator.clipboard) {
