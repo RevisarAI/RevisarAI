@@ -17,6 +17,9 @@ import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
+import createLogger from '../utils/logger';
+
+const logger = createLogger('review.controller');
 
 class ReviewController extends BaseController<IReview> {
   constructor() {
@@ -52,36 +55,22 @@ class ReviewController extends BaseController<IReview> {
 
   async getPaginated(req: AuthRequest<{}, {}, {}, IGetReviewsParams>, res: Response<IGetAllReviewsResponse>) {
     const { limit, page, before, search } = req.query;
-    // TODO: implement this function
-    // It should query all reviews before `before` with their value filtered by `search`
-    // It return paginated results with `limit` and `page`
-    // ! Please notice that page parameter starts from 1 ! //
 
-    // Simulated a loading
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const reviews = (await this.model
+        .find({ businessId: req.user!.businessId, date: { $lt: before }, value: { $regex: search } })
+        .limit(limit)
+        .skip((page - 1) * limit)) as IReview[];
 
-    // Return static random data
-    return res.status(httpStatus.OK).send({
-      currentPage: 1,
-      totalReviews: limit * 100,
-      reviews: Array.from({ length: Math.floor(1 + Math.random() * limit) }).map(() => ({
-        value:
-          'This platform is a game-changer! Having all my customer reviews in one place with clear insights is fantastic. The sentiment analysis helped me identify areas to improve, and the action items are super helpful. Highly recommend!',
-        phrases: [
-          'game-changer',
-          'clear insights',
-          'helped me identify areas to improve',
-          'action items are super helpful',
-          'highly recommend',
-        ],
-        _id: Math.random().toString(36).substring(7),
-        date: new Date(),
-        businessId: req.user!.businessId,
-        sentiment: Object.values(SentimentEnum)[Math.floor(Math.random() * 3)],
-        rating: Math.floor(1 + Math.random() * 10),
-        dataSource: Object.values(DataSourceEnum)[Math.floor(Math.random() * 3)],
-      })),
-    });
+      return res.status(httpStatus.OK).send({
+        currentPage: Number(page),
+        totalReviews: await this.model.countDocuments({ businessId: req.user!.businessId }),
+        reviews,
+      });
+    } catch (error) {
+      logger.error('Error fetching reviews', error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+    }
   }
 
   private initializeSentimentOverTimeMap(): Map<string, ISentimentBarChartGroup> {

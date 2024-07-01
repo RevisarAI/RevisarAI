@@ -4,10 +4,10 @@ import config from './config';
 
 const logger = createLogger('db');
 
-const initDB = async (dbUrl: string, dbName: string, mongoose: Mongoose) => {
-  const url = `mongodb://${dbUrl}/${dbName}`;
+const initDB = async (dbUrl: string, mongoose: Mongoose) => {
+  const url = `mongodb://${dbUrl}`;
 
-  logger.debug(`Connecting to ${dbName} DB at ${url}`);
+  logger.debug(`Connecting to DB at ${url}`);
 
   mongoose.connection.on('error', (err) => logger.error(err));
   const { connection } = await mongoose.connect(url, {
@@ -18,7 +18,7 @@ const initDB = async (dbUrl: string, dbName: string, mongoose: Mongoose) => {
     },
   });
 
-  logger.debug(`Successfully connected to ${dbName} DB`);
+  logger.debug(`Successfully connected to ${dbUrl} DB`);
 
   // Attach log listener to every client event
   // see https://www.mongodb.com/docs/drivers/node/current/fundamentals/logging/
@@ -38,8 +38,8 @@ export const metadata = new Mongoose();
 export const datalake = new Mongoose();
 
 export const connectMetadata = async () => {
-  await initDB(config.metadataDBUrl, config.metadataDBName, metadata);
+  await initDB(config.metadataDBUrl, metadata);
 };
 export const connectDatalake = async () => {
-  await initDB(config.datalakeDBUrl, config.datalakeDBName, datalake);
+  await initDB(config.datalakeDBUrl, datalake);
 };
