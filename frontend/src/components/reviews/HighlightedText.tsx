@@ -16,11 +16,13 @@ const sentimentColors: Record<SentimentEnum, Record<'border' | 'fill', string>> 
   },
 };
 
-const HighlightedText: React.FC<{ text: string; sentiment: SentimentEnum; style?: CSSProperties }> = ({
-  text,
-  sentiment,
-  style = {},
-}) => (
+interface HighlightedTextProps {
+  text: string;
+  sentiment: SentimentEnum;
+  style?: CSSProperties;
+}
+
+const HighlightedText: React.FC<HighlightedTextProps> = ({ text, sentiment, style = {} }) => (
   <span
     style={{
       paddingRight: '0.25rem',
