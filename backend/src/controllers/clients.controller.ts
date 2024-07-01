@@ -14,7 +14,7 @@ class ClientsController extends BaseController<IClient> {
 
   async updateByBusinessId(req: AuthRequest, res: Response){
     const fields = ['businessName', 'businessDescription'];
-    const { businessId } = req.body;
+    const businessId = req.user?.businessId;
     this.debug(`Updating by bid - ${businessId}`);
 
     if(fields.some((field) => isEmpty(req.body[field].toString()))){
