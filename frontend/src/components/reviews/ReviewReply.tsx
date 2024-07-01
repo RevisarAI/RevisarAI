@@ -53,7 +53,7 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
     refetchOnWindowFocus: false,
     queryFn: async ({ signal }) => {
       const reply = await reviewService.generateReviewReply({ reviewText, prompt, previousReplies }, signal);
-      setPreviousReplies((prev) => [...prev, reply.text].slice(-10)); // Send only the latest 10 replies
+      setPreviousReplies((prev) => [...prev, reply.text].slice(-4)); // Send only the latest 4 replies
       setPrompt('');
       triggerTypeAnimationRender();
       setWritingReply(true);

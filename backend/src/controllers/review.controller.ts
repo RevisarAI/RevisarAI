@@ -51,7 +51,7 @@ class ReviewController extends BaseController<IReview> {
   async generateResponseForReview(req: AuthRequest<{}, IReviewReply, IGenerateReviewReply>, res: Response) {
     const { reviewText, prompt, previousReplies } = req.body;
     const formattedPreviousReplies = previousReplies
-      .slice(-4) // Take the latest 4 replies
+      .slice(-4) // Take the latest 4 replies (the frontend should also send 4 replies at most)
       .map((reply, i) => `${i + 1}. "${reply}"`)
       .join('\n');
     const previousRepliesMessage = `Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
