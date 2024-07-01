@@ -1,11 +1,14 @@
 import { Types as mongooseTypes } from 'mongoose';
 import {
   IActionItemSchema,
+  IWeeklyActionItemsSchema,
   IClientSchema,
   ICreateUserSchema,
+  IGenerateReviewReplySchema,
+  IGetReviewsBodySchema,
   ILoginFormDataSchema,
+  IReviewReplySchema,
   IUserDetailsSchema,
-  IWeeklyActionItemsSchema,
 } from './schemas';
 import { z } from 'zod';
 
@@ -16,6 +19,12 @@ export type IUserDetails = z.infer<typeof IUserDetailsSchema>;
 export type ICreateUser = z.infer<typeof ICreateUserSchema>;
 
 export type ILoginFormData = z.infer<typeof ILoginFormDataSchema>;
+
+export type IGenerateReviewReply = z.infer<typeof IGenerateReviewReplySchema>;
+
+export type IReviewReply = z.infer<typeof IReviewReplySchema>;
+
+export type IGetReviewsParams = z.infer<typeof IGetReviewsBodySchema>;
 
 export interface IUserTokens {
   accessToken: string;
@@ -54,12 +63,18 @@ export interface IPieChartData {
   label: string;
 }
 
-export type ISentimentBarChartGroup = {
+export interface IGetAllReviewsResponse {
+  reviews: IReview[];
+  currentPage: number;
+  totalReviews: number;
+}
+
+export interface ISentimentBarChartGroup {
   date: string;
   positive: number;
   negative: number;
   neutral: number;
-};
+}
 
 export interface IWordFrequency {
   text: string;
