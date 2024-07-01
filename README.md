@@ -132,7 +132,3 @@ Please replace the placeholders with the actual values before running the micros
 - [Yoav Richter](https://github.com/yoavrichter30)
 - [Shaked Abdu](https://github.com/Shaked-abdu)
 - [Yair Chen](https://github.com/chenyair)
-
-```
-
-```
