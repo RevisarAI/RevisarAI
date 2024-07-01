@@ -73,15 +73,7 @@ The Frontend is the interface that the client interacts with. It's a React appli
 
 ## Contributors
 
-<a href="https://github.com/liadyacobi">
-    <img src="https://github.com/liadyacobi.png" width="50" height="50" style="border-radius:50%;">
-</a>
-<a href="https://github.com/yoavrichter30">
-    <img src="https://github.com/yoavrichter30.png" width="50" height="50" style="border-radius:50%;">
-</a>
-<a href="https://github.com/Shaked-abdu">
-    <img src="https://github.com/Shaked-abdu.png" width="50" height="50" style="border-radius:50%;">
-</a>
-<a href="https://github.com/chenyair">
-    <img src="https://github.com/chenyair.png" width="50" height="50" style="border-radius:50%;">
-</a>
+- [Liad Yacobi](https://github.com/liadyacobi)
+- [Yoav Richter](https://github.com/yoavrichter30)
+- [Shaked Abdu](https://github.com/Shaked-abdu)
+- [Yair Chen](https://github.com/chenyair)
