@@ -123,6 +123,7 @@ Each microservice requires certain environment variables to run properly. These 
 |                      | ACCESS_TOKEN_EXPIRATION | The expiration time for access tokens  |
 |                      | GOOGLE_CLIENT_ID        | The client ID for Google OAuth         |
 |                      | OPENAI_API_KEY          | The API key for OpenAI                 |
+| Frontend             | VITE_GOOGLE_CLIENT_ID   | The client ID for Google OAuth         |
 
 Please replace the placeholders with the actual values before running the microservices.
 
