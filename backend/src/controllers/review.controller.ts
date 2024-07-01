@@ -8,6 +8,7 @@ import {
   IReviewReply,
   IGetReviewsParams,
   IGetAllReviewsResponse,
+  IReviewReplySchema,
 } from 'shared-types';
 import OpenAI from 'openai';
 import ReviewModel from '../models/review.model';
@@ -90,7 +91,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
       messages,
     });
 
-    const { text }: IReviewReply = JSON.parse(response.choices[0].message.content!);
+    const { text }: IReviewReply = IReviewReplySchema.parse(JSON.parse(response.choices[0].message.content!));
 
     return res.status(httpStatus.OK).send({
       text,
