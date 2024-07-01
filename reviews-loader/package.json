@@ -44,7 +44,7 @@
     "mongoose": "^8.4.3",
     "openai": "^4.52.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "winston": "^3.13.0"
+    "revisar-server-utils": "file:../revisar-server-utils",
+    "swagger-ui-express": "^5.0.1"
   }
 }

@@ -13,6 +13,7 @@ const ConfigSchema = z.object({
   accessTokenSecret: z.string(),
   accessTokenExpiration: z.string(),
   googleClientID: z.string(),
+  openaiApiKey: z.string(),
 });
 
 const config = ConfigSchema.parse({
@@ -25,6 +26,7 @@ const config = ConfigSchema.parse({
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
   accessTokenExpiration: process.env.ACCESS_TOKEN_EXPIRATION,
   googleClientID: process.env.GOOGLE_CLIENT_ID,
+  openaiApiKey: process.env.OPENAI_API_KEY,
 });
 
 export default config;

@@ -1,8 +1,8 @@
 import cors from 'cors';
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
-import createLogger from './utils/logger';
-import initDB from './db';
+import createLogger from 'revisar-server-utils/logger';
+import { connectDB } from './db';
 import initConsumer from './consumer';
 import healthRoute from './routes/health.route';
 import 'express-async-errors';
@@ -27,7 +27,7 @@ const initApp = async (): Promise<Express> => {
   app.use(healthRoute);
 
   logger.info('calling init DB');
-  await initDB();
+  await connectDB();
 
   logger.info('calling init consumer');
   await initConsumer();

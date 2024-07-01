@@ -1,4 +1,11 @@
-export const ReviewMongooseSchema = {
+import { SchemaDefinition } from 'mongoose';
+import { IReview } from './types';
+
+export interface IMongooseSchemaConfig<T> {
+  name: string;
+  schema: SchemaDefinition<T>;
+}
+export const ReviewMongooseSchema: IMongooseSchemaConfig<IReview> = {
   name: 'Review',
   schema: {
     value: {
@@ -12,6 +19,7 @@ export const ReviewMongooseSchema = {
     businessId: {
       type: String,
       required: true,
+      index: true,
     },
     sentiment: {
       type: String,
@@ -22,7 +30,7 @@ export const ReviewMongooseSchema = {
       required: true,
     },
     phrases: {
-      type: [String],
+      type: Array<String>,
       required: true,
     },
     dataSource: {
