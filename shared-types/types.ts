@@ -1,5 +1,7 @@
 import { Types as mongooseTypes } from 'mongoose';
 import {
+  IActionItemSchema,
+  IWeeklyActionItemsSchema,
   IClientSchema,
   ICreateUserSchema,
   IGenerateReviewReplySchema,
@@ -50,8 +52,10 @@ export interface IReviewAnalaysis {
   sentiment: SentimentEnum;
   rating: number;
   phrases: string[];
+  importance: number;
 }
-export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId | string };
+export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
+export type IReviewMinimal = Pick<IReview, '_id' | 'value'>;
 
 export interface IPieChartData {
   id: number;
@@ -98,3 +102,6 @@ export enum WeekdaysEnum {
   FRIDAY = 'Friday',
   SATURDAY = 'Saturday',
 }
+
+export type IWeeklyActionItems = z.infer<typeof IWeeklyActionItemsSchema>;
+export type IActionItem = z.infer<typeof IActionItemSchema>;

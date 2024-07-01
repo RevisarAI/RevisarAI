@@ -36,12 +36,13 @@ export class ReviewsConsumer {
             {
               role: 'system',
               content:
-                'You analyze reviews. Read the review, determine the sentiment (positive, negative, or neutral), provide a rating out of 10, and extract concise, relevant phrases that succinctly explain the sentiment exactly as they appear in the review. Only use phrases that are verbatim from the review text without rephrasing or summarizing. In the phrases, use as few words as possible, if possible even just a couple of keywords. Consider the overall tone, language used, and any specific praises or criticisms mentioned.',
+                'You analyze reviews. Read the review, determine the sentiment (positive, negative, or neutral), provide a rating out of 10, and extract concise, relevant phrases that succinctly explain the sentiment exactly as they appear in the review. Only use phrases that are verbatim from the review text without rephrasing or summarizing. In the phrases, use as few words as possible, if possible even just a couple of keywords. Consider the overall tone, language used, and any specific praises or criticisms mentioned. In addition add importance rating between 0 to 100 - the rating is based on importance and the potential for generating actionable items from the review. Be as specific as possible.',
             },
             { role: 'user', content: message.value!.toString() },
             {
               role: 'system',
-              content: 'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "phrases": [...] }',
+              content:
+                'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "importance": "importance_rating", "phrases": [...] }',
             },
           ],
         });

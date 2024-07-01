@@ -1,5 +1,5 @@
 import { Types as mongooseTypes } from 'mongoose';
-import { z } from 'zod';
+import { date, z } from 'zod';
 import { WeekdaysEnum } from './types';
 
 export const IPaginationSchema = z.object({
@@ -42,6 +42,23 @@ export const IUserDetailsSchema = IClientSchema.omit({
   _id: true,
   password: true,
   tokens: true,
+});
+
+export const IWeeklyActionItemsRequestSchema = z.object({
+  client: IUserDetailsSchema,
+  date: z.coerce.date(),
+});
+
+export const IActionItemSchema = z.object({
+  value: z.string(),
+  reason: z.string(),
+  isCompleted: z.boolean().optional().default(false),
+});
+
+export const IWeeklyActionItemsSchema = z.object({
+  actionItems: z.array(IActionItemSchema),
+  date: z.date(),
+  businessId: z.string(),
 });
 
 export const IGenerateReviewReplySchema = z.object({
