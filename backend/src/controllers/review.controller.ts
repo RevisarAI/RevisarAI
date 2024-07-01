@@ -8,8 +8,6 @@ import {
   IReviewReply,
   IGetReviewsParams,
   IGetAllReviewsResponse,
-  DataSourceEnum,
-  SentimentEnum,
 } from 'shared-types';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
@@ -17,7 +15,7 @@ import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
-import createLogger from '../utils/logger';
+import createLogger from 'revisar-server-utils/logger';
 
 const logger = createLogger('review.controller');
 
