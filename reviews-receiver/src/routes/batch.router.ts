@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import BatchController from '../controllers/batch.controller';
 import checkApiKey from '../common/api-key.middleware';
-import schemaValidationMiddleware from '../common/schema-validation.middleware';
 import { IBatchReviewList } from 'shared-types';
+import { schemaValidationMiddleware } from 'revisar-server-utils/middlewares';
 
 const batchRouter = Router();
 

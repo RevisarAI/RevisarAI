@@ -1,12 +1,11 @@
 import { IRawReview } from 'shared-types';
 import { Producer, Kafka } from 'kafkajs';
-import winston from 'winston';
-import createLogger from './utils/logger';
+import createLogger from 'revisar-server-utils/logger';
 import config from './config';
 
 class ReviewsProducer {
   private kafkaProducer: Producer;
-  private logger: winston.Logger;
+  private logger: ReturnType<typeof createLogger>;
 
   public constructor() {
     this.kafkaProducer = this.createKafkaProducer();

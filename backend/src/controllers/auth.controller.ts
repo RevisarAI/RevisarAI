@@ -7,7 +7,7 @@ import { ICreateUser, ILoginFormData, IUserDetails, IUserTokens, IUserDetailsSch
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import createLogger from '../utils/logger';
+import createLogger from 'revisar-server-utils/logger';
 import { AuthRequest } from 'common/auth.middleware';
 import { isEmpty } from 'lodash';
 
@@ -95,7 +95,8 @@ const refresh = async (req: Request, res: Response<IUserTokens | { message: stri
     return;
   }
 
-  jwt.verify(token, config.refreshTokenSecret, async (err, clientInfo) => {
+  // This is a callback to the jwt verify function.
+  const verifyCallback: jwt.VerifyCallback = async (err, clientInfo) => {
     if (err) {
       res.status(403).json({ message: 'Invalid token' });
       return;
@@ -125,7 +126,9 @@ const refresh = async (req: Request, res: Response<IUserTokens | { message: stri
     } catch (error) {
       return res.status(500).send();
     }
-  });
+  };
+
+  jwt.verify(token, config.refreshTokenSecret, verifyCallback);
 };
 
 const logout = async (req: Request, res: Response<{ message: string }>) => {
@@ -136,7 +139,8 @@ const logout = async (req: Request, res: Response<{ message: string }>) => {
     return;
   }
 
-  jwt.verify(token, config.refreshTokenSecret, async (err, clientInfo) => {
+  // This is a callback to the jwt verify function.
+  const verifyCallback: jwt.VerifyCallback = async (err, clientInfo) => {
     if (err) {
       res.status(403).json({ message: 'Invalid token' });
       return;
@@ -162,7 +166,9 @@ const logout = async (req: Request, res: Response<{ message: string }>) => {
     } catch (error) {
       res.status(500).json({ message: 'Internal server error while logging out' });
     }
-  });
+  };
+
+  jwt.verify(token, config.refreshTokenSecret, verifyCallback);
 };
 
 const googleSignIn = async (req: Request<{}, {}, { credential: string }>, res: Response) => {

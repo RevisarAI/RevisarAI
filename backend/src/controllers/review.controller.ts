@@ -17,8 +17,8 @@ import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
+import createLogger from 'revisar-server-utils/logger';
 import config from '../config';
-import createLogger from '../utils/logger';
 
 const logger = createLogger('review.controller');
 
@@ -35,16 +35,22 @@ class ReviewController extends BaseController<IReview> {
     const today = daysAgo(0);
     const sevenDaysAgo = daysAgo(7);
 
+    this.debug('Getting analysis for business', businessId);
+
     const reviews = await this.model.find({
       date: { $gte: sevenDaysAgo, $lt: today },
       businessId,
     });
+
+    this.debug(`Found ${reviews.length} reviews for business ${businessId}, generating analysis...`);
 
     const analysis: IBusinessAnalysis = {
       sentimentOverTime: this.getSentimentOverTime(reviews),
       wordsFrequencies: this.getWordsFrequencies(reviews),
       dataSourceDistribution: this.getDataSourceDistribution(reviews),
     };
+
+    this.debug(`Retuning generated analysis for business ${businessId}`);
     return res.status(httpStatus.OK).send(analysis);
   }
 
@@ -136,6 +142,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
 
   private getSentimentOverTime(reviews: IReview[]): ISentimentBarChartGroup[] {
     const sentimentOverTime = this.initializeSentimentOverTimeMap();
+    this.debug(`Sentiment over time initialized for ${sentimentOverTime.size} sentiments`);
 
     reviews.forEach((review) => {
       const dateData = sentimentOverTime.get(review.date.toLocaleDateString())!;
@@ -147,6 +154,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
 
   private getWordsFrequencies(reviews: IReview[]): IWordFrequency[] {
     const wordFrequency = new Map<string, number>();
+    this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
     reviews.forEach((review) => {
       review.phrases.forEach((phrase) => {
@@ -165,6 +173,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
 
   private getDataSourceDistribution(reviews: IReview[]): IPieChartData[] {
     const dataSources = new Map<string, number>();
+    this.debug(`Calculating data source distribution for ${reviews.length} reviews`);
 
     reviews.forEach((review) => {
       const count = dataSources.get(review.dataSource) ?? 0;

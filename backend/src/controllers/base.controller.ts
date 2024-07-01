@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { FilterQuery, Model } from 'mongoose';
 import { omit, pick } from 'lodash';
 import httpStatus from 'http-status';
-import createLogger from '../utils/logger';
+import createLogger from 'revisar-server-utils/logger';
 
 const logger = createLogger('base controller');
 

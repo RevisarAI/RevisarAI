@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import authController from '../controllers/auth.controller';
-import schemaValidationMiddleware from '../common/schema-validation.middleware';
+import { schemaValidationMiddleware } from 'revisar-server-utils/middlewares';
 import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types';
 import authMiddleware from '../common/auth.middleware';
 

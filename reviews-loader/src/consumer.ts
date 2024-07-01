@@ -1,14 +1,13 @@
 import OpenAI from 'openai';
 import { IRawReview, IReview, IReviewAnalaysis } from 'shared-types';
-import createLogger from './utils/logger';
+import createLogger from 'revisar-server-utils/logger';
 import reviewModel from './models/review.model';
-import winston from 'winston';
 
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
-  private logger: winston.Logger;
+  private logger: ReturnType<typeof createLogger>;
   private openai: OpenAI;
 
   public constructor() {
