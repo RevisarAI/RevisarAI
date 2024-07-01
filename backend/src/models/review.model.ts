@@ -1,4 +1,4 @@
-import { IReview, ReviewMongoseSchema } from 'shared-types';
+import { IReview, ReviewMongooseSchema } from 'shared-types';
 import { datalake } from '../db';
 
 /**
@@ -49,6 +49,6 @@ import { datalake } from '../db';
  *         phrases: ["amazing"]
  *         dataSource: "google"
  */
-const reviewSchema = new datalake.Schema<IReview>(ReviewMongoseSchema.schema);
+const reviewSchema = new datalake.Schema<IReview>(ReviewMongooseSchema.schema);
 
-export default datalake.model<IReview>(ReviewMongoseSchema.name, reviewSchema);
+export default datalake.model<IReview>(ReviewMongooseSchema.name, reviewSchema);

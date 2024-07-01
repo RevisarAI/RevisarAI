@@ -1,4 +1,4 @@
-export const ReviewMongoseSchema = {
+export const ReviewMongooseSchema = {
   name: 'Review',
   schema: {
     value: {

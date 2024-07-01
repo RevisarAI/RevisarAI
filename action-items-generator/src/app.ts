@@ -7,7 +7,7 @@ import initConsumer from './consumer';
 import healthRoute from './routes/health.route';
 import 'express-async-errors';
 
-const logger = createLogger('app');
+const logger = createLogger('action-items-generator');
 
 dotenv.config();
 

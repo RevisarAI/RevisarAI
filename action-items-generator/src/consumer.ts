@@ -15,7 +15,7 @@ export class ReviewsConsumer {
 
   public constructor() {
     this.kafkaConsumer = this.createKafkaConsumer();
-    this.logger = createLogger('consumer');
+    this.logger = createLogger('action-items-generator-consumer');
     this.openai = new OpenAI({ apiKey: config.openaiApiKey });
   }
 

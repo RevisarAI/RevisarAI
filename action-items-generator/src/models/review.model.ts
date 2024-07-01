@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { IReview, ReviewMongoseSchema } from 'shared-types';
+import { IReview, ReviewMongooseSchema } from 'shared-types';
 
-const reviewSchema = new mongoose.Schema<IReview>(ReviewMongoseSchema.schema);
+const reviewSchema = new mongoose.Schema<IReview>(ReviewMongooseSchema.schema);
 
-export default mongoose.model<IReview>(ReviewMongoseSchema.name, reviewSchema);
+export default mongoose.model<IReview>(ReviewMongooseSchema.name, reviewSchema);
