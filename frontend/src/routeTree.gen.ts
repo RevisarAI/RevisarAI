@@ -15,6 +15,7 @@ import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedHomeImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedCustomizeImport } from './routes/_authenticated/customize'
 import { Route as AuthRegisterImport } from './routes/_auth/register'
 import { Route as AuthLoginImport } from './routes/_auth/login'
 
@@ -37,6 +38,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
 
 const AuthenticatedHomeRoute = AuthenticatedHomeImport.update({
   path: '/home',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
+const AuthenticatedCustomizeRoute = AuthenticatedCustomizeImport.update({
+  path: '/customize',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
@@ -82,6 +88,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterImport
       parentRoute: typeof AuthImport
     }
+    '/_authenticated/customize': {
+      id: '/_authenticated/customize'
+      path: '/customize'
+      fullPath: '/customize'
+      preLoaderRoute: typeof AuthenticatedCustomizeImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -104,6 +117,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   AuthRoute: AuthRoute.addChildren({ AuthLoginRoute, AuthRegisterRoute }),
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
+    AuthenticatedCustomizeRoute,
     AuthenticatedHomeRoute,
     AuthenticatedIndexRoute,
   }),
@@ -131,6 +145,7 @@ export const routeTree = rootRoute.addChildren({
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
+        "/_authenticated/customize",
         "/_authenticated/home",
         "/_authenticated/"
       ]
@@ -142,6 +157,10 @@ export const routeTree = rootRoute.addChildren({
     "/_auth/register": {
       "filePath": "_auth/register.tsx",
       "parent": "/_auth"
+    },
+    "/_authenticated/customize": {
+      "filePath": "_authenticated/customize.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/home": {
       "filePath": "_authenticated/home.tsx",

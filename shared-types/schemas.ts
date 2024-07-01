@@ -34,6 +34,12 @@ export const IUserDetailsSchema = IClientSchema.omit({
   tokens: true,
 });
 
+export const IBusinessDetailsSchema = IClientSchema.pick({
+  businessId: true,
+  businessName: true,
+  businessDescription: true,
+});
+
 export const IBatchReviewList = z.object({
   businessId: z.string(),
   reviews: z
