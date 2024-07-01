@@ -181,7 +181,58 @@ const router = Router();
  */
 router.get('/analysis', reviewController.getAnalysis.bind(reviewController));
 
-// TODO: add swagger and document this route
+/**
+ * @swagger
+ * paths:
+ *  /api/reviews/reply:
+ *    post:
+ *     summary: Generate response for review
+ *     tags: [Review]
+ *     security:
+ *      - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - reviewText
+ *               - prompt
+ *               - previousReplies
+ *             properties:
+ *               reviewText:
+ *                 type: string
+ *                 description: The review text
+ *                 example: "The food was amazing!"
+ *               prompt:
+ *                 type: string
+ *                 description: The prompt for the response
+ *                 example: "Make the review shorter and more formal"
+ *               previousReplies:
+ *                 type: array
+ *                 description: The previous replies
+ *                 items:
+ *                   type: string
+ *                 example: ["Thank you for your review!"]
+ *     responses:
+ *       200:
+ *         description: The generated response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 text:
+ *                   type: string
+ *                   description: The generated response
+ *                   example: "Thank you for your review! We are glad you enjoyed the food!"
+ *       500:
+ *         description: Internal server error
+ *
+ *
+ *
+ */
 router.post('/reply', reviewController.generateResponseForReview.bind(reviewController));
 
 /**
