@@ -49,7 +49,7 @@ class ReviewController extends BaseController<IReview> {
   async generateResponseForReview(req: AuthRequest<{}, IReviewReply, IGenerateReviewReply>, res: Response) {
     const { reviewText, prompt, previousReplies } = req.body;
     const formattedPreviousReplies = previousReplies
-      .slice(-7) // Take the latest 7 replies
+      .slice(-4) // Take the latest 4 replies
       .map((reply, i) => `${i + 1}. "${reply}"`)
       .join('\n');
     const previousRepliesMessage = `Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
@@ -58,7 +58,7 @@ class ReviewController extends BaseController<IReview> {
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       {
         role: 'system',
-        content: `You are a customer success advisor and write replies to customer reviews.
+        content: `You are a customer success advisor and write replies to customer reviews in "${req.user!.businessName}".
 You should provide the customer with the best overall experience, so that he keeps using the company's products.
 You are given a customer's review. Read the review and write a straight reply that expresses the company's thoughts on the review.
 Appreciate positive reviews and try to understand and show will to improve in the near future for the negative ones.
