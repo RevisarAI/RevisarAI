@@ -8,6 +8,7 @@ export interface ReviewAction {
   label: string;
   icon: SvgIconComponent;
   clickedIcon?: SvgIconComponent;
+  clickedTimeoutMs?: number;
   onClick: (reviewText: string) => void | Promise<void>;
 }
 
@@ -20,6 +21,7 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
       icon: ClipboardIcon,
       label: 'Copy review to clipboard',
       clickedIcon: CopiedIcon,
+      clickedTimeoutMs: 2000,
       onClick: async (text) => {
         if (navigator.clipboard) {
           await navigator.clipboard.writeText(text);
@@ -83,10 +85,12 @@ const ReviewActions: React.FC<{ reviewText: string }> = ({ reviewText }) => {
                   onClick={async () => {
                     await action.onClick(reviewText);
                     setActionsClickedState((prev) => prev.map((val, i) => (i === index ? true : val)));
-                    setTimeout(
-                      () => setActionsClickedState((prev) => prev.map((val, i) => (i === index ? false : val))),
-                      2000
-                    );
+                    if (action.clickedTimeoutMs) {
+                      setTimeout(
+                        () => setActionsClickedState((prev) => prev.map((val, i) => (i === index ? false : val))),
+                        action.clickedTimeoutMs
+                      );
+                    }
                   }}
                 >
                   {isClicked(index) && action.clickedIcon ? <action.clickedIcon /> : <action.icon />}
