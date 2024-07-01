@@ -30,8 +30,12 @@ export class ReviewsService {
       .data;
   }
 
-  async generateReviewReply({ reviewText, prompt, previousReplies = [] }: IGenerateReviewReply): Promise<IReviewReply> {
-    return (await this.apiClient.post<IReviewReply>('/reply', { reviewText, prompt, previousReplies })).data;
+  async generateReviewReply(
+    { reviewText, prompt, previousReplies = [] }: IGenerateReviewReply,
+    signal: AbortSignal
+  ): Promise<IReviewReply> {
+    return (await this.apiClient.post<IReviewReply>('/reply', { reviewText, prompt, previousReplies }, { signal }))
+      .data;
   }
 }
 

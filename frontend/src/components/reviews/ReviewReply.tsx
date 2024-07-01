@@ -1,7 +1,7 @@
 import { Autorenew as RefreshIcon, Send as SendIcon } from '@mui/icons-material';
 import { Dialog, Grid, IconButton, Stack, TextField, Tooltip, Typography, Zoom } from '@mui/material';
 import { random } from 'lodash';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ContentCopy as ClipboardIcon, Check as CopiedIcon } from '@mui/icons-material';
 import { GridLoader } from 'react-spinners';
 import { TypeAnimation } from 'react-type-animation';
@@ -48,10 +48,11 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
     refetchOnMount: false,
     enabled: open,
     refetchOnWindowFocus: false,
-    queryFn: async () => {
-      const reply = await reviewService.generateReviewReply({ reviewText, prompt, previousReplies });
+    queryFn: async ({ signal }) => {
+      const reply = await reviewService.generateReviewReply({ reviewText, prompt, previousReplies }, signal);
       setPreviousReplies((prev) => [...prev, reply.text].slice(-10)); // Send only the latest 10 replies
       setPrompt('');
+      setTypeAnimationKey((prev) => prev + 1);
       setWritingReply(true);
       return reply;
     },
@@ -59,11 +60,6 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
 
   const { isFetching: loading, isError: error, data: reply } = query;
   const replyText = reply?.text || '';
-
-  // Listen and rerender the TypeAnimation component
-  useEffect(() => {
-    setTypeAnimationKey((prev) => prev + 1);
-  }, [loading, writingReply]);
 
   // Do not render anything when the dialog is closed
   if (!open) {
