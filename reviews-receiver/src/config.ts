@@ -1,18 +1,20 @@
-import { z } from 'zod'
-import env from 'dotenv'
+import { z } from 'zod';
+import env from 'dotenv';
 
-env.config()
+env.config();
 
 const ConfigSchema = z.object({
-  datalakeDBUrl: z.string(),
-  datalakeDBName: z.string(),
-  port: z.string()
-})
+  metadatadbDBUrl: z.string(),
+  metadatadbDBName: z.string(),
+  port: z.string(),
+  kafka_brokers: z.string().optional(),
+});
 
 const config = ConfigSchema.parse({
-  datalakeDBUrl: process.env.DATALAKE_DB_URL,
-  datalakeDBName: process.env.DATALAKE_DB_NAME,
-  port: process.env.PORT
-})
+  metadatadbDBUrl: process.env.METADATADB_DB_URL,
+  metadatadbDBName: process.env.METADATADB_DB_NAME,
+  port: process.env.PORT,
+  kafka_brokers: process.env.KAFKA_BROKERS,
+});
 
-export default config
+export default config;
