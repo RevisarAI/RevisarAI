@@ -19,6 +19,7 @@ export const ReviewMongooseSchema: IMongooseSchemaConfig<IReview> = {
     businessId: {
       type: String,
       required: true,
+      index: true,
     },
     sentiment: {
       type: String,
