@@ -20,12 +20,6 @@ import { Router } from 'express';
  *     - businessName
  *     - businessDescription
  *    properties:
- *     accessToken:
- *      type: string
- *      description: The JWT Access token
- *     refreshToken:
- *      type: string
- *      description: The JWT Refresh token
  *     businessId:
  *      type: string
  *      description: The business ID
