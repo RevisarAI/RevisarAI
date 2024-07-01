@@ -10,7 +10,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { reviewService } from '@/services/review-service';
 
-const splitStringWithDelays = (longString: string, minDelay = 50, maxDelay = 300): Array<string | number> => {
+const splitStringWithDelays = (longString: string, minDelay = 50, maxDelay = 275): Array<string | number> => {
   const getRandomDelay = () => random(minDelay, maxDelay);
   const getRandomLength = (minLength: number, maxLength: number) => random(minLength, maxLength);
 
@@ -43,6 +43,9 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
 
   const theme = useTheme();
 
+  const triggerTypeAnimationRender = () => setTypeAnimationKey((prev) => prev + 1);
+  const onFinishWriting = () => setWritingReply(false);
+
   const query = useQuery({
     queryKey: ['generateReply', reviewText], // Unique query for each review
     refetchOnMount: false,
@@ -52,7 +55,7 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
       const reply = await reviewService.generateReviewReply({ reviewText, prompt, previousReplies }, signal);
       setPreviousReplies((prev) => [...prev, reply.text].slice(-10)); // Send only the latest 10 replies
       setPrompt('');
-      setTypeAnimationKey((prev) => prev + 1);
+      triggerTypeAnimationRender();
       setWritingReply(true);
       return reply;
     },
@@ -60,11 +63,6 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
 
   const { isFetching: loading, isError: error, data: reply } = query;
   const replyText = reply?.text || '';
-
-  // Do not render anything when the dialog is closed
-  if (!open) {
-    return;
-  }
 
   const copyReply = () => {
     if (navigator.clipboard) {
@@ -142,7 +140,7 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
             <TypeAnimation
               key={typeAnimationKey}
               style={{ whiteSpace: 'pre - line' }}
-              sequence={[...splitStringWithDelays(replyText), () => setWritingReply(false)]}
+              sequence={[...splitStringWithDelays(replyText), onFinishWriting]}
               repeat={0}
               speed={80}
             />
