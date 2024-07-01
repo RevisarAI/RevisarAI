@@ -1,10 +1,25 @@
-import { IReview, ISentimentBarChartGroup, IWordFrequency, IPieChartData, IBusinessAnalysis } from 'shared-types';
+import {
+  IReview,
+  ISentimentBarChartGroup,
+  IWordFrequency,
+  IPieChartData,
+  IBusinessAnalysis,
+  IGenerateReviewReply,
+  IReviewReply,
+  IGetReviewsParams,
+  IGetAllReviewsResponse,
+  DataSourceEnum,
+  SentimentEnum,
+} from 'shared-types';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
 import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
+import createLogger from '../utils/logger';
+
+const logger = createLogger('review.controller');
 
 class ReviewController extends BaseController<IReview> {
   constructor() {
@@ -33,6 +48,35 @@ class ReviewController extends BaseController<IReview> {
 
     this.debug(`Retuning generated analysis for business ${businessId}`);
     return res.status(httpStatus.OK).send(analysis);
+  }
+
+  async generateResponseForReview(req: AuthRequest<{}, IReviewReply, IGenerateReviewReply>, res: Response) {
+    // TODO: implement this function with calls to OpenAPI
+    const { reviewText, prompt, previousReplies } = req.body;
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    res.status(httpStatus.OK).send({
+      text: `This should return a generated response for the review: ${reviewText} with ${previousReplies.length} previous replies and the prompt "${prompt}"`,
+    });
+  }
+
+  async getPaginated(req: AuthRequest<{}, {}, {}, IGetReviewsParams>, res: Response<IGetAllReviewsResponse>) {
+    const { limit, page, before, search } = req.query;
+
+    try {
+      const reviews = (await this.model
+        .find({ businessId: req.user!.businessId, date: { $lt: before }, value: { $regex: search } })
+        .limit(limit)
+        .skip((page - 1) * limit)) as IReview[];
+
+      return res.status(httpStatus.OK).send({
+        currentPage: Number(page),
+        totalReviews: await this.model.countDocuments({ businessId: req.user!.businessId }),
+        reviews,
+      });
+    } catch (error) {
+      logger.error('Error fetching reviews', error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+    }
   }
 
   private initializeSentimentOverTimeMap(): Map<string, ISentimentBarChartGroup> {
