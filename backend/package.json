@@ -45,6 +45,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.4.3",
+    "openai": "^4.52.2",
     "revisar-server-utils": "file:../revisar-server-utils",
     "shared-types": "file:../shared-types",
     "swagger-jsdoc": "^6.2.8",
