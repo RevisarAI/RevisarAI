@@ -8,7 +8,7 @@ interface RequestSchema {
   params?: Schema;
 }
 
-const schemaValidationMiddleware =
+export const schemaValidationMiddleware =
   ({ body, query, params }: RequestSchema) =>
   (req: Request, res: Response, next: NextFunction) => {
     const schema = z.object({
@@ -30,5 +30,3 @@ const schemaValidationMiddleware =
 
     return next();
   };
-
-export default schemaValidationMiddleware;

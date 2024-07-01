@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import { db } from '../db';
 import { IReview } from 'shared-types';
 
-const reviewSchema = new mongoose.Schema<IReview>({
+const reviewSchema = new db.Schema<IReview>({
   value: {
     type: String,
     required: true,
@@ -32,4 +32,4 @@ const reviewSchema = new mongoose.Schema<IReview>({
   },
 });
 
-export default mongoose.model<IReview>('Review', reviewSchema);
+export default db.model<IReview>('Review', reviewSchema);
