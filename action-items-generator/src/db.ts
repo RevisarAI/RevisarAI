@@ -1,13 +1,15 @@
-import { Mongoose } from 'mongoose';
+import env from 'dotenv';
+import mongoose from 'mongoose';
 import createLogger from './utils/logger';
 import config from './config';
 
+env.config();
 const logger = createLogger('db');
 
-const initDB = async (dbUrl: string, mongoose: Mongoose) => {
-  const url = `mongodb://${dbUrl}`;
+const initDB = async (): Promise<mongoose.mongo.Db> => {
+  const url = `mongodb://${config.dbUrl}/${config.dbName}`;
 
-  logger.debug(`Connecting to DB at ${url}`);
+  logger.debug(`Connecting to ${process.env.NODE_ENV} DB at ${url}`);
 
   mongoose.connection.on('error', (err) => logger.error(err));
   const { connection } = await mongoose.connect(url, {
@@ -18,7 +20,7 @@ const initDB = async (dbUrl: string, mongoose: Mongoose) => {
     },
   });
 
-  logger.debug(`Successfully connected to ${dbUrl} DB`);
+  logger.debug(`Successfully connected to ${process.env.NODE_ENV} DB`);
 
   // Attach log listener to every client event
   // see https://www.mongodb.com/docs/drivers/node/current/fundamentals/logging/
@@ -32,14 +34,7 @@ const initDB = async (dbUrl: string, mongoose: Mongoose) => {
   dbClient.addListener('commandStarted', (event) => logger.debug(JSON.stringify(event, replacer)));
   dbClient.addListener('commandSucceeded', (event) => logger.debug(JSON.stringify(event, replacer)));
   dbClient.addListener('commandFailed', (event) => logger.error(JSON.stringify(event, replacer)));
+  return connection.db;
 };
 
-export const metadata = new Mongoose();
-export const datalake = new Mongoose();
-
-export const connectMetadata = async () => {
-  await initDB(config.metadataDBUrl, metadata);
-};
-export const connectDatalake = async () => {
-  await initDB(config.datalakeDBUrl, datalake);
-};
+export default initDB;
