@@ -1,6 +1,11 @@
+import os
 import requests
+from dotenv import load_dotenv
 
-API_KEY = "aa526610d8ae711f622754de16dde1481e7882c4c79221d3450ebdd85f7a3753"
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY")
+URL = os.getenv("URL")
 
 reviews = [{
     "value": "The system seems interesting, but it's a bit too early to tell how effective it will be. I'm waiting to see more functionalities before I can really recommend it.",
@@ -22,9 +27,7 @@ reviews = [{
         "date": "2024-02-02 01:01:01"
     }]
 
-url = "http://localhost:3000/batch"
-
-response = requests.post(url, json={"reviews": reviews, "t": 1}, headers={"x-api-key": API_KEY})
+response = requests.post(URL, json={"reviews": reviews}, headers={"x-api-key": API_KEY})
 
 # Printing the response information
 print("Response Status Code:", response.status_code)
