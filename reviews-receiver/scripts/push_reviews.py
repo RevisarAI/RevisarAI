@@ -7,8 +7,6 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 URL = os.getenv("URL")
 
-print(API_KEY)
-print(URL)
 reviews = [{
     "value": "The system seems interesting, but it's a bit too early to tell how effective it will be. I'm waiting to see more functionalities before I can really recommend it.",
     "date": "2024-02-02 01:01:01"
