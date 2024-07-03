@@ -1,5 +1,5 @@
 import { Types as mongooseTypes } from 'mongoose';
-import { date, z } from 'zod';
+import { z } from 'zod';
 import { WeekdaysEnum } from './types';
 
 export const IPaginationSchema = z.object({
