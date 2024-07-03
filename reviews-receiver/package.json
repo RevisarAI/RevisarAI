@@ -36,13 +36,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "http": "^0.0.1-security",
     "kafkajs": "^2.2.4",
     "mongoose": "^8.4.3",
     "shared-types": "file:../shared-types",
+    "revisar-server-utils": "file:../revisar-server-utils",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "winston": "^3.13.0",
     "zod": "^3.23.8"
   }
 }

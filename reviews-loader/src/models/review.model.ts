@@ -1,35 +1,6 @@
-import mongoose from 'mongoose';
-import { IReview } from 'shared-types';
+import { db } from '../db';
+import { IReview, ReviewMongooseSchema } from 'shared-types';
 
-const reviewSchema = new mongoose.Schema<IReview>({
-  value: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    required: true,
-  },
-  businessId: {
-    type: String,
-    required: true,
-  },
-  sentiment: {
-    type: String,
-    required: true,
-  },
-  rating: {
-    type: Number,
-    required: true,
-  },
-  phrases: {
-    type: [String],
-    required: true,
-  },
-  dataSource: {
-    type: String,
-    required: true,
-  },
-});
+const reviewSchema = new db.Schema<IReview>(ReviewMongooseSchema.schema);
 
-export default mongoose.model<IReview>('Review', reviewSchema);
+export default db.model<IReview>(ReviewMongooseSchema.name, reviewSchema);

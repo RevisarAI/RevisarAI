@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedReviewsImport } from './routes/_authenticated/reviews'
 import { Route as AuthenticatedHomeImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedCustomizeImport } from './routes/_authenticated/customize'
 import { Route as AuthRegisterImport } from './routes/_auth/register'
@@ -33,6 +34,11 @@ const AuthRoute = AuthImport.update({
 
 const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
   path: '/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
+const AuthenticatedReviewsRoute = AuthenticatedReviewsImport.update({
+  path: '/reviews',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
@@ -102,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/reviews': {
+      id: '/_authenticated/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof AuthenticatedReviewsImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
@@ -119,6 +132,7 @@ export const routeTree = rootRoute.addChildren({
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedCustomizeRoute,
     AuthenticatedHomeRoute,
+    AuthenticatedReviewsRoute,
     AuthenticatedIndexRoute,
   }),
 })
@@ -147,6 +161,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/_authenticated/customize",
         "/_authenticated/home",
+        "/_authenticated/reviews",
         "/_authenticated/"
       ]
     },
@@ -164,6 +179,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/home": {
       "filePath": "_authenticated/home.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/reviews": {
+      "filePath": "_authenticated/reviews.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/": {

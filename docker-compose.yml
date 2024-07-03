@@ -19,6 +19,8 @@ x-airflow-common: &airflow-common
     - ${AIRFLOW_PROJ_DIR:-.}/airflow/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/airflow/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
+  profiles:
+    - airflow
   depends_on: &airflow-common-depends-on
     redis:
       condition: service_healthy
@@ -40,6 +42,8 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+    profiles:
+      - airflow
 
   redis:
     image: redis:7.2-bookworm
@@ -52,6 +56,8 @@ services:
       retries: 50
       start_period: 30s
     restart: always
+    profiles:
+      - airflow
 
   airflow-webserver:
     <<: *airflow-common

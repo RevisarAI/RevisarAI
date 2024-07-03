@@ -1,14 +1,33 @@
-import { IReview, ISentimentBarChartGroup, IWordFrequency, IPieChartData, IBusinessAnalysis } from 'shared-types';
+import {
+  IReview,
+  ISentimentBarChartGroup,
+  IWordFrequency,
+  IPieChartData,
+  IBusinessAnalysis,
+  IGenerateReviewReply,
+  IReviewReply,
+  IGetReviewsParams,
+  IGetAllReviewsResponse,
+  IReviewReplySchema,
+} from 'shared-types';
+import OpenAI from 'openai';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
 import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
+import createLogger from 'revisar-server-utils/logger';
+import config from '../config';
+
+const logger = createLogger('review.controller');
 
 class ReviewController extends BaseController<IReview> {
+  private openai: OpenAI;
+
   constructor() {
     super(ReviewModel);
+    this.openai = new OpenAI({ apiKey: config.openaiApiKey });
   }
 
   async getAnalysis(req: AuthRequest, res: Response) {
@@ -16,17 +35,93 @@ class ReviewController extends BaseController<IReview> {
     const today = daysAgo(0);
     const sevenDaysAgo = daysAgo(7);
 
+    this.debug('Getting analysis for business', businessId);
+
     const reviews = await this.model.find({
       date: { $gte: sevenDaysAgo, $lt: today },
       businessId,
     });
+
+    this.debug(`Found ${reviews.length} reviews for business ${businessId}, generating analysis...`);
 
     const analysis: IBusinessAnalysis = {
       sentimentOverTime: this.getSentimentOverTime(reviews),
       wordsFrequencies: this.getWordsFrequencies(reviews),
       dataSourceDistribution: this.getDataSourceDistribution(reviews),
     };
+
+    this.debug(`Retuning generated analysis for business ${businessId}`);
     return res.status(httpStatus.OK).send(analysis);
+  }
+
+  async generateResponseForReview(req: AuthRequest<{}, IReviewReply, IGenerateReviewReply>, res: Response) {
+    const { reviewText, prompt, previousReplies } = req.body;
+    const formattedPreviousReplies = previousReplies
+      .slice(-4) // Take the latest 4 replies (the frontend should also send 4 replies at most)
+      .map((reply, i) => `${i + 1}. "${reply}"`)
+      .join('\n');
+    const previousRepliesMessage = `Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
+    const promptMessage = `I want the reply to focus on "${prompt}"`;
+
+    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      {
+        role: 'system',
+        content: `You are a customer success advisor and write replies to customer reviews in "${req.user!.businessName}".
+You should provide the customer with the best overall experience, so that he keeps using the company's products.
+You are given a customer's review. Read the review and write a straight reply that expresses the company's thoughts on the review.
+Appreciate positive reviews and try to understand and show will to improve in the near future for the negative ones.
+The reply should not exceed 120 words but should end up with less than 120 words and should be written in a more friendly yet polite tone.
+The customer may provide a prompt by the customer to focus on a specific aspect of the review.
+The customer may also provide a list of previous replies that did not satisfy him.`,
+      },
+    ];
+
+    if (previousReplies.length > 0) {
+      messages.push({ role: 'user', content: previousRepliesMessage });
+    }
+
+    if (prompt.length > 0) {
+      messages.push({ role: 'user', content: promptMessage });
+    }
+
+    messages.push(
+      { role: 'user', content: reviewText },
+      {
+        role: 'system',
+        content: 'Output in JSON: { "text": "reply_content" }',
+      }
+    );
+
+    const response = await this.openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages,
+    });
+
+    const { text }: IReviewReply = IReviewReplySchema.parse(JSON.parse(response.choices[0].message.content!));
+
+    return res.status(httpStatus.OK).send({
+      text,
+    });
+  }
+
+  async getPaginated(req: AuthRequest<{}, {}, {}, IGetReviewsParams>, res: Response<IGetAllReviewsResponse>) {
+    const { limit, page, before, search } = req.query;
+
+    try {
+      const reviews = (await this.model
+        .find({ businessId: req.user!.businessId, date: { $lt: before }, value: { $regex: search } })
+        .limit(limit)
+        .skip((page - 1) * limit)) as IReview[];
+
+      return res.status(httpStatus.OK).send({
+        currentPage: Number(page),
+        totalReviews: await this.model.countDocuments({ businessId: req.user!.businessId }),
+        reviews,
+      });
+    } catch (error) {
+      logger.error('Error fetching reviews', error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+    }
   }
 
   private initializeSentimentOverTimeMap(): Map<string, ISentimentBarChartGroup> {
@@ -47,6 +142,7 @@ class ReviewController extends BaseController<IReview> {
 
   private getSentimentOverTime(reviews: IReview[]): ISentimentBarChartGroup[] {
     const sentimentOverTime = this.initializeSentimentOverTimeMap();
+    this.debug(`Sentiment over time initialized for ${sentimentOverTime.size} sentiments`);
 
     reviews.forEach((review) => {
       const dateData = sentimentOverTime.get(review.date.toLocaleDateString())!;
@@ -58,6 +154,7 @@ class ReviewController extends BaseController<IReview> {
 
   private getWordsFrequencies(reviews: IReview[]): IWordFrequency[] {
     const wordFrequency = new Map<string, number>();
+    this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
     reviews.forEach((review) => {
       review.phrases.forEach((phrase) => {
@@ -76,6 +173,7 @@ class ReviewController extends BaseController<IReview> {
 
   private getDataSourceDistribution(reviews: IReview[]): IPieChartData[] {
     const dataSources = new Map<string, number>();
+    this.debug(`Calculating data source distribution for ${reviews.length} reviews`);
 
     reviews.forEach((review) => {
       const count = dataSources.get(review.dataSource) ?? 0;

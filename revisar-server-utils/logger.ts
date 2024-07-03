@@ -43,10 +43,10 @@ const logFormat = winston.format.printf(
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'debug',
   format: winston.format.combine(winston.format.timestamp({ format: 'DD/MM/YYYY HH:mm:ss.SSS' }), logFormat),
-  defaultMeta: { service: 'backend' },
+  defaultMeta: { service: 'service' },
   transports: [
     new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/backend.log' }),
+    new winston.transports.File({ filename: 'logs/service.log' }),
     new winston.transports.Console(),
   ],
 });

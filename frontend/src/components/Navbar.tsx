@@ -20,8 +20,11 @@ const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '
                                        {text: 'Reviews', icon: <MenuIcon/>, link: '/reviews'},
                                        {text: 'Customize', icon: <SettingsIcon/>, link: '/customize'}];
 
+const currPathPrefix = window.location.pathname.split('/')[1]; // Value after first `/`
+const initialIndex = navbarItems.findIndex(({ link }) => link === `/${currPathPrefix}`);
+
 const Navbar: React.FC = () => {
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = React.useState(initialIndex);
   const auth = useAuth();
   const navigate = useNavigate();
 

@@ -59,7 +59,6 @@ const App: React.FC = () => {
       ) : (
         <RouterProvider router={router} context={{ auth }} />
       )}
-      ;
     </div>
   );
 };
