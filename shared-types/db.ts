@@ -29,10 +29,12 @@ export const ReviewMongooseSchema: IMongooseSchemaConfig<IReview> = {
       type: Number,
       required: true,
     },
-    phrases: {
-      type: Array<String>,
-      required: true,
-    },
+    phrases: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
     dataSource: {
       type: String,
       required: true,
