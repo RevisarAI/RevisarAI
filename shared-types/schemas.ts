@@ -82,3 +82,9 @@ export const IBatchReviewList = z.object({
     )
     .nonempty(),
 });
+
+export const IBusinessProfile = IClientSchema.pick({
+  businessName: true,
+  businessDescription: true,
+  businessId: true,
+});
