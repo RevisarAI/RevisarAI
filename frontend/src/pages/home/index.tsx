@@ -5,6 +5,7 @@ import { reviewService } from '@/services/review-service';
 import SentimentOverTimePanel from '@/components/panels/SentimentOverTimePanel';
 import DataSourceDistributionPanel from '@/components/panels/DataSourceDistributionPanel';
 import WordCloudPanel from '@/components/panels/WordCloudPanel';
+import WeeklyActionItemsPanel from '@/components/panels/actionitems/WeeklyActionItemsPanel';
 
 const HomePage: React.FC = () => {
   const auth = useAuth();
@@ -38,7 +39,9 @@ const HomePage: React.FC = () => {
           </Grid>
         </Grid>
         <Grid item container columns={18} spacing={2}>
-          <Grid item md={11}></Grid>
+          <Grid item md={11}>
+            <WeeklyActionItemsPanel/>
+          </Grid>
           <Grid item md={7}>
             <WordCloudPanel
               height={250}
