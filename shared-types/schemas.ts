@@ -1,5 +1,5 @@
 import { Types as mongooseTypes } from 'mongoose';
-import { date, z } from 'zod';
+import { z } from 'zod';
 import { WeekdaysEnum } from './types';
 
 export const IPaginationSchema = z.object({
@@ -59,6 +59,29 @@ export const IWeeklyActionItemsSchema = z.object({
   actionItems: z.array(IActionItemSchema),
   date: z.date(),
   businessId: z.string(),
+});
+
+export const IApiKeySchema = z.object({
+  key: z.string(),
+  businessId: z.string(),
+  createdAt: z.date(),
+  expiry: z.date().optional(),
+  revoked: z.boolean(),
+});
+
+export const IApiKeyMinimalSchema = IApiKeySchema.pick({
+  createdAt: true,
+  expiry: true,
+  revoked: true,
+});
+
+export const ICreateApiKeySchema = z.object({
+  expiry: z.date().optional(),
+});
+
+export const ICreateApiKeyResponseSchema = IApiKeySchema.pick({
+  key: true,
+  expiry: true,
 });
 
 export const IGenerateReviewReplySchema = z.object({

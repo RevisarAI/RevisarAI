@@ -135,7 +135,7 @@ authRouter.get('/logout', authController.logout);
  * /auth/google:
  *   post:
  *     summary: signs in a user with google sign in
- *     tags: [auth]
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -163,10 +163,10 @@ authRouter.post('/google', authController.googleSignIn);
 
 /**
  * @swagger
- * /auth/google/:
+ * /auth/google:
  *   put:
  *     summary: provide additional details for a user first google sign in
- *     tags: [auth]
+ *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     requestBody:

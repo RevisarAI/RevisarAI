@@ -10,6 +10,10 @@ import {
   IReviewReplySchema,
   IUserDetailsSchema,
   IBusinessProfileSchema,
+  ICreateApiKeySchema,
+  ICreateApiKeyResponseSchema,
+  IApiKeySchema,
+  IApiKeyMinimalSchema,
 } from './schemas';
 import { z } from 'zod';
 
@@ -93,6 +97,12 @@ export interface IBusinessAnalysis {
   wordsFrequencies: IWordFrequency[];
   dataSourceDistribution: IPieChartData[];
 }
+
+export type IApiKey = z.infer<typeof IApiKeySchema>;
+
+export type ICreateApiKey = z.infer<typeof ICreateApiKeySchema>;
+export type ICreateApiKeyResponse = z.infer<typeof ICreateApiKeyResponseSchema>;
+export type IApiKeyMinimal = z.infer<typeof IApiKeyMinimalSchema>;
 
 export enum WeekdaysEnum {
   SUNDAY = 'Sunday',

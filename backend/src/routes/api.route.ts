@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.use(authMiddleware);
 router.use('/reviews', reviewRoute);
-router.use('/clients', clientsRoute)
+router.use('/clients', clientsRoute);
+router.use('/api-keys', clientsRoute);
 
 export default router;
