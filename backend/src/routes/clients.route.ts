@@ -17,8 +17,6 @@ import { Router } from 'express';
  *     - businessName
  *     - businessDescription
  *    properties:
- *     businessId:
- *      type: string
  *      description: The business ID
  *     businessName:
  *      type: string
