@@ -2,7 +2,7 @@ import { useAuth } from '@/utils/auth-context';
 import { Grid, Typography, TextField, Paper, Stack, Button, CircularProgress, Snackbar, SnackbarContent, useTheme } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
-import { IBusinessDetails, IUserDetails } from 'shared-types';
+import { IBusinessProfile, IUserDetails } from 'shared-types';
 import { isEmpty } from 'validator';
 import { clientsService } from '@/services/clients-service';
 import { writeTokens } from '@/utils/local-storage';
@@ -16,7 +16,7 @@ const CustomizePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
-  const customizeForm = useForm<IBusinessDetails>({
+  const customizeForm = useForm<IBusinessProfile>({
     defaultValues: {
       businessName: auth.user?.businessName || '',
       businessDescription: auth.user?.businessDescription || '',
