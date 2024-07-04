@@ -9,6 +9,7 @@ import {
   ILoginFormDataSchema,
   IReviewReplySchema,
   IUserDetailsSchema,
+  IBusinessProfileSchema,
 } from './schemas';
 import { z } from 'zod';
 
@@ -105,3 +106,4 @@ export enum WeekdaysEnum {
 
 export type IWeeklyActionItems = z.infer<typeof IWeeklyActionItemsSchema>;
 export type IActionItem = z.infer<typeof IActionItemSchema>;
+export type IBusinessProfile = z.infer<typeof IBusinessProfileSchema>;

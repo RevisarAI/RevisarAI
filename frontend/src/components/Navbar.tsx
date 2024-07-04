@@ -16,11 +16,9 @@ interface IMenuItem {
   link: string;
 }
 
-const navbarItems: Array<IMenuItem> = [
-  { text: 'Home', icon: <HomeIcon />, link: '/home' },
-  { text: 'Reviews', icon: <MenuIcon />, link: '/reviews' },
-  { text: 'Settings', icon: <SettingsIcon />, link: '/settings' },
-];
+const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '/home'},
+                                       {text: 'Reviews', icon: <MenuIcon/>, link: '/reviews'},
+                                       {text: 'Customize', icon: <SettingsIcon/>, link: '/customize'}];
 
 const currPathPrefix = window.location.pathname.split('/')[1]; // Value after first `/`
 const initialIndex = navbarItems.findIndex(({ link }) => link === `/${currPathPrefix}`);
