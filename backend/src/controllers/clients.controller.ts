@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthRequest } from 'common/auth.middleware';
-import { BusinessProfile, IClient } from "shared-types";
+import { IBusinessProfile, IClient } from "shared-types";
 import { BaseController } from "./base.controller";
 import clientModel from "../models/client.model";
 import httpStatus from 'http-status';
@@ -13,10 +13,10 @@ class ClientsController extends BaseController<IClient> {
   }
 
   async updateByBusinessId(req: AuthRequest, res: Response){
-    const b: BusinessProfile = {...req.body, ...{businessId: req.user?.businessId}};
-    this.debug(`Updating by bid - ${b.businessId}`);
+    const businessId = req.user?.businessId;
+    this.debug(`Updating by bid - ${businessId}`);
 
-    const client = await this.model.findOne({'businessId': b.businessId});
+    const client = await this.model.findOne({'businessId': businessId});
     if (!client) {
       return res.status(httpStatus.NOT_FOUND).send('Document not found');
     }
