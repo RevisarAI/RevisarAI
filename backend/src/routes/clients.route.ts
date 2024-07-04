@@ -27,9 +27,6 @@ import { Router } from 'express';
  *      type: string
  *      description: The business description
  *    example:
- *     accessToken: 'dsgsdgsgsdg'
- *     refreshToken: 'sdjanfklknnlnkmlds'
- *     businessId: '1'
  *     businessName: 'RevisarAI'
  *     businessDescription: 'Businesses AI platform'
  */
