@@ -14,11 +14,11 @@ const ConfigSchema = z.object({
 });
 
 const config = ConfigSchema.parse({
-  dbUrl: process.env.DATALAKE_DB_URL,
-  dbName: process.env.DATALAKE_DB_NAME,
+  datalakeDBUrl: process.env.DATALAKE_DB_URL,
+  datalakeDBName: process.env.DATALAKE_DB_NAME,
   port: process.env.PORT,
   topic: process.env.TOPIC,
-  brokers: process.env.KAFKA_BROKERS,
+  kafkaBrokers: process.env.KAFKA_BROKERS,
   consumerGroup: process.env.CONSUMER_GROUP,
   openaiApiKey: process.env.OPENAI_API_KEY,
 });

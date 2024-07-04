@@ -13,7 +13,7 @@ class ReviewsProducer {
   }
 
   private createKafkaProducer(): Producer {
-    const brokers = config.kafka_brokers?.split(',') || ['localhost:9094'];
+    const brokers = config.kafkaBrokers.split(',');
 
     const kafka = new Kafka({
       clientId: 'reviews-receiver',
