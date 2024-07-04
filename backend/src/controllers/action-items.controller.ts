@@ -12,7 +12,7 @@ class ActionItemsController extends BaseController<IWeeklyActionItems> {
 
   async getWeeklyActionItems(req: AuthRequest, res: Response<IWeeklyActionItems>) {
     const { businessId } = req.user!;
-    const weeklyActionItems = await WeeklyActionItemsModel.findOne({ businessId }).sort({ date: -1 }).limit(1);
+    const weeklyActionItems = await WeeklyActionItemsModel.findOne({ businessId }).sort({ date: -1 });
 
     if (!weeklyActionItems) {
       const emptyResponse: IWeeklyActionItems = {
