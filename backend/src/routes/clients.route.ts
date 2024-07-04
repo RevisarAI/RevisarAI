@@ -54,6 +54,8 @@ const router = Router();
  *         responses:
  *           200:
  *             description: The client's details are updated, access and refresh tokens are returned
+ *           404:
+ *             description: The client's details are invalid 
  */
 router.put('/businesses', clientsController.updateByBusinessId.bind(clientsController));
 
