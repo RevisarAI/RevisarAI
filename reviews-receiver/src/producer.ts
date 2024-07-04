@@ -31,7 +31,7 @@ class ReviewsProducer {
     try {
       await this.kafkaProducer.connect();
       await this.kafkaProducer.send({
-        topic: 'reviews',
+        topic: config.topic,
         messages: reviews.map((review) => ({
           value: JSON.stringify(review),
         })),
