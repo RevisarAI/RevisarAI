@@ -14,6 +14,7 @@ import {
   ICreateApiKeyResponseSchema,
   IApiKeySchema,
   IApiKeyMinimalSchema,
+  IRevokeApiKeySchema,
 } from './schemas';
 import { z } from 'zod';
 
@@ -103,6 +104,7 @@ export type IApiKey = z.infer<typeof IApiKeySchema>;
 export type ICreateApiKey = z.infer<typeof ICreateApiKeySchema>;
 export type ICreateApiKeyResponse = z.infer<typeof ICreateApiKeyResponseSchema>;
 export type IApiKeyMinimal = z.infer<typeof IApiKeyMinimalSchema>;
+export type IRevokeApiKey = z.infer<typeof IRevokeApiKeySchema>;
 
 export enum WeekdaysEnum {
   SUNDAY = 'Sunday',

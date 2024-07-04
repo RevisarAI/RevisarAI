@@ -1,5 +1,13 @@
 import { BaseController } from './base.controller';
-import { IApiKey, ICreateApiKey, ICreateApiKeyResponse, ICreateApiKeyResponseSchema } from 'shared-types';
+import {
+  IApiKey,
+  IApiKeyMinimal,
+  IApiKeyMinimalSchema,
+  ICreateApiKey,
+  ICreateApiKeyResponse,
+  ICreateApiKeyResponseSchema,
+  IRevokeApiKey,
+} from 'shared-types';
 import { Response } from 'express';
 import { randomBytes } from 'crypto';
 import { hash } from 'bcrypt';
@@ -13,17 +21,27 @@ class ApiKeyController extends BaseController<IApiKey> {
     super(ApiKey);
   }
 
+  async getAll(req: AuthRequest<object, IApiKeyMinimal[]>, res: Response<IApiKeyMinimal[]>) {
+    const { businessId } = req.user!;
+    this.debug(`Getting all API keys for business ${businessId}`);
+
+    const keys = await ApiKey.find({ businessId });
+    const sanitizedKeys = keys.map((keyData) => IApiKeyMinimalSchema.parse(keyData));
+
+    return res.status(httpStatus.OK).json(sanitizedKeys);
+  }
+
   async generateApiKey(
     req: AuthRequest<object, ICreateApiKeyResponse, ICreateApiKey>,
     res: Response<ICreateApiKeyResponse>
   ) {
     const { businessId, email } = req.user!;
-    const expiry = req.body.expiry || daysAhead(365);
+    const expiry = new Date(req.body.expiry || daysAhead(365));
 
     this.debug(`Generating API key for ${businessId} as requested by user mail "${email}"`);
 
     try {
-      const plainApiKey = randomBytes(32).toString('hex');
+      const plainApiKey = `${businessId}:${randomBytes(32).toString('hex')}`;
       const hashedApiKey = await hash(plainApiKey, 10);
 
       const newApiKey = new ApiKey({ key: hashedApiKey, businessId, expiry, revoked: false });
@@ -36,6 +54,32 @@ class ApiKeyController extends BaseController<IApiKey> {
         (err as Error).stack || 'no stacktrace'
       );
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+    }
+  }
+
+  async revokeKey(req: AuthRequest<IRevokeApiKey, IApiKey>, res: Response) {
+    const { businessId, email } = req.user!;
+    const { id } = req.params;
+
+    this.debug(`Revoking API key ${id} for ${businessId} as requested by user mail "${email}"`);
+
+    try {
+      const key = await ApiKey.findOne({ _id: id, businessId });
+      if (!key) {
+        return res.sendStatus(httpStatus.NOT_FOUND);
+      }
+
+      key.revoked = true;
+      await key.save();
+      this.debug(`Successfully revoked API key ${id} for ${businessId}`);
+      return res.status(httpStatus.NO_CONTENT).json(key);
+    } catch (err) {
+      this.debug(
+        `Error revoking API key ${id} for ${businessId} as requested by user mail "${email}"`,
+        (err as Error).message,
+        (err as Error).stack || 'no stacktrace'
+      );
+      return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
