@@ -15,7 +15,12 @@ class ActionItemsController extends BaseController<IWeeklyActionItems> {
     const weeklyActionItems = await WeeklyActionItemsModel.findOne({ businessId }).sort({ date: -1 }).limit(1);
 
     if (!weeklyActionItems) {
-      return res.status(httpStatus.NOT_FOUND).send();
+      const emptyResponse: IWeeklyActionItems = {
+        actionItems: [],
+        date: new Date(),
+        businessId,
+      };
+      return res.status(httpStatus.NO_CONTENT).send(emptyResponse);
     }
 
     return res.status(httpStatus.OK).send(weeklyActionItems);

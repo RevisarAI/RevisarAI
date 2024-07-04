@@ -83,8 +83,8 @@ const actionItemsRouter = Router();
  *                 $ref: '#/components/schemas/WeeklyActionItems'
  *         401:
  *           description: Unauthorized
- *         404:
- *           description: No weekly action items found
+ *         204:
+ *           description: No content. No weekly action items found for user's business
  *         500:
  *           description: Internal Server Error
  */
