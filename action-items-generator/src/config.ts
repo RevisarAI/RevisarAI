@@ -4,21 +4,21 @@ import env from 'dotenv';
 env.config();
 
 const ConfigSchema = z.object({
-  dbUrl: z.string(),
-  dbName: z.string(),
+  datalakeDBUrl: z.string(),
+  datalakeDBName: z.string(),
   port: z.string(),
   topic: z.string(),
-  brokers: z.string(),
+  kafkaBrokers: z.string(),
   consumerGroup: z.string(),
   openaiApiKey: z.string(),
 });
 
 const config = ConfigSchema.parse({
-  dbUrl: process.env.DB_URL,
-  dbName: process.env.DB_NAME,
+  dbUrl: process.env.DATALAKE_DB_URL,
+  dbName: process.env.DATALAKE_DB_NAME,
   port: process.env.PORT,
   topic: process.env.TOPIC,
-  brokers: process.env.BROKERS,
+  brokers: process.env.KAFKA_BROKERS,
   consumerGroup: process.env.CONSUMER_GROUP,
   openaiApiKey: process.env.OPENAI_API_KEY,
 });

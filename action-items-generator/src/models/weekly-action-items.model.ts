@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import { datalake } from '../db';
 import { IActionItem, IWeeklyActionItems } from 'shared-types';
 
-const ActionItemSchema = new mongoose.Schema<IActionItem>({
+const ActionItemSchema = new datalake.Schema<IActionItem>({
   value: {
     type: String,
     required: true,
@@ -17,7 +17,7 @@ const ActionItemSchema = new mongoose.Schema<IActionItem>({
   },
 });
 
-const WeeklyActionItemsSchema = new mongoose.Schema<IWeeklyActionItems>({
+const WeeklyActionItemsSchema = new datalake.Schema<IWeeklyActionItems>({
   actionItems: {
     type: [ActionItemSchema],
     required: true,
@@ -32,4 +32,4 @@ const WeeklyActionItemsSchema = new mongoose.Schema<IWeeklyActionItems>({
   },
 });
 
-export default mongoose.model<IWeeklyActionItems>('WeeklyActionItems', WeeklyActionItemsSchema);
+export default datalake.model<IWeeklyActionItems>('WeeklyActionItems', WeeklyActionItemsSchema);
