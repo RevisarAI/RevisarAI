@@ -14,9 +14,6 @@ import { Router } from 'express';
  *   BusinessInfo:
  *    type: object
  *    required:
- *     - accessToken
- *     - refreshToken
- *     - businessId
  *     - businessName
  *     - businessDescription
  *    properties:
