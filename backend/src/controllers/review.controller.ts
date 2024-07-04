@@ -17,10 +17,7 @@ import { AuthRequest } from 'common/auth.middleware';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
-import createLogger from 'revisar-server-utils/logger';
 import config from '../config';
-
-const logger = createLogger('review.controller');
 
 class ReviewController extends BaseController<IReview> {
   private openai: OpenAI;
@@ -119,7 +116,8 @@ The customer may also provide a list of previous replies that did not satisfy hi
         reviews,
       });
     } catch (error) {
-      logger.error('Error fetching reviews', error);
+      const { message, stack } = error as Error;
+      this.debug(`Error fetching reviews ${message}, ${stack}`);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
     }
   }

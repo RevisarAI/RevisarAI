@@ -1,5 +1,5 @@
 import { SchemaDefinition } from 'mongoose';
-import { IApiKey, IReview } from './types';
+import { IApiKey, IActionItem, IReview, IWeeklyActionItems } from './types';
 
 export interface IMongooseSchemaConfig<T> {
   name: string;
@@ -72,6 +72,47 @@ export const ApiKeyMongooseSchema: IMongooseSchemaConfig<IApiKey> = {
       type: Boolean,
       required: true,
       default: false,
+    },
+  },
+};
+
+const ActionItemMongooseSchema: IMongooseSchemaConfig<IActionItem> = {
+  name: 'ActionItem',
+  schema: {
+    value: {
+      type: String,
+      required: true,
+    },
+    isCompleted: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    reason: {
+      type: String,
+      required: false,
+    },
+  },
+};
+
+export const WeeklyActionItemsMongooseSchema: IMongooseSchemaConfig<IWeeklyActionItems> = {
+  name: 'WeeklyActionItems',
+  schema: {
+    actionItems: [
+      {
+        type: ActionItemMongooseSchema.schema,
+        required: true,
+      },
+    ],
+    date: {
+      type: Date,
+      required: true,
+      index: true,
+    },
+    businessId: {
+      type: String,
+      required: true,
+      index: true,
     },
   },
 };
