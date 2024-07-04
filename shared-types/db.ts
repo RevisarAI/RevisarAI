@@ -79,10 +79,12 @@ export const WeeklyActionItemsMongooseSchema: IMongooseSchemaConfig<IWeeklyActio
     date: {
       type: Date,
       required: true,
+      index: true,
     },
     businessId: {
       type: String,
       required: true,
+      index: true,
     },
   },
 };
