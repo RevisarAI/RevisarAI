@@ -1,8 +1,8 @@
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { IActionItem } from 'shared-types';
 
-export interface Column {
-  id: keyof Pick<IActionItem, 'value' | 'reason' | 'isCompleted'>;
+export interface ActionItemsColumn {
+  id: keyof Pick<IActionItem, 'value' | 'isCompleted'>;
   label: string;
   minWidth: number;
   align?: 'right' | 'center' | 'left';
@@ -11,10 +11,10 @@ export interface Column {
 
 interface ActionItemsTableProps {
   rows: IActionItem[];
-  columns: readonly Column[];
+  columns: readonly ActionItemsColumn[];
 }
 
-const ReviewsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) => {
+const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) => {
   return (
     <Paper sx={{ maxHeight: 'inherit', height: '100%', width: '100%', overflow: 'hidden' }}>
       <Stack height="100%" direction="column" justifyContent="space-between">
@@ -48,3 +48,5 @@ const ReviewsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) => {
     </Paper>
   );
 };
+
+export default ActionItemsTable;
