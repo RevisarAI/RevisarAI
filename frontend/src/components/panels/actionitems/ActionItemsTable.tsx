@@ -6,7 +6,7 @@ export interface ActionItemsColumn {
   label: string;
   minWidth: number;
   align?: 'right' | 'center' | 'left';
-  render: (value: any, review: IActionItem) => JSX.Element;
+  render: (value: any, item: IActionItem) => JSX.Element;
 }
 
 interface ActionItemsTableProps {
@@ -16,7 +16,7 @@ interface ActionItemsTableProps {
 
 const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) => {
   return (
-    <Paper sx={{ maxHeight: 'inherit', height: '100%', width: '100%', overflow: 'hidden' }}>
+    <Paper sx={{ maxHeight: 'inherit', height: '95%', width: '100%', overflow: 'hidden' }} elevation={0}>
       <Stack height="100%" direction="column" justifyContent="space-between">
         <TableContainer style={{ height: '90%' }}>
           <Table stickyHeader aria-label="sticky table">
@@ -35,7 +35,7 @@ const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) =>
                       {columns.map((column) => {
                         return (
                           <TableCell key={`${row._id!}-${column.id}`} align={column.align}>
-                            {column.render(column.id, row)}
+                            {column.render(row[column.id], row)}
                           </TableCell>
                         );
                       })}
