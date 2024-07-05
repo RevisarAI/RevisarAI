@@ -57,20 +57,27 @@ class ReviewController extends BaseController<IReview> {
       .slice(-4) // Take the latest 4 replies (the frontend should also send 4 replies at most)
       .map((reply, i) => `${i + 1}. "${reply}"`)
       .join('\n');
-    const previousRepliesMessage = `Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
-    const promptMessage = `I want the reply to focus on "${prompt}"`;
+    const previousRepliesMessage = `Example Replies: Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
+    const promptMessage = `Further Instructions: I want the reply to focus on "${prompt}"`;
 
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       {
         role: 'system',
-        content: `You are a customer success advisor and write replies to customer reviews in "${req.user!.businessName}".
-You should provide the customer with the best overall experience, so that he keeps using the company's products.
-You are given a customer's review. Read the review and write a straight reply that expresses the company's thoughts on the review.
+        content: `Background: You are a customer success advisor that write replies to customer reviews in "${req.user!.businessName}".
+Your reply should provide the customer with the best overall experience, so that he keeps using the company's products.
+The manager provides you with the following data:
+Inputs:
+1. A customer's review
+2. An optional list of example replies that did not satisfy the manager
+3. An optional message with further instructions from the manager to consider
+General Instructions: 
 Appreciate positive reviews and try to understand and show will to improve in the near future for the negative ones.
-The reply should not exceed 120 words but should end up with less than 120 words and should be written in a more friendly yet polite tone.
-The customer may provide a prompt by the customer to focus on a specific aspect of the review.
-The customer may also provide a list of previous replies that did not satisfy him.`,
+The reply should contain contain 55 words at average and 110 at maximum and should be written in a friendly yet polite tone.
+Goal:
+Read the review and write a straight reply that expresses the company's thoughts on the review.
+Consider the prompt and previous replies if provided by the manager to make your reply more precise.`,
       },
+      { role: 'user', content: reviewText }, // User review
     ];
 
     if (previousReplies.length > 0) {
@@ -81,13 +88,10 @@ The customer may also provide a list of previous replies that did not satisfy hi
       messages.push({ role: 'user', content: promptMessage });
     }
 
-    messages.push(
-      { role: 'user', content: reviewText },
-      {
-        role: 'system',
-        content: 'Output in JSON: { "text": "reply_content" }',
-      }
-    );
+    messages.push({
+      role: 'system',
+      content: 'Output in JSON: { "text": "reply_content" }',
+    });
 
     const response = await this.openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
