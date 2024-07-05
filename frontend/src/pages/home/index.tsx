@@ -6,12 +6,17 @@ import SentimentOverTimePanel from '@/components/panels/SentimentOverTimePanel';
 import DataSourceDistributionPanel from '@/components/panels/DataSourceDistributionPanel';
 import WordCloudPanel from '@/components/panels/WordCloudPanel';
 import WeeklyActionItemsPanel from '@/components/panels/actionitems/WeeklyActionItemsPanel';
+import { actionItemsService } from '@/services/action-items-service';
 
 const HomePage: React.FC = () => {
   const auth = useAuth();
   const { data, status } = useQuery({
     queryKey: ['businessAnalysis'],
     queryFn: ({ signal }) => reviewService.getBusinessAnalysis({ signal }),
+  });
+  const actionItemsQuery = useQuery({
+    queryKey: ['weeklyActionItems'],
+    queryFn: () => actionItemsService.getWeeklyActionItems(),
   });
 
   return (
@@ -40,7 +45,9 @@ const HomePage: React.FC = () => {
         </Grid>
         <Grid item container columns={18} spacing={2}>
           <Grid item md={11}>
-            <WeeklyActionItemsPanel/>
+            <WeeklyActionItemsPanel
+            data={actionItemsQuery.status == 'success' ? actionItemsQuery.data : []}
+            />
           </Grid>
           <Grid item md={7}>
             <WordCloudPanel
