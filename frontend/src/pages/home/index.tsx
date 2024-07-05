@@ -46,6 +46,7 @@ const HomePage: React.FC = () => {
         <Grid item container columns={18} spacing={2}>
           <Grid item md={11}>
             <WeeklyActionItemsPanel
+            height={295}
             data={actionItemsQuery.status == 'success' ? actionItemsQuery.data : []}
             />
           </Grid>
