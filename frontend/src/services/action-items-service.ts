@@ -10,7 +10,8 @@ export class ActionItemsService {
   }
 
   async getWeeklyActionItems(): Promise<IActionItem[]>{
-    return (await this.apiClient.get('')).data;
+    console.log((await this.apiClient.get('')).data.actionItems);
+    return (await this.apiClient.get('')).data.actionItems;
   }
 }
 
