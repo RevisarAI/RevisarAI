@@ -14,7 +14,7 @@ const columns: readonly ActionItemsColumn[] = [
     id: 'value',
     label: 'Title',
     align: 'left',
-    minWidth: 71,
+    minWidth: 50,
     render: (value: IActionItem['value'], item: IActionItem) => <span className={item.isCompleted ? 'actionItemCompleted' : ''}>{value}</span>,
   },
   {
