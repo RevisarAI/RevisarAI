@@ -4,7 +4,6 @@ import { IActionItem } from 'shared-types';
 import ActionItemCheckbox from './ActionItemCheckbox';
 import './WeeklyActionItemsPanel.css';
 import { actionItemsService } from '@/services/action-items-service';
-import { ObjectId } from 'mongoose';
 
 interface ActionItemsPanelProps {
   data: IActionItem[];
