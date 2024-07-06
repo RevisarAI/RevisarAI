@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { createApiClient } from './api-client';
-import { IActionItem } from 'shared-types';
+import { IActionItem, IWeeklyActionItems } from 'shared-types';
 
 export class ActionItemsService {
   private apiClient: AxiosInstance;
@@ -9,9 +9,12 @@ export class ActionItemsService {
     this.apiClient = createApiClient('/action-items');
   }
 
-  async getWeeklyActionItems(): Promise<IActionItem[]>{
-    console.log((await this.apiClient.get('')).data.actionItems);
-    return (await this.apiClient.get('')).data.actionItems;
+  async getWeeklyActionItems(): Promise<IWeeklyActionItems>{
+   return (await this.apiClient.get('')).data;
+  }
+
+  async updateActionItemStatus(item: IActionItem, itemsId: string): Promise<void> {
+    await this.apiClient.put(`/${itemsId}`, item);
   }
 }
 
