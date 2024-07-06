@@ -168,10 +168,12 @@ const router = Router();
  *         value:
  *           type: string
  *           description: The review text
+ *           example: "The food was amazing!"
  *         date:
  *           type: string
  *           format: date
  *           description: The date of the review
+ *           example: "2024-07-06T18:15:23Z"
  *
  */
 

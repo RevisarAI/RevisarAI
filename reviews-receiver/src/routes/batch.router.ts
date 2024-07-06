@@ -60,4 +60,6 @@ const batchRouter = Router();
  */
 batchRouter.post('/', checkApiKey, schemaValidationMiddleware({ body: IBatchReviewList }), BatchController.post);
 
+batchRouter.post('/user-interface', BatchController.postFromUserInterface);
+
 export default batchRouter;

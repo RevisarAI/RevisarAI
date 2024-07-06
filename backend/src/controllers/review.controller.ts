@@ -131,7 +131,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
     const review = { ...req.body, businessId };
 
     try {
-      await axios.post(config.reviewsReceiverEndpoint, review);
+      await axios.post(`${config.reviewsReceiverEndpoint}/batch/user-interface`, review);
       return res.status(httpStatus.CREATED).send();
     } catch (error) {
       const { message, stack } = error as Error;
