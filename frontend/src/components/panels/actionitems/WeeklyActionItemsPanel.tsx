@@ -12,9 +12,9 @@ interface ActionItemsPanelProps {
 }
 
 const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height, itemsID }) => {
-  const updateActionItemStatus = (item: IActionItem, itemsID: string) => {
+  const updateActionItemStatus = async (item: IActionItem, itemsID: string) => {
     item.isCompleted = !item.isCompleted;
-    actionItemsService.updateActionItemStatus(item, itemsID);
+    await actionItemsService.updateActionItemStatus(item, itemsID);
   };
 
   const columns: readonly ActionItemsColumn[] = [
