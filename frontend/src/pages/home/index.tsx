@@ -47,7 +47,8 @@ const HomePage: React.FC = () => {
           <Grid item md={11}>
             <WeeklyActionItemsPanel
             height={295}
-            data={actionItemsQuery.status == 'success' ? actionItemsQuery.data : []}
+            data={actionItemsQuery.status == 'success' ? actionItemsQuery.data.actionItems : []}
+            itemsID={actionItemsQuery.status == 'success' ? actionItemsQuery.data._id.toString(): ''}
             />
           </Grid>
           <Grid item md={7}>
