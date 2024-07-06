@@ -159,6 +159,20 @@ const router = Router();
  *             $ref: '#/components/schemas/IReview'
  *           description: The reviews
  *
+ *     IBatchReview:
+ *       type: object
+ *       required:
+ *         - value
+ *         - date
+ *       properties:
+ *         value:
+ *           type: string
+ *           description: The review text
+ *         date:
+ *           type: string
+ *           format: date
+ *           description: The date of the review
+ *
  */
 
 /**
@@ -279,5 +293,38 @@ router.post('/reply', reviewController.generateResponseForReview.bind(reviewCont
  *
  */
 router.get('/', reviewController.getPaginated.bind(reviewController));
+
+/**
+ * @swagger
+ * paths:
+ *   /api/reviews:
+ *     post:
+ *       summary: Upload reviews.
+ *       tags: [Review]
+ *       security:
+ *         - bearerAuth: []
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - reviews
+ *               properties:
+ *                 reviews:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/IBatchReview'  
+ *       responses:
+ *         200:
+ *           description: The reviews were uploaded successfully.
+ *         401:
+ *           description: Unauthorized.
+ *         500:
+ *           description: Internal Server Error.
+ 
+ */
+router.post('/', reviewController.uploadViaReviewsReceiver.bind(reviewController));
 
 export default router;

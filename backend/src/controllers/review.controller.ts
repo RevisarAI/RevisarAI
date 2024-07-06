@@ -18,6 +18,10 @@ import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
 import config from '../config';
+import axios from 'axios';
+import createLogger from 'revisar-server-utils/logger';
+
+const logger = createLogger('reviews controller');
 
 class ReviewController extends BaseController<IReview> {
   private openai: OpenAI;
@@ -118,6 +122,20 @@ The customer may also provide a list of previous replies that did not satisfy hi
     } catch (error) {
       const { message, stack } = error as Error;
       this.debug(`Error fetching reviews ${message}, ${stack}`);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+    }
+  }
+
+  async uploadViaReviewsReceiver(req: AuthRequest<{}, IReview>, res: Response) {
+    const { businessId } = req.user!;
+    const review = { ...req.body, businessId };
+
+    try {
+      await axios.post(config.reviewsReceiverEndpoint, review);
+      return res.status(httpStatus.CREATED).send();
+    } catch (error) {
+      const { message, stack } = error as Error;
+      logger.error(`Error uploading review to reviews receiver ${message}, ${stack}`);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
     }
   }
