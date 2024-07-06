@@ -3,6 +3,7 @@ import BatchController from '../controllers/batch.controller';
 import checkApiKey from '../common/api-key.middleware';
 import { IBatchReviewList } from 'shared-types';
 import { schemaValidationMiddleware } from 'revisar-server-utils/middlewares';
+import { authMiddleware } from 'revisar-server-utils';
 
 const batchRouter = Router();
 
@@ -60,6 +61,6 @@ const batchRouter = Router();
  */
 batchRouter.post('/', checkApiKey, schemaValidationMiddleware({ body: IBatchReviewList }), BatchController.post);
 
-batchRouter.post('/user-interface', BatchController.postFromUserInterface);
+batchRouter.post('/user-interface', authMiddleware, BatchController.postFromUserInterface);
 
 export default batchRouter;

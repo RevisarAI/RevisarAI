@@ -13,7 +13,7 @@ import {
 import OpenAI from 'openai';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
-import { AuthRequest } from 'common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
@@ -129,7 +129,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
   async uploadViaReviewsReceiver(req: AuthRequest<{}, IReview>, res: Response) {
     try {
       await axios.post(`${config.reviewsReceiverEndpoint}/batch/user-interface`, req.body, {
-        headers: req.headers,
+        headers: { Authorization: req.headers['authorization'] },
       });
       return res.status(httpStatus.CREATED).send();
     } catch (error) {

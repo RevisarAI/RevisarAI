@@ -8,7 +8,7 @@ import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import config from '../config';
 import createLogger from 'revisar-server-utils/logger';
-import { AuthRequest } from 'common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import { isEmpty } from 'lodash';
 
 const logger = createLogger('auth.controller');

@@ -24,11 +24,10 @@ class BatchController {
 
   postFromUserInterface = async (req: Request, res: Response) => {
     let { reviews } = req.body;
-    const { businessId } = req.body;
 
     reviews = reviews.map((review: IBatchReview) => ({
       ...review,
-      businessId,
+      businessId: req.user?.businessId,
       dataSource: DataSourceEnum.USER_INTERFACE,
     }));
     try {

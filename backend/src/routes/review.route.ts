@@ -301,7 +301,7 @@ router.get('/', reviewController.getPaginated.bind(reviewController));
  * paths:
  *   /api/reviews:
  *     post:
- *       summary: Upload reviews.
+ *       summary: Upload reviews
  *       tags: [Review]
  *       security:
  *         - bearerAuth: []

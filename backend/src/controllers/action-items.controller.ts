@@ -2,7 +2,7 @@ import WeeklyActionItemsModel from '../models/weekly-action-items';
 import { BaseController } from './base.controller';
 import { IWeeklyActionItems } from 'shared-types';
 import { Response } from 'express';
-import { AuthRequest } from '../common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import httpStatus from 'http-status';
 
 class ActionItemsController extends BaseController<IWeeklyActionItems> {
