@@ -127,11 +127,10 @@ The customer may also provide a list of previous replies that did not satisfy hi
   }
 
   async uploadViaReviewsReceiver(req: AuthRequest<{}, IReview>, res: Response) {
-    const { businessId } = req.user!;
-    const review = { ...req.body, businessId };
-
     try {
-      await axios.post(`${config.reviewsReceiverEndpoint}/batch/user-interface`, review);
+      await axios.post(`${config.reviewsReceiverEndpoint}/batch/user-interface`, req.body, {
+        headers: req.headers,
+      });
       return res.status(httpStatus.CREATED).send();
     } catch (error) {
       const { message, stack } = error as Error;
