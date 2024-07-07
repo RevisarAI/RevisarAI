@@ -58,24 +58,25 @@ class ReviewController extends BaseController<IReview> {
       .map((reply, i) => `${i + 1}. "${reply}"`)
       .join('\n');
     const previousRepliesMessage = `Example Replies: Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
-    const promptMessage = `Further Instructions: I want the reply to focus on "${prompt}"`;
+    const promptMessage = `Based on the example replies, here are some further instructions: ${prompt}`;
 
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       {
         role: 'system',
         content: `Background: You are a customer success advisor that write replies to customer reviews in "${req.user!.businessName}".
+The manager of the company has asked you to write a reply to a customer review.
 Your reply should provide the customer with the best overall experience, so that he keeps using the company's products.
 The manager provides you with the following data:
 Inputs:
 1. A customer's review
 2. An optional list of example replies that did not satisfy the manager
-3. An optional message with further instructions from the manager to consider. The prompt will most likely reference the previous replies mentioned in the second input.
+3. Optional further instructions from the manager to consider for writing a better reply.
 General Instructions: 
 Appreciate positive reviews and try to understand and show will to improve in the near future for the negative ones.
 The reply should contain 20-70 words at average and 110 at maximum and should be written in a friendly yet polite tone.
 Goal:
 Read the review and write a straight reply that expresses the company's thoughts on the review.
-Consider the prompt and previous replies if provided by the manager to make your reply more precise.`,
+Consider the further instructions and example replies if provided by the manager to make your reply more precise.`,
       },
       { role: 'user', content: reviewText }, // User review
     ];
