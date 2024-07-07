@@ -57,7 +57,7 @@ export const IActionItemSchema = z.object({
 });
 
 export const IWeeklyActionItemsSchema = z.object({
-  _id: z.instanceof(mongooseTypes.ObjectId),
+  _id: z.instanceof(mongooseTypes.ObjectId).optional(),
   actionItems: z.array(IActionItemSchema),
   date: z.date(),
   businessId: z.string(),
