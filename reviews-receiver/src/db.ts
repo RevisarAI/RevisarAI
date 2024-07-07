@@ -4,4 +4,4 @@ import initDB from 'revisar-server-utils/db';
 
 export const metadata = new Mongoose();
 
-export const connectMetadata = async () => initDB(config.metadataDBUrl, config.metadataDBUrl, metadata);
+export const connectMetadata = async () => initDB(config.metadataDBUrl, config.metadataDBName, metadata);
