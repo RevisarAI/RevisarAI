@@ -1,6 +1,6 @@
 import WeeklyActionItemsModel from '../models/weekly-action-items';
 import { BaseController } from './base.controller';
-import { IWeeklyActionItems } from 'shared-types';
+import { IActionItem, IWeeklyActionItems } from 'shared-types';
 import { Response } from 'express';
 import { AuthRequest } from '../common/auth.middleware';
 import httpStatus from 'http-status';
@@ -24,6 +24,20 @@ class ActionItemsController extends BaseController<IWeeklyActionItems> {
     }
 
     return res.status(httpStatus.OK).send(weeklyActionItems);
+  }
+
+  async updateActionItem(req: AuthRequest, res: Response<void>) {
+    const { id } = req.query;
+    const actionItem: IActionItem = req.body;
+
+    const result = await WeeklyActionItemsModel.updateOne(
+      { _id: id, 'actionItems._id': actionItem._id },
+      { $set: { 'actionItems.$.isCompleted': actionItem.isCompleted } }
+    );
+    if (result.modifiedCount === 0) {
+      return res.status(httpStatus.NOT_FOUND).send();
+    }
+    return res.status(httpStatus.OK).send();
   }
 }
 
