@@ -1,5 +1,7 @@
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { useState } from 'react';
 import { IActionItem } from 'shared-types';
+import ActionItemReason from './ActionItemReason';
 
 export interface ActionItemsColumn {
   id: keyof Pick<IActionItem, 'value' | 'isCompleted'>;
@@ -15,7 +17,20 @@ interface ActionItemsTableProps {
 }
 
 const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) => {
+  const [showReasonDialog, setShowReasonDialog] = useState<boolean>(false);
+  const [selectedItem, setSelectedItem] = useState<IActionItem>();
+  
+  const openReasonDialog = (item: IActionItem) => {
+    setSelectedItem(item);
+    setShowReasonDialog(true);
+  };
+
+  const closeReasonDialog = () => {
+    setShowReasonDialog(false);
+  }
+  
   return (
+    <>
     <Paper sx={{ maxHeight: 'inherit', height: '95%', width: '100%', overflow: 'hidden' }} elevation={0}>
       <Stack height="100%" direction="column" justifyContent="space-between">
         <TableContainer style={{ height: '90%' }}>
@@ -34,7 +49,7 @@ const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) =>
                     <TableRow hover key={row._id?.toString()}>
                       {columns.map((column) => {
                         return (
-                          <TableCell key={`${row._id!}-${column.id}`} align={column.align}>
+                          <TableCell key={`${row._id!}-${column.id}`} align={column.align} onClick={() => column.id !== 'isCompleted' ? openReasonDialog(row) : undefined}>
                             {column.render(row[column.id], row)}
                           </TableCell>
                         );
@@ -46,6 +61,8 @@ const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) =>
         </TableContainer>
       </Stack>
     </Paper>
+    <ActionItemReason open={showReasonDialog} onClose={closeReasonDialog} item={selectedItem}/>
+    </>
   );
 };
 
