@@ -9,7 +9,7 @@
     ".": "./index.ts",
     "./logger": "./logger.ts",
     "./db": "./db.ts",
-    "./server.ts": "./server.ts",
+    "./server": "./server.ts",
     "./middlewares": "./middlewares.ts"
   },
   "dependencies": {
