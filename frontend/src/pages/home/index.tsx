@@ -7,6 +7,7 @@ import DataSourceDistributionPanel from '@/components/panels/DataSourceDistribut
 import WordCloudPanel from '@/components/panels/WordCloudPanel';
 import WeeklyActionItemsPanel from '@/components/panels/actionitems/WeeklyActionItemsPanel';
 import { actionItemsService } from '@/services/action-items-service';
+import { IActionItem } from 'shared-types';
 
 const HomePage: React.FC = () => {
   const auth = useAuth();
@@ -17,7 +18,14 @@ const HomePage: React.FC = () => {
   const actionItemsQuery = useQuery({
     queryKey: ['weeklyActionItems'],
     queryFn: () => actionItemsService.getWeeklyActionItems(),
+    notifyOnChangeProps: 'all',
   });
+
+  const updateActionItemStatus = async (item: IActionItem, itemsID: string) => {
+    item.isCompleted = !item.isCompleted;
+    await actionItemsService.updateActionItemStatus(item, itemsID);
+    actionItemsQuery.refetch();
+  };
 
   return (
     <>
@@ -46,9 +54,14 @@ const HomePage: React.FC = () => {
         <Grid item container columns={18} spacing={2}>
           <Grid item md={11}>
             <WeeklyActionItemsPanel
-            height={295}
-            data={actionItemsQuery.status == 'success' ? actionItemsQuery.data.actionItems : []}
-            itemsID={actionItemsQuery.status == 'success' ? actionItemsQuery.data._id.toString(): ''}
+              height={295}
+              data={actionItemsQuery.status == 'success' ? actionItemsQuery.data.actionItems : []}
+              itemsID={
+                actionItemsQuery.status == 'success' && actionItemsQuery.data._id
+                  ? actionItemsQuery.data._id.toString()
+                  : ''
+              }
+              updateActionItemStatus={updateActionItemStatus}
             />
           </Grid>
           <Grid item md={7}>

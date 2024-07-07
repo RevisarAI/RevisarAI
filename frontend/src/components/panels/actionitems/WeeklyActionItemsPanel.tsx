@@ -3,20 +3,15 @@ import ActionItemsTable, { ActionItemsColumn } from './ActionItemsTable';
 import { IActionItem } from 'shared-types';
 import ActionItemCheckbox from './ActionItemCheckbox';
 import './WeeklyActionItemsPanel.css';
-import { actionItemsService } from '@/services/action-items-service';
 
 interface ActionItemsPanelProps {
   data: IActionItem[];
   height: number;
   itemsID: string;
+  updateActionItemStatus: (item: IActionItem, itemsID: string) => void;
 }
 
-const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height, itemsID }) => {
-  const updateActionItemStatus = async (item: IActionItem, itemsID: string) => {
-    item.isCompleted = !item.isCompleted;
-    await actionItemsService.updateActionItemStatus(item, itemsID);
-  };
-
+const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height, itemsID, updateActionItemStatus }) => {
   const columns: readonly ActionItemsColumn[] = [
     {
       id: 'value',
