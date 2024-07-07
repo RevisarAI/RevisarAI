@@ -1,7 +1,6 @@
 import { Express } from 'express';
 import initApp from './app';
 import { createServer } from 'revisar-server-utils/server';
+import config from './config';
 
-const { PORT } = process.env as Record<string, string>;
-
-initApp().then((app: Express) => createServer(app, PORT, 'Reviews Loader'));
+initApp().then((app: Express) => createServer(app, config.port, 'Reviews Loader'));

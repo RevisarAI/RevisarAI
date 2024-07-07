@@ -4,6 +4,7 @@ import createLogger from 'revisar-server-utils/logger';
 import reviewModel from './models/review.model';
 
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
+import config from './config';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
@@ -13,12 +14,12 @@ export class ReviewsConsumer {
   public constructor() {
     this.kafkaConsumer = this.createKafkaConsumer();
     this.logger = createLogger('consumer');
-    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.openai = new OpenAI({ apiKey: config.openaiApiKey });
   }
 
   public async startConsumer(): Promise<void> {
     await this.kafkaConsumer.connect();
-    await this.kafkaConsumer.subscribe({ topic: 'reviews', fromBeginning: false });
+    await this.kafkaConsumer.subscribe({ topic: config.topic, fromBeginning: false });
 
     await this.kafkaConsumer.run({
       autoCommit: false,
@@ -78,7 +79,7 @@ General Instructions:
   }
 
   private createKafkaConsumer(): Consumer {
-    const brokers = process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094'];
+    const brokers = config.kafkaBrokers.split(',');
 
     const kafka = new Kafka({
       clientId: 'reviews-loader',
@@ -88,7 +89,7 @@ General Instructions:
           ? { initialRetryTime: 100, retries: 8 }
           : { initialRetryTime: 300, retries: 2 },
     });
-    const consumer = kafka.consumer({ groupId: 'review-analysis-group' });
+    const consumer = kafka.consumer({ groupId: config.consumerGroup });
     return consumer;
   }
 }
