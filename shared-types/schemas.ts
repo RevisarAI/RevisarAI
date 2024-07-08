@@ -109,7 +109,6 @@ export const IReviewReplySchema = z.object({
 });
 
 export const IBatchReviewList = z.object({
-  businessId: z.string(),
   reviews: z
     .array(
       z.object({
