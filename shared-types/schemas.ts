@@ -63,6 +63,7 @@ export const IWeeklyActionItemsSchema = z.object({
 
 export const IApiKeySchema = z.object({
   _id: z.instanceof(mongooseTypes.ObjectId).or(z.string()),
+  name: z.string(),
   key: z.string(),
   businessId: z.string(),
   createdAt: z.date(),
