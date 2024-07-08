@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.use(authMiddleware);
 router.use('/reviews', reviewRoute);
+router.use('/api-keys', clientsRoute);
 router.use('/action-items', actionItemsRouter);
 router.use('/clients', clientsRoute);
 
