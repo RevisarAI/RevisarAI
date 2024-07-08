@@ -5,6 +5,8 @@ import reviewModel from './models/review.model';
 
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
 import config from './config';
+import { systemPrompts } from './openai.utils';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
@@ -29,38 +31,21 @@ export class ReviewsConsumer {
         this.logger.info(`- ${prefix} ${message.key}#${message.value}`);
 
         const review: IRawReview = JSON.parse(message.value!.toString());
-        const systemPrompt = `Context:
-You are a professional customer reviews analyst.
-You are hired by a company to analyze their customer reviews and provide a detailed analysis of each review.
-Input:
-A text which contains a customer review of a product or service provided by the company.
-Goals:
-1. Determine the review's sentiment (must be one of: positive, negative, or neutral).
-2. Provide an overall rating on the scale of 1-10.
-3. Extract concise and relevant phrases that succinctly explain the sentiment exactly as they appear in the review.
-4. Rate the review's importance on a scale of 0-100 based on the importance and potential for generating actionable items based on it.
-General Considerations:
-1. Consider the overall tone, language used, and any specific praises or criticisms mentioned in the review.
-2. Be as specific as possible
-3. The sentiment must be one of the following: positive, negative, or neutral. If the sentiment is mixed, choose the one that is most prevalent out of the three.
-Instructions for phrases extraction:
-1. Each phrase is a single sentence or clause that is directly taken from the review letter by letter. It must be verbatim from the review text and contain an exact piece of the review without skipping a letter. 
-2. A phrase cannot combine multiple "pieces" of the review into one phrase. multiple "pieces" shall be considered separate phrases.
-3. In the phrases, use as few words as possible, with up to 8 words, just a couple of keywords if possible.
-4. If an extracted phrase ends with a comma or period, you can remove the end punctuation.`;
+        const formattedSystemPrompts: ChatCompletionMessageParam[] = systemPrompts.map((prompt) => ({
+          role: 'system',
+          content: `#${prompt.title.toUpperCase()}:\n${prompt.content}`,
+        }));
         this.logger.info(`Sending review to Openai... Review: ${review.value}`);
+
         const response = await this.openai.chat.completions.create({
           model: 'gpt-3.5-turbo',
           messages: [
-            {
-              role: 'system',
-              content: systemPrompt,
-            },
+            ...formattedSystemPrompts,
             { role: 'user', content: message.value!.toString() },
             {
               role: 'system',
               content:
-                'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "importance": importance_rating, "phrases": [...] }',
+                'Output in JSON, keep strings in lowercase: { "sentiment": "sentiment_value", "rating": rating_value, "importance": importance_rating, "phrases": [quotes] }',
             },
           ],
         });
@@ -73,6 +58,12 @@ Instructions for phrases extraction:
           `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`
         );
         const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
+
+        if (reviewAnalysis.phrases.some((phrase) => !review.value.toLocaleLowerCase().includes(phrase))) {
+          this.logger.error('######################################');
+          this.logger.error(`PHRASES NOT FOUND IN THE REVIEW: ${reviewAnalysis.phrases}`);
+          this.logger.error('######################################');
+        }
         await reviewModel.create(reviewWithAnalysis);
 
         this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
