@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
+import { generateMongooseModel } from 'revisar-server-utils/db';
 import { IReview, ReviewMongooseSchema } from 'shared-types';
 
-const reviewSchema = new mongoose.Schema<IReview>(ReviewMongooseSchema.schema);
-
-export default mongoose.model<IReview>(ReviewMongooseSchema.name, reviewSchema);
+export default generateMongooseModel<IReview>(mongoose, ReviewMongooseSchema);

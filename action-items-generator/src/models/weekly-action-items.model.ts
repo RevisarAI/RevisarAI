@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
+import { generateMongooseModel } from 'revisar-server-utils/db';
 import { IWeeklyActionItems, WeeklyActionItemsMongooseSchema } from 'shared-types';
 
-const WeeklyActionItemsSchema = new mongoose.Schema<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.schema);
-
-export default mongoose.model<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.name, WeeklyActionItemsSchema);
+export default generateMongooseModel<IWeeklyActionItems>(mongoose, WeeklyActionItemsMongooseSchema);

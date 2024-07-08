@@ -1,8 +1,5 @@
 import { ApiKeyMongooseSchema, IApiKey } from 'shared-types';
 import { metadataDb } from '../db';
+import { generateMongooseModel } from 'revisar-server-utils/db';
 
-const apiKeySchema = new metadataDb.Schema<IApiKey>(ApiKeyMongooseSchema.schema);
-
-const ApiKey = metadataDb.model<IApiKey>(ApiKeyMongooseSchema.name, apiKeySchema);
-
-export default ApiKey;
+export default generateMongooseModel<IApiKey>(metadataDb, ApiKeyMongooseSchema);
