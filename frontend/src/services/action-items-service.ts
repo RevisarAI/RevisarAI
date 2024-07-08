@@ -14,7 +14,7 @@ export class ActionItemsService {
   }
 
   async updateActionItemStatus(item: IActionItem, itemsId: string): Promise<void> {
-    await this.apiClient.put('/id', item, { params: { id: itemsId } });
+    await this.apiClient.put('/', item, { params: { id: itemsId } });
   }
 }
 
