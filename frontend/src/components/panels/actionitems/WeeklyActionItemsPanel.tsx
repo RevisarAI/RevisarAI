@@ -1,7 +1,6 @@
-import { Paper, Typography } from '@mui/material';
+import { Checkbox, Paper, Typography } from '@mui/material';
 import ActionItemsTable, { ActionItemsColumn } from './ActionItemsTable';
 import { IActionItem } from 'shared-types';
-import ActionItemCheckbox from './ActionItemCheckbox';
 import './WeeklyActionItemsPanel.css';
 
 interface ActionItemsPanelProps {
@@ -28,12 +27,7 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height,
       align: 'left',
       minWidth: 5,
       render: (isCompleted: IActionItem['isCompleted'], item: IActionItem) => (
-        <ActionItemCheckbox
-          isCompleted={isCompleted}
-          updateActionItemStatus={() => {
-            updateActionItemStatus(item, itemsID);
-          }}
-        />
+        <Checkbox checked={isCompleted} onClick={() => updateActionItemStatus(item, itemsID)}/>
       ),
     },
   ];
