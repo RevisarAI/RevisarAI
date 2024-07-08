@@ -1,11 +1,7 @@
-import env from 'dotenv';
 import { Mongoose } from 'mongoose';
 import initDB from 'revisar-server-utils/db';
+import config from './config';
 
-env.config();
+export const datalake = new Mongoose();
 
-const { DB_URL, DB_NAME } = process.env as Record<string, string>;
-
-export const db = new Mongoose();
-
-export const connectDB = async () => initDB(DB_URL, DB_NAME, db);
+export const connectDatalake = async () => initDB(config.datalakeDBUrl, config.datalakeDBName, datalake);

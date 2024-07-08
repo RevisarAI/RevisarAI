@@ -13,7 +13,7 @@ class ReviewsProducer {
   }
 
   private createKafkaProducer(): Producer {
-    const brokers = config.kafka_brokers?.split(',') || ['localhost:9094'];
+    const brokers = config.kafkaBrokers.split(',');
 
     const kafka = new Kafka({
       clientId: 'reviews-receiver',
@@ -31,7 +31,7 @@ class ReviewsProducer {
     try {
       await this.kafkaProducer.connect();
       await this.kafkaProducer.send({
-        topic: 'reviews',
+        topic: config.topic,
         messages: reviews.map((review) => ({
           value: JSON.stringify(review),
         })),

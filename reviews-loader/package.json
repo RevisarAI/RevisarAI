@@ -26,9 +26,9 @@
     "eslint-plugin-prettier": "^5.1.3",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.2",
+    "shared-types": "file:../shared-types",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.2",
-    "shared-types": "file:../shared-types"
+    "typescript": "^5.5.2"
   },
   "dependencies": {
     "@types/cors": "^2.8.17",
@@ -43,8 +43,9 @@
     "kafkajs": "^2.2.4",
     "mongoose": "^8.4.3",
     "openai": "^4.52.0",
-    "swagger-jsdoc": "^6.2.8",
     "revisar-server-utils": "file:../revisar-server-utils",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.23.8"
   }
 }

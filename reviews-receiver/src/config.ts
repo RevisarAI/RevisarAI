@@ -4,17 +4,19 @@ import env from 'dotenv';
 env.config();
 
 const ConfigSchema = z.object({
-  metadatadbDBUrl: z.string(),
-  metadatadbDBName: z.string(),
+  metadataDBUrl: z.string(),
+  metadataDBName: z.string(),
   port: z.string(),
-  kafka_brokers: z.string().optional(),
+  topic: z.string(),
+  kafkaBrokers: z.string(),
 });
 
 const config = ConfigSchema.parse({
-  metadatadbDBUrl: process.env.METADATADB_DB_URL,
-  metadatadbDBName: process.env.METADATADB_DB_NAME,
+  metadataDBUrl: process.env.METADATA_DB_URL,
+  metadataDBName: process.env.METADATA_DB_NAME,
   port: process.env.PORT,
-  kafka_brokers: process.env.KAFKA_BROKERS,
+  kafkaBrokers: process.env.KAFKA_BROKERS,
+  topic: process.env.TOPIC,
 });
 
 export default config;
