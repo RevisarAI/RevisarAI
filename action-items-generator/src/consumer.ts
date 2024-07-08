@@ -51,22 +51,29 @@ export class ReviewsConsumer {
             value: review.value,
           }));
 
-          const prompt = `
-          Based on the list of reviews, extract the 5 most important action items for the next week. Each action item should include an explanation with references and ids from the list of reviews.
-          Reviews:
-          ${JSON.stringify(minialLastWeekReviews)}}
-        `;
+          const systemPrompt = `Context:
+You are an expert analyst that is hired by "${request.client.businessName}" to analyze their reviews and extract the most important action items for the next week.
+Input:
+A list of reviews from the past week provided by the company in a JSON format, each review containing an id and a value.
+Goal:
+The goal is to extract the 5 most important action items for the next week based on the provided reviews.
+Each action item should include an explanation with references and ids from the list of reviews.
+General Instructions:
+The action items should be:
+1. Clear and actionable.
+2. Based on the reviews provided.
+3. Prioritized based on the importance of the reviews.
+4. Diverse and cover different aspects of the reviews.`;
 
           this.logger.info(`Generating action items with Openai for client: ${request.client.businessId}...`);
           const response = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
-              { role: 'system', content: 'You are an expert analyst.' },
-              { role: 'user', content: prompt },
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: JSON.stringify(minialLastWeekReviews) },
               {
                 role: 'system',
-                content:
-                  'Output in JSON: [{"value": string, "reason": string}] without the code block like ```json```.',
+                content: 'Output: in JSON: [{"value": string, "reason": string}].',
               },
             ],
           });
