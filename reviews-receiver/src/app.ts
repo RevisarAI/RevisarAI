@@ -16,6 +16,14 @@ const initApp = async () => {
   app.use('/batch', batchRouter);
   app.use('/keys', apiKeyRouter);
 
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', '*');
+    res.header('Access-Control-Allow-Headers', '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+  });
+
   await connectMetadatadb();
 
   const swaggerOptions: swaggerJsDoc.Options = {

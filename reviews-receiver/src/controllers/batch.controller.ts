@@ -21,6 +21,22 @@ class BatchController {
       res.status(500).send();
     }
   };
+
+  postFromUserInterface = async (req: Request, res: Response) => {
+    let { reviews } = req.body;
+
+    reviews = reviews.map((review: IBatchReview) => ({
+      ...review,
+      businessId: req.user?.businessId,
+      dataSource: DataSourceEnum.USER_INTERFACE,
+    }));
+    try {
+      await this.reviewsProducer.produce(reviews);
+      res.status(201).send();
+    } catch (err) {
+      res.status(500).send();
+    }
+  };
 }
 
 export default new BatchController();

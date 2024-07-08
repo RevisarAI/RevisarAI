@@ -99,31 +99,32 @@ docker compose up -d
 
 Each microservice requires certain environment variables to run properly. These are configuration values that can be changed depending on the environment in which the application is running. The following table lists the environment variables required for each microservice, along with a brief description of each:
 
-| Microservice         | Environment Variables   | Description                            |
-| -------------------- | ----------------------- | -------------------------------------- |
-| ReviewsReciever      | METADATA_DB_URL         | The URL of the metadata database       |
-|                      | METADATADB_NAME         | The name of the metadata database      |
-|                      | PORT                    | The port on which the service runs     |
-|                      | KAFKA_BROKERS           | The addresses of the Kafka brokers     |
-| ActionItemsGenerator | DB_URL                  | The URL of the database                |
-|                      | DB_NAME                 | The name of the database               |
-|                      | PORT                    | The port on which the service runs     |
-|                      | TOPIC                   | The Kafka topic to consume             |
-|                      | BROKERS                 | The addresses of the Kafka brokers     |
-|                      | CONSUMER_GROUP          | The Kafka consumer group               |
-|                      | OPENAI_API_KEY          | The API key for OpenAI                 |
-| ReviewsLoader        | (REFACTOR ENV VARS)     |                                        |
-| Backend              | DATALAKE_DB_URL         | The URL of the Datalake database       |
-|                      | DATALAKE_DB_NAME        | The name of the Datalake database      |
-|                      | METADATA_DB_URL         | The URL of the metadata database       |
-|                      | METADATA_DB_NAME        | The name of the metadata database      |
-|                      | PORT                    | The port on which the service runs     |
-|                      | REFRESH_TOKEN_SECRET    | The secret used to sign refresh tokens |
-|                      | ACCESS_TOKEN_SECRET     | The secret used to sign access tokens  |
-|                      | ACCESS_TOKEN_EXPIRATION | The expiration time for access tokens  |
-|                      | GOOGLE_CLIENT_ID        | The client ID for Google OAuth         |
-|                      | OPENAI_API_KEY          | The API key for OpenAI                 |
-| Frontend             | VITE_GOOGLE_CLIENT_ID   | The client ID for Google OAuth         |
+| Microservice         | Environment Variables     | Description                             |
+| -------------------- | ------------------------- | --------------------------------------- |
+| ReviewsReciever      | METADATA_DB_URL           | The URL of the metadata database        |
+|                      | METADATADB_NAME           | The name of the metadata database       |
+|                      | PORT                      | The port on which the service runs      |
+|                      | KAFKA_BROKERS             | The addresses of the Kafka brokers      |
+| ActionItemsGenerator | DB_URL                    | The URL of the database                 |
+|                      | DB_NAME                   | The name of the database                |
+|                      | PORT                      | The port on which the service runs      |
+|                      | TOPIC                     | The Kafka topic to consume              |
+|                      | BROKERS                   | The addresses of the Kafka brokers      |
+|                      | CONSUMER_GROUP            | The Kafka consumer group                |
+|                      | OPENAI_API_KEY            | The API key for OpenAI                  |
+| ReviewsLoader        | (REFACTOR ENV VARS)       |                                         |
+| Backend              | DATALAKE_DB_URL           | The URL of the Datalake database        |
+|                      | DATALAKE_DB_NAME          | The name of the Datalake database       |
+|                      | METADATA_DB_URL           | The URL of the metadata database        |
+|                      | METADATA_DB_NAME          | The name of the metadata database       |
+|                      | PORT                      | The port on which the service runs      |
+|                      | REFRESH_TOKEN_SECRET      | The secret used to sign refresh tokens  |
+|                      | ACCESS_TOKEN_SECRET       | The secret used to sign access tokens   |
+|                      | ACCESS_TOKEN_EXPIRATION   | The expiration time for access tokens   |
+|                      | GOOGLE_CLIENT_ID          | The client ID for Google OAuth          |
+|                      | OPENAI_API_KEY            | The API key for OpenAI                  |
+|                      | REVIEWS_RECEIVER_ENDPOINT | The URL of the reviews receiver service |
+| Frontend             | VITE_GOOGLE_CLIENT_ID     | The client ID for Google OAuth          |
 
 Please replace the placeholders with the actual values before running the microservices.
 
