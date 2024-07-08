@@ -1,6 +1,6 @@
-import { db } from '../db';
+import { datalake } from '../db';
 import { IReview, ReviewMongooseSchema } from 'shared-types';
 
-const reviewSchema = new db.Schema<IReview>(ReviewMongooseSchema.schema);
+const reviewSchema = new datalake.Schema<IReview>(ReviewMongooseSchema.schema);
 
-export default db.model<IReview>(ReviewMongooseSchema.name, reviewSchema);
+export default datalake.model<IReview>(ReviewMongooseSchema.name, reviewSchema);

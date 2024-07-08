@@ -1,11 +1,11 @@
 import OpenAI from 'openai';
 import { IActionItem, IActionItemSchema, IReviewMinimal, IWeeklyActionItemsRequestSchema } from 'shared-types';
-import createLogger from './utils/logger';
 import winston from 'winston';
 import config from './config';
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
 import weeklyActionItemsModel from './models/weekly-action-items.model';
 import reviewModel from './models/review.model';
+import createLogger from 'revisar-server-utils/logger';
 import { z } from 'zod';
 
 export class ReviewsConsumer {
@@ -92,7 +92,7 @@ export class ReviewsConsumer {
   }
 
   private createKafkaConsumer(): Consumer {
-    const brokers = config.brokers.split(',');
+    const brokers = config.kafkaBrokers.split(',');
 
     const kafka = new Kafka({
       clientId: 'weekly-action-items-consumer',

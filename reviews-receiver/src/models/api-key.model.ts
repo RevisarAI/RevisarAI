@@ -1,4 +1,4 @@
-import { metadatadb } from '../db';
+import { metadata } from '../db';
 
 /**
  * @swagger
@@ -25,19 +25,18 @@ import { metadatadb } from '../db';
  *     businessId: 'asdasdm324jnr2kjwnfs'
  *     createdAt: '2021-09-01T00:00:00.000Z'
  */
-
 interface ApiKeyDocument extends Document {
   key: string;
   businessId: string;
   createdAt: Date;
 }
 
-const apiKeySchema = new metadatadb.Schema<ApiKeyDocument>({
+const apiKeySchema = new metadata.Schema<ApiKeyDocument>({
   key: { type: String, required: true, unique: true },
   businessId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
-const ApiKey = metadatadb.model<ApiKeyDocument>('ApiKey', apiKeySchema);
+const ApiKey = metadata.model<ApiKeyDocument>('ApiKey', apiKeySchema);
 
 export default ApiKey;

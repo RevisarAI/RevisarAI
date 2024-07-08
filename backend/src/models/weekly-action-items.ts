@@ -1,6 +1,6 @@
-import { metadata } from '../db';
+import { datalake } from '../db';
 import { IWeeklyActionItems, WeeklyActionItemsMongooseSchema } from 'shared-types';
 
-const WeeklyActionItemsSchema = new metadata.Schema<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.schema);
+const WeeklyActionItemsSchema = new datalake.Schema<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.schema);
 
-export default metadata.model<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.name, WeeklyActionItemsSchema);
+export default datalake.model<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.name, WeeklyActionItemsSchema);
