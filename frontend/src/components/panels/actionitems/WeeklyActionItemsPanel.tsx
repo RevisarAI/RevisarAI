@@ -6,18 +6,11 @@ import './WeeklyActionItemsPanel.css';
 interface ActionItemsPanelProps {
   data: IActionItem[];
   height: number;
-  itemsID: string;
-  updateActionItemStatus: (item: IActionItem, itemsID: string) => void;
+  onComplete: (item: IActionItem) => void;
   loading: boolean;
 }
 
-const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({
-  data,
-  height,
-  itemsID,
-  updateActionItemStatus,
-  loading,
-}) => {
+const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height, onComplete, loading }) => {
   const columns: readonly ActionItemsColumn[] = [
     {
       id: 'value',
@@ -34,7 +27,7 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({
       align: 'left',
       minWidth: 5,
       render: (isCompleted: IActionItem['isCompleted'], item: IActionItem) => (
-        <Checkbox checked={isCompleted} onClick={() => updateActionItemStatus(item, itemsID)} />
+        <Checkbox checked={isCompleted} onClick={() => onComplete(item)} />
       ),
     },
   ];

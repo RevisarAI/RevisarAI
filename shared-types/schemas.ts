@@ -57,7 +57,7 @@ export const IWeeklyActionItemsRequestSchema = z.object({
 });
 
 export const IActionItemSchema = z.object({
-  _id: z.instanceof(mongooseTypes.ObjectId).optional(),
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]).optional(),
   value: z.string(),
   reason: z.string(),
   isCompleted: z.boolean().optional().default(false),

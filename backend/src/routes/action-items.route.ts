@@ -1,6 +1,8 @@
 import { actionItemsController } from '../controllers/action-items.controller';
 import { Router } from 'express';
 import 'express-async-errors';
+import { schemaValidationMiddleware } from 'revisar-server-utils';
+import { IActionItemSchema } from 'shared-types';
 
 const actionItemsRouter = Router();
 
@@ -95,7 +97,7 @@ actionItemsRouter.get('/', actionItemsController.getWeeklyActionItems.bind(actio
  * paths:
  *   /api/action-items/:
  *     put:
- *       summary: Update action item 
+ *       summary: Update action item
  *       tags: [Action Items]
  *       security:
  *         - bearerAuth: []
@@ -105,7 +107,7 @@ actionItemsRouter.get('/', actionItemsController.getWeeklyActionItems.bind(actio
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/components/schemas/WeeklyActionItems'
+ *                 $ref: '#/components/schemas/ActionItem'
  *         401:
  *           description: Unauthorized
  *         404:
@@ -113,6 +115,10 @@ actionItemsRouter.get('/', actionItemsController.getWeeklyActionItems.bind(actio
  *         500:
  *           description: Internal Server Error
  */
-actionItemsRouter.put('/', actionItemsController.updateActionItem.bind(actionItemsController));
+actionItemsRouter.put(
+  '',
+  schemaValidationMiddleware({ body: IActionItemSchema }),
+  actionItemsController.updateActionItem.bind(actionItemsController)
+);
 
 export default actionItemsRouter;

@@ -13,8 +13,8 @@ export class ActionItemsService {
     return (await this.apiClient.get('')).data;
   }
 
-  async updateActionItemStatus(item: IActionItem, itemsId: string): Promise<void> {
-    await this.apiClient.put('/', item, { params: { id: itemsId } });
+  async updateActionItem(actionItem: IActionItem): Promise<IActionItem> {
+    return (await this.apiClient.put('', actionItem)).data;
   }
 }
 

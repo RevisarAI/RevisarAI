@@ -1,30 +1,41 @@
 import { useAuth } from '@/utils/auth-context';
 import { Grid, Typography } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { reviewService } from '@/services/review-service';
 import SentimentOverTimePanel from '@/components/panels/SentimentOverTimePanel';
 import DataSourceDistributionPanel from '@/components/panels/DataSourceDistributionPanel';
 import WordCloudPanel from '@/components/panels/WordCloudPanel';
 import WeeklyActionItemsPanel from '@/components/panels/actionitems/WeeklyActionItemsPanel';
 import { actionItemsService } from '@/services/action-items-service';
-import { IActionItem } from 'shared-types';
+import { IActionItem, IWeeklyActionItems } from 'shared-types';
 
 const HomePage: React.FC = () => {
   const auth = useAuth();
+  const queryClient = useQueryClient();
   const { data, status } = useQuery({
     queryKey: ['businessAnalysis'],
     queryFn: ({ signal }) => reviewService.getBusinessAnalysis({ signal }),
   });
+
   const actionItemsQuery = useQuery({
     queryKey: ['weeklyActionItems'],
     queryFn: () => actionItemsService.getWeeklyActionItems(),
-    notifyOnChangeProps: 'all',
+  });
+  const mutateActionItems = useMutation({
+    mutationFn: (item: IActionItem) => actionItemsService.updateActionItem(item),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['weeklyActionItems'], (oldData: IWeeklyActionItems) => {
+        oldData.actionItems = oldData.actionItems.map((item) => (item._id === data._id ? data : item));
+        return oldData;
+      });
+    },
+    retry: 3,
+    retryDelay: 3000,
   });
 
-  const updateActionItemStatus = async (item: IActionItem, itemsID: string) => {
+  const handleOnComplete = (item: IActionItem) => {
     item.isCompleted = !item.isCompleted;
-    await actionItemsService.updateActionItemStatus(item, itemsID);
-    actionItemsQuery.refetch();
+    mutateActionItems.mutate(item);
   };
 
   return (
@@ -56,12 +67,7 @@ const HomePage: React.FC = () => {
             <WeeklyActionItemsPanel
               height={295}
               data={actionItemsQuery.status == 'success' ? actionItemsQuery.data.actionItems : []}
-              itemsID={
-                actionItemsQuery.status == 'success' && actionItemsQuery.data._id
-                  ? actionItemsQuery.data._id.toString()
-                  : ''
-              }
-              updateActionItemStatus={updateActionItemStatus}
+              onComplete={handleOnComplete}
               loading={actionItemsQuery.status === 'pending'}
             />
           </Grid>
