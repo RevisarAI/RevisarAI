@@ -57,14 +57,29 @@ export class ReviewsConsumer {
         this.logger.info(
           `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`
         );
-        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
 
-        if (reviewAnalysis.phrases.some((phrase) => !review.value.toLocaleLowerCase().includes(phrase))) {
-          this.logger.error('######################################');
-          this.logger.error(`PHRASES NOT FOUND IN THE REVIEW: ${reviewAnalysis.phrases}`);
-          this.logger.error('######################################');
+        const filteredPhrases = reviewAnalysis.phrases.filter((phrase) =>
+          review.value.toLocaleLowerCase().includes(phrase.toLocaleLowerCase())
+        );
+
+        if (filteredPhrases.length === 0) {
+          this.logger.error(
+            `No valid phrases found in review: "${review.value}"`,
+            `phrases: ${JSON.stringify(reviewAnalysis.phrases)}`,
+            'not committing offset and waiting for retry...'
+          );
+          throw new Error('No valid phrases found in review');
         }
-        await reviewModel.create(reviewWithAnalysis);
+
+        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis, phrases: filteredPhrases };
+
+        const { _id: reviewID } = await reviewModel.create(reviewWithAnalysis);
+
+        if (filteredPhrases.length !== reviewAnalysis.phrases.length) {
+          this.logger.warn(
+            `${reviewAnalysis.phrases.length - filteredPhrases.length} phrases not found in the review: ${reviewID}`
+          );
+        }
 
         this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
       },

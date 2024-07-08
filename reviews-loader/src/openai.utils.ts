@@ -17,9 +17,10 @@ Consider the overall tone, language used, and any specific praises or criticisms
     title: 'Output Instructions',
     content: `1. Review's sentiment (positive, negative, or neutral): Always choose the one that is most prevalent out of the three.
 2. Numeric review rating on the scale of 1-10: Based on the overall satisfaction level of the customer.
-3. Main quotes of the review: Pick short quotes (as few words as possible with up to 8 words) which capture the overall sentiment of the review, use the exact verbatim from the review with (a contained "substring").
-4. Numeric review importance on a scale of 0-100. The score is based on the potential for generating company related missions from the review.
-   Higher value will be given for a review that contains more specific criticisms,
-   Lower score will be given for a review that is generic or contains only general praises.`,
+3. The exact quotes from the review that your analysis is based on (few words as possible with up to 8 words), use the exact phrasing ("substring").
+4. Numeric review importance on a scale of 0-100. The score is based on the potential for generating company missions from the review.
+   High score (66-100) will be given for a review that suggest improvements or contain a described lack of satisfaction,
+   Medium score (33-65) will be given for a positive review or non-specific neutral review,
+   Low score (0-32) will be given for a review that is generic`,
   },
 ];
