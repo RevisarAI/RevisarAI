@@ -53,7 +53,7 @@ class ApiKeyController extends BaseController<IApiKey> {
         (err as Error).message,
         (err as Error).stack || 'no stacktrace'
       );
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+      return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -64,15 +64,13 @@ class ApiKeyController extends BaseController<IApiKey> {
     this.debug(`Revoking API key ${id} for ${businessId} as requested by user mail "${email}"`);
 
     try {
-      const key = await ApiKey.findOne({ _id: id, businessId });
+      const key = await ApiKey.findOneAndUpdate({ _id: id, businessId }, { revoked: true }, { new: true });
       if (!key) {
         return res.sendStatus(httpStatus.NOT_FOUND);
       }
 
-      key.revoked = true;
-      await key.save();
       this.debug(`Successfully revoked API key ${id} for ${businessId}`);
-      return res.status(httpStatus.NO_CONTENT).json(key);
+      return res.status(httpStatus.NO_CONTENT).json(IApiKeyMinimalSchema.parse(key));
     } catch (err) {
       this.debug(
         `Error revoking API key ${id} for ${businessId} as requested by user mail "${email}"`,
