@@ -35,9 +35,9 @@ class ActionItemsController extends BaseController<IWeeklyActionItems> {
       { $set: { 'actionItems.$.isCompleted': actionItem.isCompleted } }
     );
     if (result.modifiedCount === 0) {
-      return res.status(httpStatus.NOT_FOUND).send();
+      return res.sendStatus(httpStatus.NOT_FOUND);
     }
-    return res.status(httpStatus.OK).send();
+    return res.sendStatus(httpStatus.OK);
   }
 }
 
