@@ -3,9 +3,8 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import apiKeyRouter from './routes/api-key.router';
 import batchRouter from './routes/batch.router';
-import { connectMetadatadb } from './db';
+import { connectMetadata } from './db';
 
 const app = express();
 
@@ -14,7 +13,6 @@ const initApp = async () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use('/batch', batchRouter);
-  app.use('/keys', apiKeyRouter);
 
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -24,7 +22,7 @@ const initApp = async () => {
     next();
   });
 
-  await connectMetadatadb();
+  await connectMetadata();
 
   const swaggerOptions: swaggerJsDoc.Options = {
     definition: {
