@@ -3,7 +3,6 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import apiKeyRouter from './routes/api-key.router';
 import batchRouter from './routes/batch.router';
 import { connectMetadataDb } from './db';
 
@@ -14,7 +13,6 @@ const initApp = async () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use('/batch', batchRouter);
-  app.use('/keys', apiKeyRouter);
 
   await connectMetadataDb();
 
