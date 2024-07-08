@@ -26,7 +26,7 @@ class ActionItemsController extends BaseController<IWeeklyActionItems> {
     return res.status(httpStatus.OK).send(weeklyActionItems);
   }
 
-  async updateActionItem(req: AuthRequest, res: Response<void>) {
+  async updateActionItem(req: AuthRequest<IActionItem>, res: Response<void>) {
     const { id } = req.query;
     const actionItem: IActionItem = req.body;
 
