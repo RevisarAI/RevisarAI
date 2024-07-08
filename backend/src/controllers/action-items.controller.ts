@@ -28,10 +28,11 @@ class ActionItemsController extends BaseController<IWeeklyActionItems> {
 
   async updateActionItem(req: AuthRequest<IActionItem>, res: Response<IWeeklyActionItems>) {
     const { id } = req.query;
+    const { businessId } = req.user!;
     const actionItem: IActionItem = req.body;
 
     const weeklyActionItems = await WeeklyActionItemsModel.findOneAndUpdate(
-      { _id: id, 'actionItems._id': actionItem._id },
+      { _id: id, businessId: businessId, 'actionItems._id': actionItem._id },
       { $set: { 'actionItems.$.isCompleted': actionItem.isCompleted } },
       { new: true }
     );
