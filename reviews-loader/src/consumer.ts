@@ -4,6 +4,7 @@ import createLogger from 'revisar-server-utils/logger';
 import reviewModel from './models/review.model';
 
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
+import config from './config';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
@@ -13,12 +14,12 @@ export class ReviewsConsumer {
   public constructor() {
     this.kafkaConsumer = this.createKafkaConsumer();
     this.logger = createLogger('consumer');
-    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.openai = new OpenAI({ apiKey: config.openaiApiKey });
   }
 
   public async startConsumer(): Promise<void> {
     await this.kafkaConsumer.connect();
-    await this.kafkaConsumer.subscribe({ topic: 'reviews', fromBeginning: false });
+    await this.kafkaConsumer.subscribe({ topic: config.topic, fromBeginning: false });
 
     await this.kafkaConsumer.run({
       autoCommit: false,
@@ -28,14 +29,31 @@ export class ReviewsConsumer {
         this.logger.info(`- ${prefix} ${message.key}#${message.value}`);
 
         const review: IRawReview = JSON.parse(message.value!.toString());
+        const systemPrompt = `Context:
+You are a professional customer reviews analyst.
+You are hired by a company to analyze their customer reviews and provide a detailed analysis of each review.
+Input:
+A text which contains a customer review of a product or service provided by the company.
+Goals:
+1. Determine the review's sentiment (positive, negative, or neutral).
+2. Provide an overall rating on the scale of 1-10.
+3. Extract concise and relevant phrases that succinctly explain the sentiment exactly as they appear in the review.
+4. Rate the review's importance on a scale of 0-100 based on the importance and potential for generating actionable items based on it.
+General Considerations:
+1. Consider the overall tone, language used, and any specific praises or criticisms mentioned in the review.
+2. Be as specific as possible
+Instructions for phrases extraction:
+1. Each phrase is a single sentence or clause that is directly taken from the review letter by letter. It must be verbatim from the review text and contain an exact piece of the review without skipping a letter. 
+2. A phrase cannot combine multiple "pieces" of the review into one phrase. multiple "pieces" shall be considered separate phrases.
+3. In the phrases, use up to 8 words and attempt to use as few words as possible, just a couple of keywords if possible.
+4. If an extracted phrase ends with a comma or period, you can remove the end punctuation.`;
         this.logger.info(`Sending review to Openai... Review: ${review.value}`);
         const response = await this.openai.chat.completions.create({
           model: 'gpt-3.5-turbo',
           messages: [
             {
               role: 'system',
-              content:
-                'You analyze reviews. Read the review, determine the sentiment (positive, negative, or neutral), provide a rating out of 10, and extract concise, relevant phrases that succinctly explain the sentiment exactly as they appear in the review. Only use phrases that are verbatim from the review text without rephrasing or summarizing. In the phrases, use as few words as possible, if possible even just a couple of keywords. Consider the overall tone, language used, and any specific praises or criticisms mentioned. In addition add importance rating between 0 to 100 - the rating is based on importance and the potential for generating actionable items from the review. Be as specific as possible.',
+              content: systemPrompt,
             },
             { role: 'user', content: message.value!.toString() },
             {
@@ -64,7 +82,7 @@ export class ReviewsConsumer {
   }
 
   private createKafkaConsumer(): Consumer {
-    const brokers = process.env.KAFKA_BROKERS?.split(',') || ['localhost:9094'];
+    const brokers = config.kafkaBrokers.split(',');
 
     const kafka = new Kafka({
       clientId: 'reviews-loader',
@@ -74,7 +92,7 @@ export class ReviewsConsumer {
           ? { initialRetryTime: 100, retries: 8 }
           : { initialRetryTime: 300, retries: 2 },
     });
-    const consumer = kafka.consumer({ groupId: 'review-analysis-group' });
+    const consumer = kafka.consumer({ groupId: config.consumerGroup });
     return consumer;
   }
 }
