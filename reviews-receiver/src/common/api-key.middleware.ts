@@ -32,7 +32,7 @@ const checkApiKey = async (req: ApiKeyRequest, res: Response, next: NextFunction
 
   const isValid = (await Promise.all(validUserKeys.map(({ key }) => compare(apiKey, key)))).some(Boolean);
 
-  if (!validUserKeys || !isValid) {
+  if (!isValid) {
     logger.debug(`Invalid api key for business ${businessId}`);
     return res.status(httpStatus.FORBIDDEN).json({ message: 'Invalid API key' });
   }
