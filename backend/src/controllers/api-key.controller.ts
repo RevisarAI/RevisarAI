@@ -45,7 +45,8 @@ class ApiKeyController extends BaseController<IApiKey> {
       const hashedApiKey = await hash(plainApiKey, 10);
 
       const newApiKey = await new ApiKey({ key: hashedApiKey, businessId, expiry, revoked: false }).save();
-      return res.status(httpStatus.CREATED).json(ICreateApiKeyResponseSchema.parse({ ...newApiKey, key: plainApiKey }));
+      const parsedApiKey = ICreateApiKeyResponseSchema.parse({ ...newApiKey.toJSON(), key: plainApiKey });
+      return res.status(httpStatus.CREATED).json(parsedApiKey);
     } catch (err) {
       this.debug(
         `Error generating API key for ${businessId} as requested by user mail "${email}"`,

@@ -20,7 +20,7 @@ export const IReviewAnalysisSchema = z.object({
 });
 
 export const IClientSchema = z.object({
-  _id: z.instanceof(mongooseTypes.ObjectId).optional(),
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]).optional(),
   email: z.string(),
   fullName: z.string(),
   businessName: z.string(),
@@ -69,7 +69,7 @@ export const IWeeklyActionItemsSchema = z.object({
 });
 
 export const IApiKeySchema = z.object({
-  _id: z.union([z.instanceof(mongooseTypes.ObjectId), z.string()]),
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]),
   key: z.string(),
   businessId: z.string(),
   createdAt: z.date(),
