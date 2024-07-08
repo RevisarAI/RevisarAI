@@ -1,5 +1,5 @@
 import { generateMongooseModel } from 'revisar-server-utils/db';
-import { metadata } from '../db';
+import { datalake } from '../db';
 import { IWeeklyActionItems, WeeklyActionItemsMongooseSchema } from 'shared-types';
 
-export default generateMongooseModel<IWeeklyActionItems>(metadata, WeeklyActionItemsMongooseSchema);
+export default generateMongooseModel<IWeeklyActionItems>(datalake, WeeklyActionItemsMongooseSchema);

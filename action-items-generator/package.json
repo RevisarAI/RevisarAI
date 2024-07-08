@@ -40,6 +40,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^8.4.3",
     "openai": "^4.52.1",
+    "revisar-server-utils": "file:../revisar-server-utils",
     "shared-types": "file:../shared-types",
     "revisar-server-utils": "file:../revisar-server-utils",
     "swagger-jsdoc": "^6.2.8",

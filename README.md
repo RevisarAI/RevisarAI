@@ -102,17 +102,24 @@ Each microservice requires certain environment variables to run properly. These 
 | Microservice         | Environment Variables     | Description                             |
 | -------------------- | ------------------------- | --------------------------------------- |
 | ReviewsReciever      | METADATA_DB_URL           | The URL of the metadata database        |
-|                      | METADATADB_NAME           | The name of the metadata database       |
+|                      | METADATA_DB_NAME          | The name of the metadata database       |
 |                      | PORT                      | The port on which the service runs      |
 |                      | KAFKA_BROKERS             | The addresses of the Kafka brokers      |
-| ActionItemsGenerator | DB_URL                    | The URL of the database                 |
-|                      | DB_NAME                   | The name of the database                |
+|                      | TOPIC                     | The Kafka topic to produce to           |
+| ActionItemsGenerator | DATALAKE_DB_URL           | The URL of the datalake database        |
+|                      | DATALAKE_DB_NAME          | The name of the datalake database       |
 |                      | PORT                      | The port on which the service runs      |
 |                      | TOPIC                     | The Kafka topic to consume              |
-|                      | BROKERS                   | The addresses of the Kafka brokers      |
+|                      | KAFKA_BROKERS             | The addresses of the Kafka brokers      |
 |                      | CONSUMER_GROUP            | The Kafka consumer group                |
 |                      | OPENAI_API_KEY            | The API key for OpenAI                  |
-| ReviewsLoader        | (REFACTOR ENV VARS)       |                                         |
+| ReviewsLoader        | DATALAKE_DB_URL           | The URL of the datalake database        |
+|                      | DATALAKE_DB_NAME          | The name of the datalake database       |
+|                      | PORT                      | The port on which the service runs      |
+|                      | TOPIC                     | The Kafka topic to consume              |
+|                      | KAFKA_BROKERS             | The addresses of the Kafka brokers      |
+|                      | CONSUMER_GROUP            | The Kafka consumer group                |
+|                      | OPENAI_API_KEY            | The API key for OpenAI                  |
 | Backend              | DATALAKE_DB_URL           | The URL of the Datalake database        |
 |                      | DATALAKE_DB_NAME          | The name of the Datalake database       |
 |                      | METADATA_DB_URL           | The URL of the metadata database        |
