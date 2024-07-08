@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { IRawReview, IReview, IReviewAnalaysis } from 'shared-types';
+import { IRawReview, IReview, IReviewAnalaysis, IReviewAnalysisSchema } from 'shared-types';
 import createLogger from 'revisar-server-utils/logger';
 import reviewModel from './models/review.model';
 
@@ -45,7 +45,7 @@ General Considerations:
 Instructions for phrases extraction:
 1. Each phrase is a single sentence or clause that is directly taken from the review letter by letter. It must be verbatim from the review text and contain an exact piece of the review without skipping a letter. 
 2. A phrase cannot combine multiple "pieces" of the review into one phrase. multiple "pieces" shall be considered separate phrases.
-3. In the phrases, use up to 8 words and attempt to use as few words as possible, just a couple of keywords if possible.
+3. In the phrases, use as few words as possible, with up to 8 words, just a couple of keywords if possible.
 4. If an extracted phrase ends with a comma or period, you can remove the end punctuation.`;
         this.logger.info(`Sending review to Openai... Review: ${review.value}`);
         const response = await this.openai.chat.completions.create({
@@ -64,7 +64,9 @@ Instructions for phrases extraction:
           ],
         });
 
-        const reviewAnalysis: IReviewAnalaysis = JSON.parse(response.choices[0].message.content!);
+        const reviewAnalysis: IReviewAnalaysis = IReviewAnalysisSchema.parse(
+          JSON.parse(response.choices[0].message.content!)
+        );
 
         this.logger.info(
           `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`

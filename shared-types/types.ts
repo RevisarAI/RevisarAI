@@ -15,6 +15,7 @@ import {
   IApiKeySchema,
   IApiKeyMinimalSchema,
   IRevokeApiKeySchema,
+  IReviewAnalysisSchema,
 } from './schemas';
 import { z } from 'zod';
 
@@ -54,12 +55,7 @@ export interface IBatchReview {
   date: Date;
 }
 
-export interface IReviewAnalaysis {
-  sentiment: SentimentEnum;
-  rating: number;
-  phrases: string[];
-  importance: number;
-}
+export type IReviewAnalaysis = z.infer<typeof IReviewAnalysisSchema>;
 export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
 export type IReviewMinimal = Pick<IReview, '_id' | 'value'>;
 

@@ -1,6 +1,6 @@
 import { Types as mongooseTypes } from 'mongoose';
 import { z } from 'zod';
-import { WeekdaysEnum } from './types';
+import { SentimentEnum, WeekdaysEnum } from './types';
 
 export const IPaginationSchema = z.object({
   page: z.number().int().positive().default(1),
@@ -12,8 +12,15 @@ export const IGetReviewsBodySchema = IPaginationSchema.extend({
   search: z.string().optional().default(''),
 });
 
+export const IReviewAnalysisSchema = z.object({
+  sentiment: z.nativeEnum(SentimentEnum),
+  rating: z.number().int().min(1).max(10),
+  phrases: z.array(z.string()),
+  importance: z.number().int().min(0).max(100),
+});
+
 export const IClientSchema = z.object({
-  _id: z.instanceof(mongooseTypes.ObjectId).optional(),
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]).optional(),
   email: z.string(),
   fullName: z.string(),
   businessName: z.string(),
@@ -62,7 +69,7 @@ export const IWeeklyActionItemsSchema = z.object({
 });
 
 export const IApiKeySchema = z.object({
-  _id: z.instanceof(mongooseTypes.ObjectId).or(z.string()),
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]),
   key: z.string(),
   businessId: z.string(),
   createdAt: z.date(),
