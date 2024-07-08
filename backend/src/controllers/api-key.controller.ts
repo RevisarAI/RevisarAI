@@ -64,13 +64,11 @@ class ApiKeyController extends BaseController<IApiKey> {
     this.debug(`Revoking API key ${id} for ${businessId} as requested by user mail "${email}"`);
 
     try {
-      const key = await ApiKey.findOne({ _id: id, businessId });
+      const key = await ApiKey.findOneAndUpdate({ _id: id, businessId }, { revoked: true });
       if (!key) {
         return res.sendStatus(httpStatus.NOT_FOUND);
       }
 
-      key.revoked = true;
-      await key.save();
       this.debug(`Successfully revoked API key ${id} for ${businessId}`);
       return res.status(httpStatus.NO_CONTENT).json(key);
     } catch (err) {
