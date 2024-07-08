@@ -61,6 +61,36 @@ export const IWeeklyActionItemsSchema = z.object({
   businessId: z.string(),
 });
 
+export const IApiKeySchema = z.object({
+  _id: z.instanceof(mongooseTypes.ObjectId).or(z.string()),
+  key: z.string(),
+  businessId: z.string(),
+  createdAt: z.date(),
+  expiry: z.date().optional(),
+  revoked: z.boolean(),
+});
+
+export const IApiKeyMinimalSchema = IApiKeySchema.pick({
+  _id: true,
+  createdAt: true,
+  expiry: true,
+  revoked: true,
+});
+
+export const ICreateApiKeySchema = z.object({
+  expiry: z.date().optional(),
+});
+
+export const ICreateApiKeyResponseSchema = IApiKeySchema.pick({
+  _id: true,
+  key: true,
+  expiry: true,
+});
+
+export const IRevokeApiKeySchema = z.object({
+  id: z.string(),
+});
+
 export const IGenerateReviewReplySchema = z.object({
   reviewText: z.string(),
   prompt: z.string().default(''),
