@@ -42,7 +42,7 @@ Goals:
 General Considerations:
 1. Consider the overall tone, language used, and any specific praises or criticisms mentioned in the review.
 2. Be as specific as possible
-3. The sentiment must be one of the following: positive, negative, or neutral. If the sentiment is mixed, choose the one that is most prevalent.
+3. The sentiment must be one of the following: positive, negative, or neutral. If the sentiment is mixed, choose the one that is most prevalent out of the three.
 Instructions for phrases extraction:
 1. Each phrase is a single sentence or clause that is directly taken from the review letter by letter. It must be verbatim from the review text and contain an exact piece of the review without skipping a letter. 
 2. A phrase cannot combine multiple "pieces" of the review into one phrase. multiple "pieces" shall be considered separate phrases.
@@ -60,7 +60,7 @@ Instructions for phrases extraction:
             {
               role: 'system',
               content:
-                'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "importance": "importance_rating", "phrases": [...] }',
+                'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "importance": importance_rating, "phrases": [...] }',
             },
           ],
         });
