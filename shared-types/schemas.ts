@@ -1,6 +1,6 @@
 import { Types as mongooseTypes } from 'mongoose';
 import { z } from 'zod';
-import { SentimentEnum, WeekdaysEnum } from './types';
+import { DataSourceEnum, SentimentEnum, WeekdaysEnum } from './types';
 
 export const IPaginationSchema = z.object({
   page: z.number().int().positive().default(1),
@@ -106,17 +106,23 @@ export const IGenerateReviewReplySchema = z.object({
   previousReplies: z.array(z.string()).optional().default([]),
 });
 
+export const IRawReviewSchema = z.object({
+  businessId: z.string(),
+  value: z.string(),
+  date: z.date().or(z.string()),
+  dataSource: z.nativeEnum(DataSourceEnum),
+});
+
 export const IReviewReplySchema = z.object({
   text: z.string(),
 });
 
-export const IBatchReviewList = z.object({
-  businessId: z.string(),
+export const IBatchReviewListSchema = z.object({
   reviews: z
     .array(
-      z.object({
-        value: z.string(),
-        date: z.string(),
+      IRawReviewSchema.pick({
+        value: true,
+        date: true,
       })
     )
     .nonempty(),
