@@ -53,7 +53,7 @@ class ApiKeyController extends BaseController<IApiKey> {
         (err as Error).message,
         (err as Error).stack || 'no stacktrace'
       );
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+      return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
