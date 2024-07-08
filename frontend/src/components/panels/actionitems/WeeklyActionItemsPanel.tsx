@@ -8,9 +8,16 @@ interface ActionItemsPanelProps {
   height: number;
   itemsID: string;
   updateActionItemStatus: (item: IActionItem, itemsID: string) => void;
+  loading: boolean;
 }
 
-const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height, itemsID, updateActionItemStatus }) => {
+const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({
+  data,
+  height,
+  itemsID,
+  updateActionItemStatus,
+  loading,
+}) => {
   const columns: readonly ActionItemsColumn[] = [
     {
       id: 'value',
@@ -27,7 +34,7 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height,
       align: 'left',
       minWidth: 5,
       render: (isCompleted: IActionItem['isCompleted'], item: IActionItem) => (
-        <Checkbox checked={isCompleted} onClick={() => updateActionItemStatus(item, itemsID)}/>
+        <Checkbox checked={isCompleted} onClick={() => updateActionItemStatus(item, itemsID)} />
       ),
     },
   ];
@@ -37,7 +44,7 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height,
       <Typography variant="body1" sx={{ fontWeight: 'semibold' }}>
         Weekly action items
       </Typography>
-      <ActionItemsTable rows={data} columns={columns} />
+      <ActionItemsTable rows={data} columns={columns} loading={loading} />
     </Paper>
   );
 };
