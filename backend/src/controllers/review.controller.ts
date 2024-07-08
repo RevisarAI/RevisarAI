@@ -9,6 +9,7 @@ import {
   IGetReviewsParams,
   IGetAllReviewsResponse,
   IReviewReplySchema,
+  IBatchReview,
 } from 'shared-types';
 import OpenAI from 'openai';
 import ReviewModel from '../models/review.model';
@@ -126,7 +127,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
     }
   }
 
-  async uploadViaReviewsReceiver(req: AuthRequest<{}, IReview>, res: Response) {
+  async uploadViaReviewsReceiver(req: AuthRequest<{}, IBatchReview[]>, res: Response) {
     try {
       await axios.post(`${config.reviewsReceiverEndpoint}/batch/user-interface`, req.body, {
         headers: { Authorization: req.headers['authorization'] },
