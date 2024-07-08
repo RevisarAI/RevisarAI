@@ -8,6 +8,7 @@ const ConfigSchema = z.object({
   metadatadbDBName: z.string(),
   port: z.string(),
   kafka_brokers: z.string().optional(),
+  accessTokenSecret: z.string(),
 });
 
 const config = ConfigSchema.parse({
@@ -15,6 +16,7 @@ const config = ConfigSchema.parse({
   metadatadbDBName: process.env.METADATADB_DB_NAME,
   port: process.env.PORT,
   kafka_brokers: process.env.KAFKA_BROKERS,
+  accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
 });
 
 export default config;
