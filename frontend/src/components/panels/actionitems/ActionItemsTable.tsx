@@ -49,7 +49,7 @@ const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns }) =>
                     <TableRow hover key={row._id?.toString()}>
                       {columns.map((column) => {
                         return (
-                          <TableCell key={`${row._id!}-${column.id}`} align={column.align} onClick={() => column.id !== 'isCompleted' ? openReasonDialog(row) : undefined}>
+                          <TableCell key={`${row._id!}-${column.id}`} align={column.align} onClick={() => column.id !== 'isCompleted' && openReasonDialog(row) }>
                             {column.render(row[column.id], row)}
                           </TableCell>
                         );
