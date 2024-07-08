@@ -35,13 +35,14 @@ You are hired by a company to analyze their customer reviews and provide a detai
 Input:
 A text which contains a customer review of a product or service provided by the company.
 Goals:
-1. Determine the review's sentiment (positive, negative, or neutral).
+1. Determine the review's sentiment (must be one of: positive, negative, or neutral).
 2. Provide an overall rating on the scale of 1-10.
 3. Extract concise and relevant phrases that succinctly explain the sentiment exactly as they appear in the review.
 4. Rate the review's importance on a scale of 0-100 based on the importance and potential for generating actionable items based on it.
 General Considerations:
 1. Consider the overall tone, language used, and any specific praises or criticisms mentioned in the review.
 2. Be as specific as possible
+3. The sentiment must be one of the following: positive, negative, or neutral. If the sentiment is mixed, choose the one that is most prevalent.
 Instructions for phrases extraction:
 1. Each phrase is a single sentence or clause that is directly taken from the review letter by letter. It must be verbatim from the review text and contain an exact piece of the review without skipping a letter. 
 2. A phrase cannot combine multiple "pieces" of the review into one phrase. multiple "pieces" shall be considered separate phrases.
