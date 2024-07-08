@@ -1,5 +1,5 @@
 import { IBatchReview, DataSourceEnum } from 'shared-types';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import ReviewsProducer from '../producer';
 import { ApiKeyRequest } from 'common/api-key.middleware';
 import httpStatus from 'http-status';
