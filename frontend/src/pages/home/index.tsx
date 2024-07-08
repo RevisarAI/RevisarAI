@@ -62,6 +62,7 @@ const HomePage: React.FC = () => {
                   : ''
               }
               updateActionItemStatus={updateActionItemStatus}
+              loading={actionItemsQuery.status === 'pending'}
             />
           </Grid>
           <Grid item md={7}>
