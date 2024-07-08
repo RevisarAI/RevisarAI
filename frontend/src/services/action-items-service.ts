@@ -9,12 +9,12 @@ export class ActionItemsService {
     this.apiClient = createApiClient('/action-items');
   }
 
-  async getWeeklyActionItems(): Promise<IWeeklyActionItems>{
-   return (await this.apiClient.get('')).data;
+  async getWeeklyActionItems(): Promise<IWeeklyActionItems> {
+    return (await this.apiClient.get('')).data;
   }
 
   async updateActionItemStatus(item: IActionItem, itemsId: string): Promise<void> {
-    await this.apiClient.put(`/?id=${itemsId}`, item);
+    await this.apiClient.put('/id', item, { params: { id: itemsId } });
   }
 }
 
