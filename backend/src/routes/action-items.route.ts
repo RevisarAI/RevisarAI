@@ -105,9 +105,7 @@ actionItemsRouter.get('/', actionItemsController.getWeeklyActionItems.bind(actio
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/components/schemas/ActionItem'
- *         200:
- *           description: Action item updated
+ *                 $ref: '#/components/schemas/WeeklyActionItems'
  *         401:
  *           description: Unauthorized
  *         404:

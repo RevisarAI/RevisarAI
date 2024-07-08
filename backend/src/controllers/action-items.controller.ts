@@ -26,18 +26,19 @@ class ActionItemsController extends BaseController<IWeeklyActionItems> {
     return res.status(httpStatus.OK).send(weeklyActionItems);
   }
 
-  async updateActionItem(req: AuthRequest<IActionItem>, res: Response<void>) {
+  async updateActionItem(req: AuthRequest<IActionItem>, res: Response<IWeeklyActionItems>) {
     const { id } = req.query;
     const actionItem: IActionItem = req.body;
 
-    const result = await WeeklyActionItemsModel.updateOne(
+    const weeklyActionItems = await WeeklyActionItemsModel.findOneAndUpdate(
       { _id: id, 'actionItems._id': actionItem._id },
-      { $set: { 'actionItems.$.isCompleted': actionItem.isCompleted } }
+      { $set: { 'actionItems.$.isCompleted': actionItem.isCompleted } },
+      { new: true }
     );
-    if (result.modifiedCount === 0) {
+    if (!weeklyActionItems) {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
-    return res.sendStatus(httpStatus.OK);
+    return res.status(httpStatus.OK).send(weeklyActionItems);
   }
 }
 
