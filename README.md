@@ -101,7 +101,7 @@ Each microservice requires certain environment variables to run properly. These 
 
 | Microservice         | Environment Variables   | Description                            |
 | -------------------- | ----------------------- | -------------------------------------- |
-| ReviewsReciever      | METADATA_DB_URL         | The URL of the metadata database       |
+| ReviewsReceiver      | METADATA_DB_URL         | The URL of the metadata database       |
 |                      | METADATA_DB_NAME        | The name of the metadata database      |
 |                      | PORT                    | The port on which the service runs     |
 |                      | KAFKA_BROKERS           | The addresses of the Kafka brokers     |

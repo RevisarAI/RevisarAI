@@ -1,5 +1,5 @@
 import express from 'express';
-import authMiddleware from '../common/auth.middleware';
+import { authMiddleware } from 'revisar-server-utils';
 import reviewRoute from './review.route';
 import clientsRoute from './clients.route';
 import 'express-async-errors';

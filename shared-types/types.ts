@@ -41,6 +41,7 @@ export enum DataSourceEnum {
   API = 'API',
   TRIPADVISOR = 'TripAdvisor',
   GOOGLE = 'Google',
+  USER_INTERFACE = 'UserInterface',
 }
 export interface IRawReview {
   businessId: string;

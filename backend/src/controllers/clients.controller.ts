@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthRequest } from 'common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import { IBusinessProfile, IClient } from "shared-types";
 import { BaseController } from "./base.controller";
 import clientModel from "../models/client.model";
