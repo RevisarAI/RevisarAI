@@ -22,10 +22,10 @@ const navbarItems: Array<IMenuItem> = [
   { text: 'Customize', icon: <SettingsIcon />, link: '/customize' },
 ];
 
-const currPathPrefix = window.location.pathname.split('/')[1]; // Value after first `/`
-const initialIndex = navbarItems.findIndex(({ link }) => link === `/${currPathPrefix}`);
-
 const Navbar: React.FC = () => {
+  const currPathPrefix = window.location.pathname.split('/')[1]; // Value after first `/`
+  const initialIndex = navbarItems.findIndex(({ link }) => link === `/${currPathPrefix}`);
+
   const [selectedIndex, setSelectedIndex] = React.useState(initialIndex);
   const auth = useAuth();
   const navigate = useNavigate();
