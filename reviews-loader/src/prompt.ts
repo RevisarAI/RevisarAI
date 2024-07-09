@@ -11,7 +11,9 @@ interface Prompt<T> {
   topP: number;
 }
 
-export const getSentimentRatingPrompt = (review: string): Prompt<{ sentiment: SentimentEnum; rating: number }> => {
+const SentimentRatingResponseSchema = z.object({ sentiment: z.nativeEnum(SentimentEnum), rating: z.number() });
+
+export const getSentimentRatingPrompt = (review: string): Prompt<z.infer<typeof SentimentRatingResponseSchema>> => {
   const systemContent = `
 You are an AI that analyzes reviews. First, identify the sentiment (positive, neutral, negative) and rating from 1-10 of the following review.
 
@@ -30,7 +32,7 @@ O: { "sentiment": "negative", rating: 3 }
 Review: ${review}
 `;
   return {
-    outputSchema: z.object({ sentiment: z.nativeEnum(SentimentEnum), rating: z.number() }),
+    outputSchema: SentimentRatingResponseSchema,
     messages: [
       {
         role: 'system',
@@ -44,7 +46,12 @@ Review: ${review}
     topP: 1,
   };
 };
-export const getPhrasesPrompt = (review: string, sentiment: SentimentEnum): Prompt<string[]> => {
+
+const PhrasesResponseSchema = z.array(z.string());
+export const getPhrasesPrompt = (
+  review: string,
+  sentiment: SentimentEnum
+): Prompt<z.infer<typeof PhrasesResponseSchema>> => {
   const systemContent = `
 Based on the following review, extract key phrases exactly as they appear in the review. These phrases should represent the sentiment and overall importance of the review.
 
@@ -61,7 +68,7 @@ Review: ${review}
 Sentiment: ${sentiment}
 `;
   return {
-    outputSchema: z.array(z.string()),
+    outputSchema: PhrasesResponseSchema,
     messages: [
       {
         role: 'system',
@@ -76,7 +83,11 @@ Sentiment: ${sentiment}
   };
 };
 
-export const getImportancePrompt = (review: string, sentiment: SentimentEnum): Prompt<number> => {
+const ImportanceResponseSchema = z.number();
+export const getImportancePrompt = (
+  review: string,
+  sentiment: SentimentEnum
+): Prompt<z.infer<typeof ImportanceResponseSchema>> => {
   const systemContent = `
 You are a critics system. Based on the review, determine the importance based on the possibility to create a meaningful action item from it. 
 A meaningful action item is a task the business needs to do to in order to improve it's reviews. Thus, most of the times negative reviews will be of high importance and positive reviews will be of low importance.
@@ -89,7 +100,7 @@ Sentiment: ${sentiment}
 `;
 
   return {
-    outputSchema: z.number(),
+    outputSchema: ImportanceResponseSchema,
     messages: [
       {
         role: 'system',
