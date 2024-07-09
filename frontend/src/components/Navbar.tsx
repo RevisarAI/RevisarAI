@@ -16,9 +16,11 @@ interface IMenuItem {
   link: string;
 }
 
-const navbarItems: Array<IMenuItem> = [{text: 'Home', icon: <HomeIcon/>, link: '/home'},
-                                       {text: 'Reviews', icon: <MenuIcon/>, link: '/reviews'},
-                                       {text: 'Customize', icon: <SettingsIcon/>, link: '/customize'}];
+const navbarItems: Array<IMenuItem> = [
+  { text: 'Home', icon: <HomeIcon />, link: '/home' },
+  { text: 'Reviews', icon: <MenuIcon />, link: '/reviews' },
+  { text: 'Customize', icon: <SettingsIcon />, link: '/customize' },
+];
 
 const currPathPrefix = window.location.pathname.split('/')[1]; // Value after first `/`
 const initialIndex = navbarItems.findIndex(({ link }) => link === `/${currPathPrefix}`);
@@ -88,6 +90,7 @@ const Navbar: React.FC = () => {
               <Avatar alt="ProfilePic" src="">
                 {auth.user?.fullName
                   .split(' ')
+                  .filter((_, i, { length }) => [0, length - 1].includes(i)) // Take first and last name
                   .map((n) => n[0])
                   .join('')}
               </Avatar>
