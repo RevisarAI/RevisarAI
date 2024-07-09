@@ -5,8 +5,7 @@ import reviewModel from './models/review.model';
 
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
 import config from './config';
-import { systemPrompts } from './openai.utils';
-import { ChatCompletionMessageParam } from 'openai/resources';
+import { getSentimentRatingPrompt, getPhrasesPrompt, getImportancePrompt } from './prompt';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
@@ -31,56 +30,49 @@ export class ReviewsConsumer {
         this.logger.info(`- ${prefix} ${message.key}#${message.value}`);
 
         const review: IRawReview = JSON.parse(message.value!.toString());
-        const formattedSystemPrompts: ChatCompletionMessageParam[] = systemPrompts.map((prompt) => ({
-          role: 'system',
-          content: `#${prompt.title.toUpperCase()}:\n${prompt.content}`,
-        }));
-        this.logger.info(`Sending review to Openai... Review: ${review.value}`);
 
-        const response = await this.openai.chat.completions.create({
+        const sentimentRatingPrompt = getSentimentRatingPrompt(review.value);
+        const sentimentRatingResponse = await this.openai.chat.completions.create({
           model: 'gpt-3.5-turbo',
-          messages: [
-            ...formattedSystemPrompts,
-            { role: 'user', content: message.value!.toString() },
-            {
-              role: 'system',
-              content:
-                'Output in JSON, keep strings in lowercase: { "sentiment": "sentiment_value", "rating": rating_value, "importance": importance_rating, "phrases": [quotes] }',
-            },
-          ],
+          messages: sentimentRatingPrompt.messages,
+          top_p: sentimentRatingPrompt.topP,
         });
-
-        const reviewAnalysis: IReviewAnalaysis = IReviewAnalysisSchema.parse(
-          JSON.parse(response.choices[0].message.content!)
+        const { sentiment, rating } = sentimentRatingPrompt.outputSchema.parse(
+          JSON.parse(sentimentRatingResponse.choices[0].message.content!)
         );
+
+        const phrasesPrompt = getPhrasesPrompt(review.value, sentiment);
+        const phrasesResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: phrasesPrompt.messages,
+          top_p: phrasesPrompt.topP,
+        });
+        const phrases = phrasesPrompt.outputSchema.parse(JSON.parse(phrasesResponse.choices[0].message.content!));
+
+        const importancePrompt = getImportancePrompt(review.value, sentiment);
+        const importanceResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: importancePrompt.messages,
+          top_p: importancePrompt.topP,
+        });
+        const importance = importancePrompt.outputSchema.parse(
+          parseInt(importanceResponse.choices[0].message.content!)
+        );
+
+        const reviewAnalysis: IReviewAnalaysis = {
+          sentiment,
+          rating,
+          phrases,
+          importance,
+        };
 
         this.logger.info(
           `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`
         );
 
-        const filteredPhrases = reviewAnalysis.phrases.filter((phrase) =>
-          review.value.toLocaleLowerCase().includes(phrase.toLocaleLowerCase())
-        );
+        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
 
-        if (filteredPhrases.length === 0) {
-          this.logger.error(
-            `No valid phrases found in review: "${review.value}"`,
-            `phrases: ${JSON.stringify(reviewAnalysis.phrases)}`,
-            'not committing offset and waiting for retry...'
-          );
-          throw new Error('No valid phrases found in review');
-        }
-
-        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis, phrases: filteredPhrases };
-
-        const { _id: reviewID } = await reviewModel.create(reviewWithAnalysis);
-
-        if (filteredPhrases.length !== reviewAnalysis.phrases.length) {
-          this.logger.warn(
-            `${reviewAnalysis.phrases.length - filteredPhrases.length} phrases not found in the review: ${reviewID}`
-          );
-        }
-
+        await reviewModel.create(reviewWithAnalysis);
         this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
       },
     });
