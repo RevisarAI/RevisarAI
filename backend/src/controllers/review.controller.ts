@@ -159,12 +159,18 @@ Consider the further instructions and example replies if provided by the manager
     const wordFrequency = new Map<string, number>();
     this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
+    const isWantedWord = (word: string) =>
+      !['was', 'the', 'is', 'a', 'to', 'into', 'of', 'at', 'on', 'in', 'are', 'and'].includes(word.toLowerCase());
+
     reviews.forEach((review) => {
       review.phrases.forEach((phrase) => {
-        phrase.split(' ').forEach((word) => {
-          const count = wordFrequency.get(word) ?? 0;
-          wordFrequency.set(word, count + 1);
-        });
+        phrase
+          .split(' ')
+          .filter(isWantedWord)
+          .forEach((word) => {
+            const count = wordFrequency.get(word) ?? 0;
+            wordFrequency.set(word, count + 1);
+          });
       });
     });
 
