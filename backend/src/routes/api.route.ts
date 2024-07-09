@@ -3,7 +3,7 @@ import authMiddleware from '../common/auth.middleware';
 import reviewRoute from './review.route';
 import clientsRoute from './clients.route';
 import 'express-async-errors';
-import actionItemsRouter from './action-items';
+import actionItemsRouter from './action-items.route';
 import apiKeyRouter from './api-key.router';
 
 const router = express.Router();
