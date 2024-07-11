@@ -10,7 +10,7 @@ interface ActionItemReasonProps {
 
 const ActionItemReason: React.FC<ActionItemReasonProps> = ({ open, item, onClose }) => (
   <Dialog PaperProps={{ sx: { borderRadius: '1rem' } }} fullWidth onClose={onClose} open={open}>
-    <Stack minHeight="30vh" display="flex" direction="column" paddingLeft={5} paddingTop={8}>
+    <Stack minHeight="30vh" display="flex" direction="column" paddingLeft={5} paddingRight={4} paddingTop={8}>
       <IconButton
         aria-label="close"
         onClick={onClose}

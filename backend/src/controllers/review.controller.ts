@@ -148,7 +148,7 @@ Consider the further instructions and example replies if provided by the manager
     this.debug(`Sentiment over time initialized for ${sentimentOverTime.size} sentiments`);
 
     reviews.forEach((review) => {
-      const dateData = sentimentOverTime.get((review.date as Date).toLocaleDateString())!;
+      const dateData = sentimentOverTime.get(new Date(review.date).toLocaleDateString())!;
       dateData[review.sentiment]++;
     });
 
@@ -159,12 +159,18 @@ Consider the further instructions and example replies if provided by the manager
     const wordFrequency = new Map<string, number>();
     this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
+    const isWantedWord = (word: string) =>
+      !['was', 'the', 'is', 'a', 'to', 'into', 'of', 'at', 'on', 'in', 'are', 'and'].includes(word.toLowerCase());
+
     reviews.forEach((review) => {
       review.phrases.forEach((phrase) => {
-        phrase.split(' ').forEach((word) => {
-          const count = wordFrequency.get(word) ?? 0;
-          wordFrequency.set(word, count + 1);
-        });
+        phrase
+          .split(' ')
+          .filter(isWantedWord)
+          .forEach((word) => {
+            const count = wordFrequency.get(word) ?? 0;
+            wordFrequency.set(word, count + 1);
+          });
       });
     });
 
