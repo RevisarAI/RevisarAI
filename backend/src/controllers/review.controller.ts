@@ -148,7 +148,7 @@ Consider the further instructions and example replies if provided by the manager
     this.debug(`Sentiment over time initialized for ${sentimentOverTime.size} sentiments`);
 
     reviews.forEach((review) => {
-      const dateData = sentimentOverTime.get(review.date.toLocaleDateString())!;
+      const dateData = sentimentOverTime.get((review.date as Date).toLocaleDateString())!;
       dateData[review.sentiment]++;
     });
 
