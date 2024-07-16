@@ -46,11 +46,21 @@ const apiKeyRouter = Router();
  *         expiry: 2020-11-01T00:00:00.000Z
  *         revoked: false
  *         createdAt: 2020-11-01T00:00:00.000Z
+ *     CreateApiKey:
+ *       type: object
+ *       properties:
+ *         expiry:
+ *           type: string
+ *           description: The expiry date of the API key
+ *           example: 2020-11-01T00:00:00.000Z
+ *       example:
+ *         expiry: 2020-11-01T00:00:00.000Z
+ *
  */
 
 /**
  * @swagger
- * /api-keys:
+ * /api/api-keys:
  *  get:
  *    tags:
  *      - Api Keys
@@ -72,13 +82,19 @@ const apiKeyRouter = Router();
 
 /**
  * @swagger
- * /api-keys:
+ * /api/api-keys:
  *   post:
  *     tags:
  *       - Api Keys
  *     security:
  *       - bearerAuth: []
  *     summary: Generate a new API key
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateApiKey'
  *     responses:
  *       201:
  *        description: Successful operation
@@ -93,7 +109,7 @@ apiKeyRouter.post(
 
 /**
  * @swagger
- * /api-keys/{id}:
+ * /api/api-keys/{id}:
  *   delete:
  *     tags:
  *       - Api Keys

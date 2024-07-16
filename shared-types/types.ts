@@ -15,6 +15,9 @@ import {
   IApiKeySchema,
   IApiKeyMinimalSchema,
   IRevokeApiKeySchema,
+  IReviewAnalysisSchema,
+  IBatchReviewListSchema,
+  IRawReviewSchema,
 } from './schemas';
 import { z } from 'zod';
 
@@ -43,24 +46,11 @@ export enum DataSourceEnum {
   GOOGLE = 'Google',
   USER_INTERFACE = 'UserInterface',
 }
-export interface IRawReview {
-  businessId: string;
-  value: string;
-  date: Date;
-  dataSource: DataSourceEnum;
-}
+export type IRawReview = z.infer<typeof IRawReviewSchema>;
 
-export interface IBatchReview {
-  value: string;
-  date: Date;
-}
+export type IBatchReviewList = z.infer<typeof IBatchReviewListSchema>;
 
-export interface IReviewAnalaysis {
-  sentiment: SentimentEnum;
-  rating: number;
-  phrases: string[];
-  importance: number;
-}
+export type IReviewAnalaysis = z.infer<typeof IReviewAnalysisSchema>;
 export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
 export type IReviewMinimal = Pick<IReview, '_id' | 'value'>;
 
