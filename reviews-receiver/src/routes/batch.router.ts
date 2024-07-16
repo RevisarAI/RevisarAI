@@ -3,6 +3,41 @@ import BatchController from '../controllers/batch.controller';
 import checkApiKey from '../common/api-key.middleware';
 import { IBatchReviewListSchema } from 'shared-types';
 import { schemaValidationMiddleware } from 'revisar-server-utils/middlewares';
+import { authMiddleware } from 'revisar-server-utils';
+import config from '../config';
+
+/**
+ * @swagger
+ * components:
+ *  securitySchemes:
+ *    bearerAuth:
+ *      type: http
+ *      scheme: bearer
+ *      bearerFormat: JWT
+ */
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     IBatchReview:
+ *       type: object
+ *       required:
+ *         - value
+ *         - date
+ *       properties:
+ *         value:
+ *           type: string
+ *           description: The review text
+ *           example: 'The AI analysis seems a bit hit-or-miss. Some of the insights were spot-on, but others felt off base. Also, the pricing seems a bit high for the current feature set.'
+ *         date:
+ *           type: string
+ *           format: date
+ *           description: The date of the review
+ *           example: '2024-07-06T18:15:23Z'
+ *       example:
+ *         value: 'The AI analysis seems a bit hit-or-miss. Some of the insights were spot-on, but others felt off base. Also, the pricing seems a bit high for the current feature set.'
+ *         date: '2024-07-06T18:15:23Z'
+ */
 
 const batchRouter = Router();
 
@@ -20,23 +55,14 @@ const batchRouter = Router();
  *         schema:
  *          type: object
  *          properties:
+ *           businessId:
+ *            type: string
+ *            description: The ID of the business that the reviews are for
+ *            example: '1asdasdasfd'
  *           reviews:
  *            type: array
  *            items:
- *             schema:
- *              type: object
- *              properties:
- *               value:
- *                type: string
- *                description: The text of the review
- *               date:
- *                type: string
- *                format: date-time
- *                description: The date the review was created
- *          example:
- *           reviews:
- *           - value: 'The AI analysis seems a bit hit-or-miss. Some of the insights were spot-on, but others felt off base. Also, the pricing seems a bit high for the current feature set.'
- *             date: '2021-09-01T00:00:00.000Z'
+ *              $ref: '#/components/schemas/IBatchReview'
  *     responses:
  *       201:
  *         description: Successful operation
@@ -56,5 +82,37 @@ const batchRouter = Router();
  *        example: '1c7ebe32457039cb2e98141e746e081d2a10282fd407e02e538ef72638955b08'
  */
 batchRouter.post('/', checkApiKey, schemaValidationMiddleware({ body: IBatchReviewListSchema }), BatchController.post);
+
+/**
+ * @swagger
+ * /batch/user-interface:
+ *   post:
+ *     tags:
+ *       - Batch
+ *     summary: Post a batch of reviews from user interface
+ *     security:
+ *         - bearerAuth: []
+ *     requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - reviews
+ *               properties:
+ *                 reviews:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/IBatchReview'
+ *     responses:
+ *       200:
+ *         description: The reviews were uploaded successfully.
+ *       401:
+ *         description: Unauthorized.
+ *       500:
+ *           description: Internal Server Error.
+ */
+batchRouter.post('/user-interface', authMiddleware(config.accessTokenSecret), BatchController.postFromUserInterface);
 
 export default batchRouter;

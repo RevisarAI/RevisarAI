@@ -44,6 +44,7 @@ export enum DataSourceEnum {
   API = 'API',
   TRIPADVISOR = 'TripAdvisor',
   GOOGLE = 'Google',
+  USER_INTERFACE = 'UserInterface',
 }
 export type IRawReview = z.infer<typeof IRawReviewSchema>;
 

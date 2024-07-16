@@ -9,15 +9,20 @@ import {
   IGetReviewsParams,
   IGetAllReviewsResponse,
   IReviewReplySchema,
+  IBatchReview,
 } from 'shared-types';
 import OpenAI from 'openai';
 import ReviewModel from '../models/review.model';
 import { BaseController } from './base.controller';
-import { AuthRequest } from 'common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import httpStatus from 'http-status';
 import { Response } from 'express';
 import { daysAgo } from '../utils/date';
 import config from '../config';
+import axios from 'axios';
+import createLogger from 'revisar-server-utils/logger';
+
+const logger = createLogger('reviews controller');
 
 class ReviewController extends BaseController<IReview> {
   private openai: OpenAI;
@@ -123,6 +128,19 @@ Consider the further instructions and example replies if provided by the manager
     } catch (error) {
       const { message, stack } = error as Error;
       this.debug(`Error fetching reviews ${message}, ${stack}`);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+    }
+  }
+
+  async uploadViaReviewsReceiver(req: AuthRequest<{}, IBatchReview[]>, res: Response) {
+    try {
+      await axios.post(`${config.reviewsReceiverEndpoint}/batch/user-interface`, req.body, {
+        headers: { Authorization: req.headers['authorization'] },
+      });
+      return res.status(httpStatus.CREATED).send();
+    } catch (error) {
+      const { message, stack } = error as Error;
+      logger.error(`Error uploading review to reviews receiver ${message}, ${stack}`);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
     }
   }

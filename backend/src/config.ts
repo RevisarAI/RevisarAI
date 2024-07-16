@@ -14,6 +14,7 @@ const ConfigSchema = z.object({
   accessTokenExpiration: z.string(),
   googleClientID: z.string(),
   openaiApiKey: z.string(),
+  reviewsReceiverEndpoint: z.string(),
 });
 
 const config = ConfigSchema.parse({
@@ -27,6 +28,7 @@ const config = ConfigSchema.parse({
   accessTokenExpiration: process.env.ACCESS_TOKEN_EXPIRATION,
   googleClientID: process.env.GOOGLE_CLIENT_ID,
   openaiApiKey: process.env.OPENAI_API_KEY,
+  reviewsReceiverEndpoint: process.env.REVIEWS_RECEIVER_ENDPOINT,
 });
 
 export default config;

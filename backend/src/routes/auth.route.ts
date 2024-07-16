@@ -2,8 +2,9 @@ import { Router } from 'express';
 import authController from '../controllers/auth.controller';
 import { schemaValidationMiddleware } from 'revisar-server-utils/middlewares';
 import { ICreateUserSchema, ILoginFormDataSchema } from 'shared-types';
-import authMiddleware from '../common/auth.middleware';
+import { authMiddleware } from 'revisar-server-utils';
 import 'express-async-errors';
+import config from '../config';
 
 /**
  * @swagger
@@ -193,7 +194,7 @@ authRouter.post('/google', authController.googleSignIn);
  */
 authRouter.put(
   '/google',
-  authMiddleware,
+  authMiddleware(config.accessTokenSecret),
   schemaValidationMiddleware({ body: ICreateUserSchema.pick({ businessName: true, businessDescription: true }) }),
   authController.googleAdditionalDetails
 );
