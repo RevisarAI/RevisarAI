@@ -21,6 +21,7 @@ import { daysAgo } from '../utils/date';
 import config from '../config';
 import axios from 'axios';
 import createLogger from 'revisar-server-utils/logger';
+import { stopwords } from 'utils/stopwords';
 
 const logger = createLogger('reviews controller');
 
@@ -177,8 +178,7 @@ Consider the further instructions and example replies if provided by the manager
     const wordFrequency = new Map<string, number>();
     this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
-    const isWantedWord = (word: string) =>
-      !['was', 'the', 'is', 'a', 'to', 'into', 'of', 'at', 'on', 'in', 'are', 'and'].includes(word.toLowerCase());
+    const isWantedWord = (word: string) => !stopwords.includes(word.toLowerCase());
 
     reviews.forEach((review) => {
       review.phrases.forEach((phrase) => {
