@@ -48,7 +48,7 @@ const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ rows, columns, load
                 </TableRow>
               </TableHead>
               <TableBody>
-                {loading
+                {loading || !rows
                   ? range(5).map((i) => <ActionItemSkeleton key={i} height={5} />)
                   : rows.map((row) => (
                       <TableRow hover key={row._id?.toString()}>

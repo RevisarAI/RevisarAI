@@ -118,6 +118,7 @@ Consider the further instructions and example replies if provided by the manager
     try {
       const reviews = (await this.model
         .find({ businessId: req.user!.businessId, date: { $lt: before }, value: { $regex: search } })
+        .sort({ date: -1 })
         .limit(limit)
         .skip((page - 1) * limit)) as IReview[];
 
