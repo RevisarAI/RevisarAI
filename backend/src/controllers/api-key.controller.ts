@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { randomBytes } from 'crypto';
 import { hash } from 'bcrypt';
 import ApiKey from '../models/api-key.model';
-import { AuthRequest } from '../common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import { daysAhead } from '../utils/date';
 import httpStatus from 'http-status';
 

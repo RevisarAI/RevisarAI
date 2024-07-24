@@ -21,7 +21,7 @@ import { daysAgo } from '../utils/date';
 import config from '../config';
 import axios from 'axios';
 import createLogger from 'revisar-server-utils/logger';
-import { stopwords } from 'utils/stopwords';
+import { stopwords } from '../utils/stopwords';
 
 const logger = createLogger('reviews controller');
 
