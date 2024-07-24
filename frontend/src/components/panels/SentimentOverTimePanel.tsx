@@ -33,7 +33,7 @@ const SentimentOverTimePanel: React.FC<SentimentOverTimePanelProps> = ({
             series={Object.values(SentimentEnum).map((sentiment) => ({
               dataKey: sentiment,
               label: sentiment.charAt(0).toUpperCase() + sentiment.slice(1),
-              color: sentimentColors[sentiment].fill,
+              color: sentimentColors[sentiment].border,
             }))}
           />
         </Box>
