@@ -50,6 +50,8 @@ export type IRawReview = z.infer<typeof IRawReviewSchema>;
 
 export type IBatchReviewList = z.infer<typeof IBatchReviewListSchema>;
 
+export type IBatchReview = Pick<IRawReview, 'value' | 'date'>;
+
 export type IReviewAnalaysis = z.infer<typeof IReviewAnalysisSchema>;
 export type IReview = IRawReview & IReviewAnalaysis & { _id?: mongooseTypes.ObjectId };
 export type IReviewMinimal = Pick<IReview, '_id' | 'value'>;

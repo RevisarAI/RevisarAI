@@ -16,7 +16,7 @@ const config = ConfigSchema.parse({
   metadataDBUrl: process.env.METADATA_DB_URL,
   metadataDBName: process.env.METADATA_DB_NAME,
   port: process.env.PORT,
-  kafka_brokers: process.env.KAFKA_BROKERS,
+  kafkaBrokers: process.env.KAFKA_BROKERS,
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
   topic: process.env.TOPIC,
 });
