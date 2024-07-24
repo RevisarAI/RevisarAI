@@ -25,7 +25,29 @@ reviews = [{
     }, {
         "value": "This platform is a great starting point for understanding customer feedback. The visualizations are clear, and I like that I can drill down into specific topics.  I would love to see more advanced features like competitor analysis in the future.",
         "date": "2024-02-02 01:01:01"
-    }]
+    },
+    {
+        "value": "This platform is bad, I did not like it. The analysis was not accurate, and the interface was clunky. I would not recommend this to others.",
+        "date": "2024-02-02 01:01:01"
+    },
+    {
+        "value": "This platform is not very useful. The insights are not actionable, and the analysis is not accurate. I would not recommend this to others.",
+        "date": "2024-02-02 01:01:01"
+    },
+    {
+        "value": "This platform is not well designed. The colors are too bright, and the interface is clunky. I would not recommend this to others.",
+        "date": "2024-02-02 01:01:01"
+    },
+    {
+        "value": "This platform is not worth the price. The features are limited, and the analysis is not accurate. I would not recommend this to others.",
+        "date": "2024-02-02 01:01:01"
+    },
+    {
+        "value": "This platform is fine. I do not know what to say.",
+        "date": "2024-02-02 01:01:01"
+    },
+
+]
 
 response = requests.post(URL, json={"reviews": reviews}, headers={"x-api-key": API_KEY})
 
