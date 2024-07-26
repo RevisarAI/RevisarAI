@@ -176,6 +176,7 @@ Consider the further instructions and example replies if provided by the manager
   }
 
   private getWordsFrequencies(reviews: IReview[]): IWordFrequency[] {
+    const totalWordFrequency = new Map<string, number>();
     const positiveWordFrequency = new Map<string, number>();
     const negativeWordFrequency = new Map<string, number>();
     const neutralWordFrequency = new Map<string, number>();
@@ -189,6 +190,8 @@ Consider the further instructions and example replies if provided by the manager
           .split(' ')
           .filter(isWantedWord)
           .forEach((word) => {
+            const count = totalWordFrequency.get(word) ?? 0;
+            totalWordFrequency.set(word, count + 1);
             if (review.sentiment === 'positive') {
               const count = positiveWordFrequency.get(word) ?? 0;
               positiveWordFrequency.set(word, count + 1);
@@ -201,23 +204,6 @@ Consider the further instructions and example replies if provided by the manager
             }
           });
       });
-    });
-
-    const totalWordFrequency = new Map<string, number>();
-
-    positiveWordFrequency.forEach((value, word) => {
-      const count = totalWordFrequency.get(word) ?? 0;
-      totalWordFrequency.set(word, count + value);
-    });
-
-    negativeWordFrequency.forEach((value, word) => {
-      const count = totalWordFrequency.get(word) ?? 0;
-      totalWordFrequency.set(word, count + value);
-    });
-
-    neutralWordFrequency.forEach((value, word) => {
-      const count = totalWordFrequency.get(word) ?? 0;
-      totalWordFrequency.set(word, count + value);
     });
 
     return Array.from(totalWordFrequency.entries())
