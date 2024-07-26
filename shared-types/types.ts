@@ -77,6 +77,9 @@ export interface ISentimentBarChartGroup {
 
 export interface IWordFrequency {
   text: string;
+  positive: number;
+  negative: number;
+  neutral: number;
   value: number;
 }
 
