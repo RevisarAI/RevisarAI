@@ -1,18 +1,21 @@
 import { CSSProperties } from 'react';
 import { SentimentEnum } from 'shared-types';
 
-export const sentimentColors: Record<SentimentEnum, Record<'border' | 'fill', string>> = {
+export const sentimentColors: Record<SentimentEnum, Record<'border' | 'fill' | 'main', string>> = {
   positive: {
     fill: '#defce2',
     border: '#76de83',
+    main: '#367E18'
   },
   negative: {
     fill: '#fae3e3',
     border: '#af6863',
+    main: '#B00020'
   },
   neutral: {
     fill: '#faf2d3',
     border: '#e0cd80',
+    main: '#FFC107'
   },
 };
 
