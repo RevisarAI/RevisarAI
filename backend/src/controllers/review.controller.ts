@@ -176,27 +176,46 @@ Consider the further instructions and example replies if provided by the manager
   }
 
   private getWordsFrequencies(reviews: IReview[]): IWordFrequency[] {
-    const wordFrequency = new Map<string, number>();
+    const totalWordFrequency = new Map<string, number>();
+    const positiveWordFrequency = new Map<string, number>();
+    const negativeWordFrequency = new Map<string, number>();
+    const neutralWordFrequency = new Map<string, number>();
     this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
     const isWantedWord = (word: string) => !stopwords.includes(word.toLowerCase());
+    const removePunctuation = (word: string) => word.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
 
     reviews.forEach((review) => {
-      review.phrases.forEach((phrase) => {
-        phrase
-          .split(' ')
-          .filter(isWantedWord)
-          .forEach((word) => {
-            const count = wordFrequency.get(word) ?? 0;
-            wordFrequency.set(word, count + 1);
-          });
-      });
+      review.value
+        .split(' ')
+        .filter(isWantedWord)
+        .map(removePunctuation)
+        .forEach((word) => {
+          const count = totalWordFrequency.get(word) ?? 0;
+          totalWordFrequency.set(word, count + 1);
+          if (review.sentiment === 'positive') {
+            const count = positiveWordFrequency.get(word) ?? 0;
+            positiveWordFrequency.set(word, count + 1);
+          } else if (review.sentiment === 'negative') {
+            const count = negativeWordFrequency.get(word) ?? 0;
+            negativeWordFrequency.set(word, count + 1);
+          } else if (review.sentiment === 'neutral') {
+            const count = neutralWordFrequency.get(word) ?? 0;
+            neutralWordFrequency.set(word, count + 1);
+          }
+        });
     });
 
-    return Array.from(wordFrequency.entries())
+    return Array.from(totalWordFrequency.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 20)
-      .map(([text, value]) => ({ text, value }));
+      .map(([text, value]) => ({
+        text,
+        positive: positiveWordFrequency.get(text) ?? 0,
+        negative: negativeWordFrequency.get(text) ?? 0,
+        neutral: neutralWordFrequency.get(text) ?? 0,
+        value,
+      }));
   }
 
   private getDataSourceDistribution(reviews: IReview[]): IPieChartData[] {
