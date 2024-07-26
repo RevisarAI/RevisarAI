@@ -183,27 +183,27 @@ Consider the further instructions and example replies if provided by the manager
     this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
     const isWantedWord = (word: string) => !stopwords.includes(word.toLowerCase());
+    const removePunctuation = (word: string) => word.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
 
     reviews.forEach((review) => {
-      review.phrases.forEach((phrase) => {
-        phrase
-          .split(' ')
-          .filter(isWantedWord)
-          .forEach((word) => {
-            const count = totalWordFrequency.get(word) ?? 0;
-            totalWordFrequency.set(word, count + 1);
-            if (review.sentiment === 'positive') {
-              const count = positiveWordFrequency.get(word) ?? 0;
-              positiveWordFrequency.set(word, count + 1);
-            } else if (review.sentiment === 'negative') {
-              const count = negativeWordFrequency.get(word) ?? 0;
-              negativeWordFrequency.set(word, count + 1);
-            } else if (review.sentiment === 'neutral') {
-              const count = neutralWordFrequency.get(word) ?? 0;
-              neutralWordFrequency.set(word, count + 1);
-            }
-          });
-      });
+      review.value
+        .split(' ')
+        .filter(isWantedWord)
+        .map(removePunctuation)
+        .forEach((word) => {
+          const count = totalWordFrequency.get(word) ?? 0;
+          totalWordFrequency.set(word, count + 1);
+          if (review.sentiment === 'positive') {
+            const count = positiveWordFrequency.get(word) ?? 0;
+            positiveWordFrequency.set(word, count + 1);
+          } else if (review.sentiment === 'negative') {
+            const count = negativeWordFrequency.get(word) ?? 0;
+            negativeWordFrequency.set(word, count + 1);
+          } else if (review.sentiment === 'neutral') {
+            const count = neutralWordFrequency.get(word) ?? 0;
+            neutralWordFrequency.set(word, count + 1);
+          }
+        });
     });
 
     return Array.from(totalWordFrequency.entries())
