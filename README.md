@@ -106,8 +106,8 @@ Each microservice requires certain environment variables to run properly. These 
 |                      | PORT                      | The port on which the service runs      |
 |                      | KAFKA_BROKERS             | The addresses of the Kafka brokers      |
 |                      | TOPIC                     | The Kafka topic to produce to           |
-| ActionItemsGenerator | DATALAKE_DB_URL           | The URL of the datalake database        |
-|                      | DATALAKE_DB_NAME          | The name of the datalake database       |
+| ActionItemsGenerator | DATALAKE_DB_URL           | The URL of the database                 |
+|                      | DATALAKE_DB_NAME          | The name of the database                |
 |                      | PORT                      | The port on which the service runs      |
 |                      | TOPIC                     | The Kafka topic to consume              |
 |                      | KAFKA_BROKERS             | The addresses of the Kafka brokers      |

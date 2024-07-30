@@ -21,6 +21,7 @@ import { daysAgo } from '../utils/date';
 import config from '../config';
 import axios from 'axios';
 import createLogger from 'revisar-server-utils/logger';
+import { stopwords } from '../utils/stopwords';
 
 const logger = createLogger('reviews controller');
 
@@ -117,6 +118,7 @@ Consider the further instructions and example replies if provided by the manager
     try {
       const reviews = (await this.model
         .find({ businessId: req.user!.businessId, date: { $lt: before }, value: { $regex: search } })
+        .sort({ date: -1 })
         .limit(limit)
         .skip((page - 1) * limit)) as IReview[];
 
@@ -166,7 +168,7 @@ Consider the further instructions and example replies if provided by the manager
     this.debug(`Sentiment over time initialized for ${sentimentOverTime.size} sentiments`);
 
     reviews.forEach((review) => {
-      const dateData = sentimentOverTime.get(review.date.toLocaleDateString())!;
+      const dateData = sentimentOverTime.get(new Date(review.date).toLocaleDateString())!;
       dateData[review.sentiment]++;
     });
 
@@ -177,12 +179,17 @@ Consider the further instructions and example replies if provided by the manager
     const wordFrequency = new Map<string, number>();
     this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
+    const isWantedWord = (word: string) => !stopwords.includes(word.toLowerCase());
+
     reviews.forEach((review) => {
       review.phrases.forEach((phrase) => {
-        phrase.split(' ').forEach((word) => {
-          const count = wordFrequency.get(word) ?? 0;
-          wordFrequency.set(word, count + 1);
-        });
+        phrase
+          .split(' ')
+          .filter(isWantedWord)
+          .forEach((word) => {
+            const count = wordFrequency.get(word) ?? 0;
+            wordFrequency.set(word, count + 1);
+          });
       });
     });
 

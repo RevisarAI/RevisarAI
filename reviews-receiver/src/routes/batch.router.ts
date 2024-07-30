@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import BatchController from '../controllers/batch.controller';
 import checkApiKey from '../common/api-key.middleware';
-import { IBatchReviewList } from 'shared-types';
+import { IBatchReviewListSchema } from 'shared-types';
 import { schemaValidationMiddleware } from 'revisar-server-utils/middlewares';
 import { authMiddleware } from 'revisar-server-utils';
+import config from '../config';
+
 /**
  * @swagger
  * components:
@@ -75,7 +77,7 @@ const batchRouter = Router();
  *        description: The API key
  *        example: '1c7ebe32457039cb2e98141e746e081d2a10282fd407e02e538ef72638955b08'
  */
-batchRouter.post('/', checkApiKey, schemaValidationMiddleware({ body: IBatchReviewList }), BatchController.post);
+batchRouter.post('/', checkApiKey, schemaValidationMiddleware({ body: IBatchReviewListSchema }), BatchController.post);
 
 /**
  * @swagger
@@ -107,6 +109,6 @@ batchRouter.post('/', checkApiKey, schemaValidationMiddleware({ body: IBatchRevi
  *       500:
  *           description: Internal Server Error.
  */
-batchRouter.post('/user-interface', authMiddleware, BatchController.postFromUserInterface);
+batchRouter.post('/user-interface', authMiddleware(config.accessTokenSecret), BatchController.postFromUserInterface);
 
 export default batchRouter;

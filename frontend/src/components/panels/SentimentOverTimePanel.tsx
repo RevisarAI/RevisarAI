@@ -1,8 +1,9 @@
 import React from 'react';
-import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 import { BarChart } from '@mui/x-charts';
 import { ISentimentBarChartGroup, SentimentEnum } from 'shared-types';
 import BarChartSkeleton from '../skeletons/BarChartSkeleton';
+import { sentimentColors } from '../reviews/HighlightedText';
 
 interface SentimentOverTimePanelProps {
   data: ISentimentBarChartGroup[];
@@ -32,6 +33,7 @@ const SentimentOverTimePanel: React.FC<SentimentOverTimePanelProps> = ({
             series={Object.values(SentimentEnum).map((sentiment) => ({
               dataKey: sentiment,
               label: sentiment.charAt(0).toUpperCase() + sentiment.slice(1),
+              color: sentimentColors[sentiment].border,
             }))}
           />
         </Box>

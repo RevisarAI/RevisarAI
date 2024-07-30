@@ -1,10 +1,11 @@
 import OpenAI from 'openai';
-import { IRawReview, IReview, IReviewAnalaysis } from 'shared-types';
+import { IRawReview, IReview, IReviewAnalaysis, IReviewAnalysisSchema } from 'shared-types';
 import createLogger from 'revisar-server-utils/logger';
 import reviewModel from './models/review.model';
 
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
 import config from './config';
+import { getSentimentRatingPrompt, getPhrasesPrompt, getImportancePrompt } from './prompt';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
@@ -29,49 +30,49 @@ export class ReviewsConsumer {
         this.logger.info(`- ${prefix} ${message.key}#${message.value}`);
 
         const review: IRawReview = JSON.parse(message.value!.toString());
-        const systemPrompt = `Context:
-You are a professional customer reviews analyst.
-You are hired by a company to analyze their customer reviews and provide a detailed analysis of each review.
-Input:
-A text which contains a customer review of a product or service provided by the company.
-Goals:
-1. Determine the review's sentiment (positive, negative, or neutral).
-2. Provide an overall rating on the scale of 1-10.
-3. Extract concise and relevant phrases that succinctly explain the sentiment exactly as they appear in the review.
-4. Rate the review's importance on a scale of 0-100 based on the importance and potential for generating actionable items based on it.
-General Considerations:
-1. Consider the overall tone, language used, and any specific praises or criticisms mentioned in the review.
-2. Be as specific as possible
-Instructions for phrases extraction:
-1. Each phrase is a single sentence or clause that is directly taken from the review letter by letter. It must be verbatim from the review text and contain an exact piece of the review without skipping a letter. 
-2. A phrase cannot combine multiple "pieces" of the review into one phrase. multiple "pieces" shall be considered separate phrases.
-3. In the phrases, use up to 8 words and attempt to use as few words as possible, just a couple of keywords if possible.
-4. If an extracted phrase ends with a comma or period, you can remove the end punctuation.`;
-        this.logger.info(`Sending review to Openai... Review: ${review.value}`);
-        const response = await this.openai.chat.completions.create({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt,
-            },
-            { role: 'user', content: message.value!.toString() },
-            {
-              role: 'system',
-              content:
-                'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "importance": "importance_rating", "phrases": [...] }',
-            },
-          ],
-        });
 
-        const reviewAnalysis: IReviewAnalaysis = JSON.parse(response.choices[0].message.content!);
+        const sentimentRatingPrompt = getSentimentRatingPrompt(review.value);
+        const sentimentRatingResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: sentimentRatingPrompt.messages,
+          top_p: sentimentRatingPrompt.topP,
+        });
+        const { sentiment, rating } = sentimentRatingPrompt.outputSchema.parse(
+          JSON.parse(sentimentRatingResponse.choices[0].message.content!)
+        );
+
+        const phrasesPrompt = getPhrasesPrompt(review.value, sentiment);
+        const phrasesResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: phrasesPrompt.messages,
+          top_p: phrasesPrompt.topP,
+        });
+        const phrases = phrasesPrompt.outputSchema.parse(JSON.parse(phrasesResponse.choices[0].message.content!));
+
+        const importancePrompt = getImportancePrompt(review.value, sentiment);
+        const importanceResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: importancePrompt.messages,
+          top_p: importancePrompt.topP,
+        });
+        const importance = importancePrompt.outputSchema.parse(
+          parseInt(importanceResponse.choices[0].message.content!)
+        );
+
+        const reviewAnalysis: IReviewAnalaysis = {
+          sentiment,
+          rating,
+          phrases,
+          importance,
+        };
 
         this.logger.info(
           `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`
         );
-        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
-        await reviewModel.create(reviewWithAnalysis);
 
+        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
+
+        await reviewModel.create(reviewWithAnalysis);
         this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
       },
     });

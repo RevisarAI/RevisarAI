@@ -1,6 +1,6 @@
 import { Types as mongooseTypes } from 'mongoose';
 import { z } from 'zod';
-import { WeekdaysEnum } from './types';
+import { DataSourceEnum, SentimentEnum, WeekdaysEnum } from './types';
 
 export const IPaginationSchema = z.object({
   page: z.number().int().positive().default(1),
@@ -12,8 +12,15 @@ export const IGetReviewsBodySchema = IPaginationSchema.extend({
   search: z.string().optional().default(''),
 });
 
+export const IReviewAnalysisSchema = z.object({
+  sentiment: z.nativeEnum(SentimentEnum),
+  rating: z.number().int().min(1).max(10),
+  phrases: z.array(z.string()),
+  importance: z.number().int().min(0).max(100),
+});
+
 export const IClientSchema = z.object({
-  _id: z.instanceof(mongooseTypes.ObjectId).optional(),
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]).optional(),
   email: z.string(),
   fullName: z.string(),
   businessName: z.string(),
@@ -50,19 +57,21 @@ export const IWeeklyActionItemsRequestSchema = z.object({
 });
 
 export const IActionItemSchema = z.object({
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]).optional(),
   value: z.string(),
   reason: z.string(),
   isCompleted: z.boolean().optional().default(false),
 });
 
 export const IWeeklyActionItemsSchema = z.object({
+  _id: z.instanceof(mongooseTypes.ObjectId).optional(),
   actionItems: z.array(IActionItemSchema),
   date: z.date(),
   businessId: z.string(),
 });
 
 export const IApiKeySchema = z.object({
-  _id: z.instanceof(mongooseTypes.ObjectId).or(z.string()),
+  _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]),
   key: z.string(),
   businessId: z.string(),
   createdAt: z.date(),
@@ -97,17 +106,23 @@ export const IGenerateReviewReplySchema = z.object({
   previousReplies: z.array(z.string()).optional().default([]),
 });
 
+export const IRawReviewSchema = z.object({
+  businessId: z.string(),
+  value: z.string(),
+  date: z.date().or(z.string()),
+  dataSource: z.nativeEnum(DataSourceEnum),
+});
+
 export const IReviewReplySchema = z.object({
   text: z.string(),
 });
 
-export const IBatchReviewList = z.object({
-  businessId: z.string(),
+export const IBatchReviewListSchema = z.object({
   reviews: z
     .array(
-      z.object({
-        value: z.string(),
-        date: z.string(),
+      IRawReviewSchema.pick({
+        value: true,
+        date: true,
       })
     )
     .nonempty(),

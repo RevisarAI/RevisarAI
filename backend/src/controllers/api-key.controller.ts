@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { randomBytes } from 'crypto';
 import { hash } from 'bcrypt';
 import ApiKey from '../models/api-key.model';
-import { AuthRequest } from '../common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import { daysAhead } from '../utils/date';
 import httpStatus from 'http-status';
 
@@ -44,9 +44,9 @@ class ApiKeyController extends BaseController<IApiKey> {
       const plainApiKey = `${businessId}:${randomBytes(32).toString('hex')}`;
       const hashedApiKey = await hash(plainApiKey, 10);
 
-      const newApiKey = new ApiKey({ key: hashedApiKey, businessId, expiry, revoked: false });
-      await newApiKey.save();
-      return res.status(httpStatus.CREATED).json(ICreateApiKeyResponseSchema.parse({ ...newApiKey, key: plainApiKey }));
+      const newApiKey = await new ApiKey({ key: hashedApiKey, businessId, expiry, revoked: false }).save();
+      const parsedApiKey = ICreateApiKeyResponseSchema.parse({ ...newApiKey.toJSON(), key: plainApiKey });
+      return res.status(httpStatus.CREATED).json(parsedApiKey);
     } catch (err) {
       this.debug(
         `Error generating API key for ${businessId} as requested by user mail "${email}"`,

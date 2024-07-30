@@ -1,5 +1,5 @@
-import { IBatchReview, DataSourceEnum } from 'shared-types';
-import { Request, Response } from 'express';
+import { DataSourceEnum, IBatchReviewList, IBatchReview } from 'shared-types';
+import { Response, Request } from 'express';
 import ReviewsProducer from '../producer';
 import { ApiKeyRequest } from 'common/api-key.middleware';
 import httpStatus from 'http-status';
@@ -14,10 +14,11 @@ class BatchController {
     this.reviewsProducer = new ReviewsProducer();
   }
 
-  post = async (req: ApiKeyRequest<object, void, IBatchReview[]>, res: Response) => {
-    const { businessId, body: reviews } = req;
+  post = async (req: ApiKeyRequest<object, void, IBatchReviewList>, res: Response) => {
+    const { businessId, body } = req;
+    const { reviews } = body;
 
-    const mappedReviews = reviews.map((review: IBatchReview) => ({
+    const mappedReviews = reviews.map((review) => ({
       ...review,
       businessId,
       dataSource: DataSourceEnum.API,
