@@ -1,6 +1,5 @@
-import { datalake } from '../db';
+import { generateMongooseModel } from 'revisar-server-utils/db';
 import { IReview, ReviewMongooseSchema } from 'shared-types';
+import { datalake } from '../db';
 
-const reviewSchema = new datalake.Schema<IReview>(ReviewMongooseSchema.schema);
-
-export default datalake.model<IReview>(ReviewMongooseSchema.name, reviewSchema);
+export default generateMongooseModel<IReview>(datalake, ReviewMongooseSchema);

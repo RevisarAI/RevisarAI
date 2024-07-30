@@ -1,6 +1,5 @@
-import { datalake } from '../db';
+import { generateMongooseModel } from 'revisar-server-utils/db';
 import { IWeeklyActionItems, WeeklyActionItemsMongooseSchema } from 'shared-types';
+import { datalake } from '../db';
 
-const WeeklyActionItemsSchema = new datalake.Schema<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.schema);
-
-export default datalake.model<IWeeklyActionItems>(WeeklyActionItemsMongooseSchema.name, WeeklyActionItemsSchema);
+export default generateMongooseModel<IWeeklyActionItems>(datalake, WeeklyActionItemsMongooseSchema);
