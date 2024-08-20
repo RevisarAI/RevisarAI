@@ -60,6 +60,7 @@ export const IActionItemSchema = z.object({
   _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]).optional(),
   value: z.string(),
   reason: z.string(),
+  priority: z.number().int().min(1).max(10),
   isCompleted: z.boolean().optional().default(false),
 });
 

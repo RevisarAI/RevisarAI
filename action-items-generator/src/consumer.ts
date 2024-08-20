@@ -58,6 +58,7 @@ A list of reviews from the past week provided by the company in a JSON format, e
 Goal:
 The goal is to extract the 5 most important action items for the next week based on the provided reviews.
 Each action item should include an explanation with references and ids from the list of reviews.
+Each item should be given a priority from 1 to 10 based on the item's potential to increase company sales.
 General Instructions:
 The action items should be:
 1. Clear and actionable.
@@ -73,7 +74,7 @@ The action items should be:
               { role: 'user', content: JSON.stringify(minialLastWeekReviews) },
               {
                 role: 'system',
-                content: 'Output: in JSON: [{"value": string, "reason": string}].',
+                content: 'Output: in JSON: [{"value": string, "reason": string, "priority": number}].',
               },
             ],
           });
