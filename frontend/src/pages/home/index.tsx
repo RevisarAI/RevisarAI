@@ -76,7 +76,6 @@ const HomePage: React.FC = () => {
               height={250}
               data={status == 'success' ? data.wordsFrequencies : []}
               loading={status == 'pending'}
-              colors={['#143059', '#2F6B9A', '#82a6c2']}
             />
           </Grid>
         </Grid>
