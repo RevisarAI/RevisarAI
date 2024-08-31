@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import batchRouter from './routes/batch.router';
-import { connectMetadata } from './db';
+import { connectMetadataDb } from './db';
 
 const app = express();
 
@@ -22,7 +22,7 @@ const initApp = async () => {
     next();
   });
 
-  await connectMetadata();
+  await connectMetadataDb();
 
   const swaggerOptions: swaggerJsDoc.Options = {
     definition: {

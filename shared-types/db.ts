@@ -67,6 +67,10 @@ export const ApiKeyMongooseSchema: IMongooseSchemaConfig<IApiKey> = {
       required: true,
       unique: true,
     },
+    name: {
+      type: String,
+      required: true,
+    },
     businessId: {
       type: String,
       required: true,
@@ -85,6 +89,13 @@ export const ApiKeyMongooseSchema: IMongooseSchemaConfig<IApiKey> = {
       default: false,
     },
   },
+  indexes: [
+    // A businessId cannot have 2 keys with the same name
+    {
+      index: { businessId: 1, name: 1 },
+      options: { unique: true },
+    },
+  ],
 };
 
 const ActionItemMongooseSchema: IMongooseSchemaConfig<IActionItem> = {
