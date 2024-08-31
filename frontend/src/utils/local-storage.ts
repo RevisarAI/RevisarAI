@@ -1,4 +1,4 @@
-import { UserTokens } from 'shared-types';
+import { IUserTokens } from 'shared-types';
 
 export const clearTokens = (): void => {
   localStorage.removeItem('token');
@@ -8,7 +8,7 @@ export const clearTokens = (): void => {
   sessionStorage.removeItem('refreshToken');
 };
 
-export const writeTokens = (tokens: UserTokens, rememberMe: boolean = false): void => {
+export const writeTokens = (tokens: IUserTokens, rememberMe: boolean = false): void => {
   // Clear any existing tokens
   clearTokens();
 
