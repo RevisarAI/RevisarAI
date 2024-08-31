@@ -67,10 +67,6 @@ export const ApiKeyMongooseSchema: IMongooseSchemaConfig<IApiKey> = {
       required: true,
       unique: true,
     },
-    name: {
-      type: String,
-      required: true,
-    },
     businessId: {
       type: String,
       required: true,

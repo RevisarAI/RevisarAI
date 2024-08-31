@@ -74,7 +74,6 @@ export const IWeeklyActionItemsSchema = z.object({
 export const IApiKeySchema = z.object({
   _id: z.union([z.custom<mongooseTypes.ObjectId>(), z.string()]),
   key: z.string(),
-  name: z.string(),
   businessId: z.string(),
   createdAt: z.date(),
   expiry: z.date().optional(),
