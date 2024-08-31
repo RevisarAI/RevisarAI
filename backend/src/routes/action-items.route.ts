@@ -1,6 +1,8 @@
 import { actionItemsController } from '../controllers/action-items.controller';
 import { Router } from 'express';
 import 'express-async-errors';
+import { schemaValidationMiddleware } from 'revisar-server-utils';
+import { IActionItemSchema } from 'shared-types';
 
 const actionItemsRouter = Router();
 
@@ -89,5 +91,34 @@ const actionItemsRouter = Router();
  *           description: Internal Server Error
  */
 actionItemsRouter.get('/', actionItemsController.getWeeklyActionItems.bind(actionItemsController));
+
+/**
+ * @swagger
+ * paths:
+ *   /api/action-items/:
+ *     put:
+ *       summary: Update action item
+ *       tags: [Action Items]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         200:
+ *           description: The update succeeded
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/ActionItem'
+ *         401:
+ *           description: Unauthorized
+ *         404:
+ *           description: Action item not found
+ *         500:
+ *           description: Internal Server Error
+ */
+actionItemsRouter.put(
+  '',
+  schemaValidationMiddleware({ body: IActionItemSchema }),
+  actionItemsController.updateActionItem.bind(actionItemsController)
+);
 
 export default actionItemsRouter;

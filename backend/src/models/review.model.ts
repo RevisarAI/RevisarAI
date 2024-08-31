@@ -1,5 +1,6 @@
 import { IReview, ReviewMongooseSchema } from 'shared-types';
 import { datalake } from '../db';
+import { generateMongooseModel } from 'revisar-server-utils/db';
 
 /**
  * @swagger
@@ -49,6 +50,5 @@ import { datalake } from '../db';
  *         phrases: ["amazing"]
  *         dataSource: "google"
  */
-const reviewSchema = new datalake.Schema<IReview>(ReviewMongooseSchema.schema);
 
-export default datalake.model<IReview>(ReviewMongooseSchema.name, reviewSchema);
+export default generateMongooseModel<IReview>(datalake, ReviewMongooseSchema);

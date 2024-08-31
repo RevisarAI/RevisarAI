@@ -167,7 +167,7 @@ const ReviewReply: React.FC<ReviewReplyProps> = ({ reviewText, open, onClose }) 
                     }
                   }}
                   inputProps={{ maxLength: 65 }}
-                  placeholder={'Prompt or regenerate new reply automatically'}
+                  placeholder={'Specify instruction or regenerate new reply automatically'}
                   InputProps={{
                     // Input icon
                     endAdornment: (

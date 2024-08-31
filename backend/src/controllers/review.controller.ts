@@ -21,6 +21,7 @@ import { daysAgo } from '../utils/date';
 import config from '../config';
 import axios from 'axios';
 import createLogger from 'revisar-server-utils/logger';
+import { stopwords } from '../utils/stopwords';
 
 const logger = createLogger('reviews controller');
 
@@ -62,20 +63,28 @@ class ReviewController extends BaseController<IReview> {
       .slice(-4) // Take the latest 4 replies (the frontend should also send 4 replies at most)
       .map((reply, i) => `${i + 1}. "${reply}"`)
       .join('\n');
-    const previousRepliesMessage = `Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
-    const promptMessage = `I want the reply to focus on "${prompt}"`;
+    const previousRepliesMessage = `Example Replies: Here are some replies I'm not satisfied with, try to write a review which is different in phrasing and meaning than these: ${formattedPreviousReplies}`;
+    const promptMessage = `Based on the example replies, here are some further instructions: ${prompt}`;
 
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       {
         role: 'system',
-        content: `You are a customer success advisor and write replies to customer reviews in "${req.user!.businessName}".
-You should provide the customer with the best overall experience, so that he keeps using the company's products.
-You are given a customer's review. Read the review and write a straight reply that expresses the company's thoughts on the review.
+        content: `Background: You are a customer success advisor that write replies to customer reviews in "${req.user!.businessName}".
+The manager of the company has asked you to write a reply to a customer review.
+Your reply should provide the customer with the best overall experience, so that he keeps using the company's products.
+The manager provides you with the following data:
+Inputs:
+1. A customer's review
+2. An optional list of example replies that did not satisfy the manager
+3. Optional further instructions from the manager to consider for writing a better reply.
+General Instructions: 
 Appreciate positive reviews and try to understand and show will to improve in the near future for the negative ones.
-The reply should not exceed 120 words but should end up with less than 120 words and should be written in a more friendly yet polite tone.
-The customer may provide a prompt by the customer to focus on a specific aspect of the review.
-The customer may also provide a list of previous replies that did not satisfy him.`,
+The reply should contain 20-70 words at average and 110 at maximum and should be written in a friendly yet polite tone.
+Goal:
+Read the review and write a straight reply that expresses the company's thoughts on the review.
+Consider the further instructions and example replies if provided by the manager to make your reply more precise.`,
       },
+      { role: 'user', content: reviewText }, // User review
     ];
 
     if (previousReplies.length > 0) {
@@ -86,13 +95,10 @@ The customer may also provide a list of previous replies that did not satisfy hi
       messages.push({ role: 'user', content: promptMessage });
     }
 
-    messages.push(
-      { role: 'user', content: reviewText },
-      {
-        role: 'system',
-        content: 'Output in JSON: { "text": "reply_content" }',
-      }
-    );
+    messages.push({
+      role: 'system',
+      content: 'Output in JSON: { "text": "reply_content" }',
+    });
 
     const response = await this.openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
@@ -112,6 +118,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
     try {
       const reviews = (await this.model
         .find({ businessId: req.user!.businessId, date: { $lt: before }, value: { $regex: search } })
+        .sort({ date: -1 })
         .limit(limit)
         .skip((page - 1) * limit)) as IReview[];
 
@@ -161,7 +168,7 @@ The customer may also provide a list of previous replies that did not satisfy hi
     this.debug(`Sentiment over time initialized for ${sentimentOverTime.size} sentiments`);
 
     reviews.forEach((review) => {
-      const dateData = sentimentOverTime.get(review.date.toLocaleDateString())!;
+      const dateData = sentimentOverTime.get(new Date(review.date).toLocaleDateString())!;
       dateData[review.sentiment]++;
     });
 
@@ -169,22 +176,46 @@ The customer may also provide a list of previous replies that did not satisfy hi
   }
 
   private getWordsFrequencies(reviews: IReview[]): IWordFrequency[] {
-    const wordFrequency = new Map<string, number>();
+    const totalWordFrequency = new Map<string, number>();
+    const positiveWordFrequency = new Map<string, number>();
+    const negativeWordFrequency = new Map<string, number>();
+    const neutralWordFrequency = new Map<string, number>();
     this.debug(`Calculating word frequency for ${reviews.length} reviews`);
 
+    const isWantedWord = (word: string) => !stopwords.includes(word.toLowerCase());
+    const removePunctuation = (word: string) => word.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
+
     reviews.forEach((review) => {
-      review.phrases.forEach((phrase) => {
-        phrase.split(' ').forEach((word) => {
-          const count = wordFrequency.get(word) ?? 0;
-          wordFrequency.set(word, count + 1);
+      review.value
+        .split(' ')
+        .filter(isWantedWord)
+        .map(removePunctuation)
+        .forEach((word) => {
+          const count = totalWordFrequency.get(word) ?? 0;
+          totalWordFrequency.set(word, count + 1);
+          if (review.sentiment === 'positive') {
+            const count = positiveWordFrequency.get(word) ?? 0;
+            positiveWordFrequency.set(word, count + 1);
+          } else if (review.sentiment === 'negative') {
+            const count = negativeWordFrequency.get(word) ?? 0;
+            negativeWordFrequency.set(word, count + 1);
+          } else if (review.sentiment === 'neutral') {
+            const count = neutralWordFrequency.get(word) ?? 0;
+            neutralWordFrequency.set(word, count + 1);
+          }
         });
-      });
     });
 
-    return Array.from(wordFrequency.entries())
+    return Array.from(totalWordFrequency.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 20)
-      .map(([text, value]) => ({ text, value }));
+      .map(([text, value]) => ({
+        text,
+        positive: positiveWordFrequency.get(text) ?? 0,
+        negative: negativeWordFrequency.get(text) ?? 0,
+        neutral: neutralWordFrequency.get(text) ?? 0,
+        value,
+      }));
   }
 
   private getDataSourceDistribution(reviews: IReview[]): IPieChartData[] {

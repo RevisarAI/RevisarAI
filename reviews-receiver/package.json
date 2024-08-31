@@ -31,7 +31,7 @@
     "shared-types": "file:../shared-types",
     "start": "TZ='UTC' node dist/index.js",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

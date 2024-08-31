@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { randomBytes } from 'crypto';
 import { hash } from 'bcrypt';
 import ApiKey from '../models/api-key.model';
-import { AuthRequest } from '../common/auth.middleware';
+import { AuthRequest } from 'revisar-server-utils';
 import { daysAhead } from '../utils/date';
 import httpStatus from 'http-status';
 
@@ -44,16 +44,16 @@ class ApiKeyController extends BaseController<IApiKey> {
       const plainApiKey = `${businessId}:${randomBytes(32).toString('hex')}`;
       const hashedApiKey = await hash(plainApiKey, 10);
 
-      const newApiKey = new ApiKey({ key: hashedApiKey, businessId, expiry, revoked: false });
-      await newApiKey.save();
-      return res.status(httpStatus.CREATED).json(ICreateApiKeyResponseSchema.parse({ ...newApiKey, key: plainApiKey }));
+      const newApiKey = await new ApiKey({ key: hashedApiKey, businessId, expiry, revoked: false }).save();
+      const parsedApiKey = ICreateApiKeyResponseSchema.parse({ ...newApiKey.toJSON(), key: plainApiKey });
+      return res.status(httpStatus.CREATED).json(parsedApiKey);
     } catch (err) {
       this.debug(
         `Error generating API key for ${businessId} as requested by user mail "${email}"`,
         (err as Error).message,
         (err as Error).stack || 'no stacktrace'
       );
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send();
+      return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -64,15 +64,13 @@ class ApiKeyController extends BaseController<IApiKey> {
     this.debug(`Revoking API key ${id} for ${businessId} as requested by user mail "${email}"`);
 
     try {
-      const key = await ApiKey.findOne({ _id: id, businessId });
+      const key = await ApiKey.findOneAndUpdate({ _id: id, businessId }, { revoked: true }, { new: true });
       if (!key) {
         return res.sendStatus(httpStatus.NOT_FOUND);
       }
 
-      key.revoked = true;
-      await key.save();
       this.debug(`Successfully revoked API key ${id} for ${businessId}`);
-      return res.status(httpStatus.NO_CONTENT).json(key);
+      return res.status(httpStatus.NO_CONTENT).json(IApiKeyMinimalSchema.parse(key));
     } catch (err) {
       this.debug(
         `Error revoking API key ${id} for ${businessId} as requested by user mail "${email}"`,

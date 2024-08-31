@@ -1,8 +1,12 @@
-import { IndexDirection, IndexOptions, SchemaDefinition } from 'mongoose';
+import { IndexDefinition, IndexDirection, IndexOptions, SchemaDefinition } from 'mongoose';
 import { IApiKey, IActionItem, IReview, IWeeklyActionItems } from './types';
 
+type IndexDef<T> = IndexDefinition & {
+  [key in keyof T]: IndexDirection; // Just means { keyInT: 1, otherKeyInT: -1 }
+};
+
 interface SchemaIndex<T> {
-  index: Partial<Record<keyof T, IndexDirection>>;
+  index: IndexDef<T>;
   options?: IndexOptions;
 }
 
@@ -100,6 +104,12 @@ const ActionItemMongooseSchema: IMongooseSchemaConfig<IActionItem> = {
     value: {
       type: String,
       required: true,
+    },
+    priority: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 10,
     },
     isCompleted: {
       type: Boolean,

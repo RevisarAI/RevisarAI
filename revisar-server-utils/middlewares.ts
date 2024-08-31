@@ -5,9 +5,7 @@ import { z } from 'zod';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 import { IUserDetails } from 'shared-types';
-import { AuthRequest } from '../revisar-server-utils/middlewares'
-import config from './config'
-
+import { AuthRequest } from '../revisar-server-utils/middlewares';
 
 export { Request as AuthRequest };
 
@@ -52,18 +50,20 @@ declare global {
   }
 }
 
-export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = extractBearerToken(req);
-  if (!token) return res.status(httpStatus.UNAUTHORIZED).send('No token provided');
+export const authMiddleware = (accessTokenSecret: string) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    const token = extractBearerToken(req);
+    if (!token) return res.status(httpStatus.UNAUTHORIZED).send('No token provided');
 
-  try {
-    const user = <IUserDetails>jwt.verify(token, config.accessTokenSecret);
-    req.user = user;
-    return next();
-  } catch (err) {
-    logger.error(err);
-    return res.status(httpStatus.UNAUTHORIZED).send((err as Error).message);
-  }
+    try {
+      const user = <IUserDetails>jwt.verify(token, accessTokenSecret);
+      req.user = user;
+      return next();
+    } catch (err) {
+      logger.error(err);
+      return res.status(httpStatus.UNAUTHORIZED).send((err as Error).message);
+    }
+  };
 };
 
 const extractBearerToken = (req: Request): string | undefined => {

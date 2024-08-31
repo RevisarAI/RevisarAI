@@ -5,15 +5,15 @@ import { Text } from '@visx/text';
 import { scaleLog } from '@visx/scale';
 import Wordcloud from '@visx/wordcloud/lib/Wordcloud';
 import WordCloudSkeleton from '../skeletons/WordCountSkeleton';
+import { sentimentColors } from '../reviews/HighlightedText';
 
 interface WordCloudPanelProps {
   data: IWordFrequency[];
   height: number;
   loading: boolean;
-  colors: string[];
 }
 
-const WordCloudPanel: React.FC<WordCloudPanelProps> = ({ data, height, loading, colors }: WordCloudPanelProps) => {
+const WordCloudPanel: React.FC<WordCloudPanelProps> = ({ data, height, loading }: WordCloudPanelProps) => {
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
   const handleBoxWidth = useCallback((node?: HTMLDivElement) => {
@@ -33,6 +33,16 @@ const WordCloudPanel: React.FC<WordCloudPanelProps> = ({ data, height, loading, 
 
   const fixedValueGenerator = () => 0.5;
   const fontSizeSetter = (word: IWordFrequency) => fontScale(word.value);
+
+  const getMainColor = (word: IWordFrequency) => {
+    if (word.positive > word.negative && word.positive > word.neutral) {
+      return sentimentColors.positive.main
+    } else if (word.negative > word.positive && word.negative > word.neutral) {
+      return sentimentColors.negative.main
+    } else {
+      return sentimentColors.neutral.main
+    }
+  };
 
   return (
     <Paper style={{ padding: 16, borderRadius: 15 }}>
@@ -58,15 +68,16 @@ const WordCloudPanel: React.FC<WordCloudPanelProps> = ({ data, height, loading, 
             {(cloudWords) =>
               cloudWords.map((w, i) => (
                 <Text
-                  key={w.text}
-                  fill={colors[i % colors.length]}
-                  textAnchor={'middle'}
-                  transform={`translate(${w.x}, ${w.y}) rotate(${w.rotate})`}
-                  fontSize={w.size}
-                  fontFamily={w.font}
-                >
-                  {w.text}
-                </Text>
+                key={w.text}
+                fill={getMainColor(w as IWordFrequency)}
+                textAnchor={'middle'}
+                transform={`translate(${w.x}, ${w.y}) rotate(${w.rotate})`}
+                fontSize={w.size}
+                fontFamily={w.font}
+              >
+                {w.text}
+              </Text>
+
               ))
             }
           </Wordcloud>

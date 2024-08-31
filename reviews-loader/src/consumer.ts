@@ -1,10 +1,11 @@
 import OpenAI from 'openai';
-import { IRawReview, IReview, IReviewAnalaysis } from 'shared-types';
+import { IRawReview, IReview, IReviewAnalaysis, IReviewAnalysisSchema } from 'shared-types';
 import createLogger from 'revisar-server-utils/logger';
 import reviewModel from './models/review.model';
 
 import { Consumer, Kafka, EachMessagePayload } from 'kafkajs';
 import config from './config';
+import { getSentimentRatingPrompt, getPhrasesPrompt, getImportancePrompt } from './prompt';
 
 export class ReviewsConsumer {
   private kafkaConsumer: Consumer;
@@ -29,32 +30,49 @@ export class ReviewsConsumer {
         this.logger.info(`- ${prefix} ${message.key}#${message.value}`);
 
         const review: IRawReview = JSON.parse(message.value!.toString());
-        this.logger.info(`Sending review to Openai... Review: ${review.value}`);
-        const response = await this.openai.chat.completions.create({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You analyze reviews. Read the review, determine the sentiment (positive, negative, or neutral), provide a rating out of 10, and extract concise, relevant phrases that succinctly explain the sentiment exactly as they appear in the review. Only use phrases that are verbatim from the review text without rephrasing or summarizing. In the phrases, use as few words as possible, if possible even just a couple of keywords. Consider the overall tone, language used, and any specific praises or criticisms mentioned. In addition add importance rating between 0 to 100 - the rating is based on importance and the potential for generating actionable items from the review. Be as specific as possible.',
-            },
-            { role: 'user', content: message.value!.toString() },
-            {
-              role: 'system',
-              content:
-                'Output in JSON: { "sentiment": "sentiment_value", "rating": rating_value, "importance": "importance_rating", "phrases": [...] }',
-            },
-          ],
-        });
 
-        const reviewAnalysis: IReviewAnalaysis = JSON.parse(response.choices[0].message.content!);
+        const sentimentRatingPrompt = getSentimentRatingPrompt(review.value);
+        const sentimentRatingResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: sentimentRatingPrompt.messages,
+          top_p: sentimentRatingPrompt.topP,
+        });
+        const { sentiment, rating } = sentimentRatingPrompt.outputSchema.parse(
+          JSON.parse(sentimentRatingResponse.choices[0].message.content!)
+        );
+
+        const phrasesPrompt = getPhrasesPrompt(review.value, sentiment);
+        const phrasesResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: phrasesPrompt.messages,
+          top_p: phrasesPrompt.topP,
+        });
+        const phrases = phrasesPrompt.outputSchema.parse(JSON.parse(phrasesResponse.choices[0].message.content!));
+
+        const importancePrompt = getImportancePrompt(review.value, sentiment);
+        const importanceResponse = await this.openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: importancePrompt.messages,
+          top_p: importancePrompt.topP,
+        });
+        const importance = importancePrompt.outputSchema.parse(
+          parseInt(importanceResponse.choices[0].message.content!)
+        );
+
+        const reviewAnalysis: IReviewAnalaysis = {
+          sentiment,
+          rating,
+          phrases,
+          importance,
+        };
 
         this.logger.info(
           `Received analysis from Openai... Sentiment: ${reviewAnalysis.sentiment}, Rating: ${reviewAnalysis.rating}`
         );
-        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
-        await reviewModel.create(reviewWithAnalysis);
 
+        const reviewWithAnalysis: IReview = { ...review, ...reviewAnalysis };
+
+        await reviewModel.create(reviewWithAnalysis);
         this.kafkaConsumer.commitOffsets([{ topic, partition, offset: (parseInt(message.offset) + 1).toString() }]);
       },
     });
