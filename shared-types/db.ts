@@ -83,6 +83,12 @@ const ActionItemMongooseSchema: IMongooseSchemaConfig<IActionItem> = {
       type: String,
       required: true,
     },
+    priority: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 10,
+    },
     isCompleted: {
       type: Boolean,
       required: false,

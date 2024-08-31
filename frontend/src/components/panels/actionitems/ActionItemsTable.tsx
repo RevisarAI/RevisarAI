@@ -6,7 +6,7 @@ import ActionItemSkeleton from '@/components/skeletons/ActionItemSkeleton';
 import { range } from 'lodash';
 
 export interface ActionItemsColumn {
-  id: keyof Pick<IActionItem, 'value' | 'isCompleted'>;
+  id: keyof Pick<IActionItem, 'value' | 'isCompleted' | 'priority'>;
   label: string;
   minWidth: number;
   align?: 'right' | 'center' | 'left';

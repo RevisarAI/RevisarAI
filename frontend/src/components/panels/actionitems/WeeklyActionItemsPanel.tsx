@@ -14,7 +14,7 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height,
   const columns: readonly ActionItemsColumn[] = [
     {
       id: 'value',
-      label: 'Title',
+      label: 'Task',
       align: 'left',
       minWidth: 50,
       render: (value: IActionItem['value'], item: IActionItem) => (
@@ -22,8 +22,15 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height,
       ),
     },
     {
+      id: 'priority',
+      label: 'Impact',
+      align: 'center',
+      minWidth: 5,
+      render: (priority: IActionItem['priority']) => <>{priority}</>,
+    },
+    {
       id: 'isCompleted',
-      label: 'Is done',
+      label: '',
       align: 'left',
       minWidth: 5,
       render: (isCompleted: IActionItem['isCompleted'], item: IActionItem) => (
