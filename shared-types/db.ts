@@ -2,7 +2,7 @@ import { IndexDefinition, IndexDirection, IndexOptions, SchemaDefinition } from 
 import { IApiKey, IActionItem, IReview, IWeeklyActionItems } from './types';
 
 type IndexDef<T> = IndexDefinition & {
-  [key in keyof T]: IndexDirection; // Just means { keyInT: 1, otherKeyInT: -1 }
+  [key in keyof T]?: IndexDirection; // Just means { keyInT: 1, otherKeyInT: -1 }
 };
 
 interface SchemaIndex<T> {

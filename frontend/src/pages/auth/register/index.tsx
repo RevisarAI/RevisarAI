@@ -39,7 +39,8 @@ const RegisterPage: React.FC = () => {
     businessId: auth.user?.businessId,
   };
 
-  const registerForm = useForm<IClient & { confirmPassword: string }>({
+  type INewClient = Omit<IClient, '_id'>;
+  const registerForm = useForm<INewClient & { confirmPassword: string }>({
     defaultValues: {
       email: '',
       password: '',

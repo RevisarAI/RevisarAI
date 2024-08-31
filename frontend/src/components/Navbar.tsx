@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
   const auth = useAuth();
   const navigate = useNavigate();
 
-  const handleRedirect = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
+  const handleRedirect = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
     setSelectedIndex(index);
     navigate({ to: navbarItems[index].link || '/' });
   };

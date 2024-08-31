@@ -27,7 +27,7 @@ const SentimentOverTimePanel: React.FC<SentimentOverTimePanelProps> = ({
         <Box mt={2}>
           {/* Add box for responsive margin*/}
           <BarChart
-            dataset={data}
+            dataset={data as Record<string, any>[]}
             xAxis={[{ scaleType: 'band', dataKey: 'date' }]}
             height={height}
             series={Object.values(SentimentEnum).map((sentiment) => ({
