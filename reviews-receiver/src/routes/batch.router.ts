@@ -55,10 +55,6 @@ const batchRouter = Router();
  *         schema:
  *          type: object
  *          properties:
- *           businessId:
- *            type: string
- *            description: The ID of the business that the reviews are for
- *            example: '1asdasdasfd'
  *           reviews:
  *            type: array
  *            items:
