@@ -46,7 +46,7 @@ const initApp = async () => {
   };
 
   const specs = swaggerJsDoc(swaggerOptions);
-  app.use(express.static('public'));
+  app.use(express.static(`${__dirname}/public`));
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
   app.use('/api', apiRoute);
 
