@@ -1,4 +1,4 @@
-import { Checkbox, Paper, Typography } from '@mui/material';
+import { Checkbox, Grid, Paper, Typography } from '@mui/material';
 import ActionItemsTable, { ActionItemsColumn } from './ActionItemsTable';
 import { IActionItem } from 'shared-types';
 import './WeeklyActionItemsPanel.css';
@@ -44,7 +44,13 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height,
       <Typography variant="body1" sx={{ fontWeight: 'semibold' }}>
         Weekly action items
       </Typography>
-      <ActionItemsTable rows={data} columns={columns} loading={loading} />
+      {data?.length ? (
+        <ActionItemsTable rows={data} columns={columns} loading={loading} />
+      ) : (
+        <Grid container justifyContent={'center'} alignItems={'center'} height={'100%'}>
+          <Typography>No weekly items yet</Typography>
+        </Grid>
+      )}
     </Paper>
   );
 };
