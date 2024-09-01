@@ -26,7 +26,7 @@ const WeeklyActionItemsPanel: React.FC<ActionItemsPanelProps> = ({ data, height,
       label: 'Impact',
       align: 'center',
       minWidth: 5,
-      render: (priority: IActionItem['priority']) => <>{priority}</>,
+      render: (priority: IActionItem['priority']) => <>{priority >= 8 ? 'High' : priority >= 6 ? 'Medium' : 'Low'}</>,
     },
     {
       id: 'isCompleted',
