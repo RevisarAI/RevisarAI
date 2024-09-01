@@ -50,6 +50,9 @@ export class AuthenticationService {
 
   async refreshAccessToken(refreshToken: string, signal?: AbortSignal): Promise<IUserTokens> {
     // TODO: implement
+    console.log(signal);
+    console.log(refreshToken);
+    return { accessToken: '', refreshToken: '' };
   }
 
   async register(newUser: ICreateUser): Promise<IUserTokens> {

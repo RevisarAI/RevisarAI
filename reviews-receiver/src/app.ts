@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import batchRouter from './routes/batch.router';
-import { connectMetadata } from './db';
+import { connectMetadataDb } from './db';
 
 const app = express();
 
@@ -14,7 +14,7 @@ const initApp = async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use('/batch', batchRouter);
 
-  app.use((req, res, next) => {
+  app.use((_, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', '*');
     res.header('Access-Control-Allow-Headers', '*');
@@ -22,7 +22,7 @@ const initApp = async () => {
     next();
   });
 
-  await connectMetadata();
+  await connectMetadataDb();
 
   const swaggerOptions: swaggerJsDoc.Options = {
     definition: {

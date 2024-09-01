@@ -1,4 +1,4 @@
-import { Checkbox, Paper, Typography } from '@mui/material';
+import { Checkbox, Grid, Paper, Typography } from '@mui/material';
 import ActionItemsTable, { ActionItemsColumn } from './ActionItemsTable';
 import { IActionItem } from 'shared-types';
 import './WeeklyActionItemsPanel.css';

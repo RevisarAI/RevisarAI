@@ -17,6 +17,7 @@ const dataSourceIcons: Record<DataSourceEnum, string> = {
   API: ApiSvg,
   TripAdvisor: TripAdvisorSvg,
   Google: GoogleSvg,
+  UserInterface: ApiSvg,
 };
 
 const columns: readonly ReviewColumn[] = [

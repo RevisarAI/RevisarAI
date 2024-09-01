@@ -1,10 +1,21 @@
-import { SchemaDefinition } from 'mongoose';
+import { IndexDefinition, IndexDirection, IndexOptions, SchemaDefinition } from 'mongoose';
 import { IApiKey, IActionItem, IReview, IWeeklyActionItems } from './types';
+
+type IndexDef<T> = IndexDefinition & {
+  [key in keyof T]?: IndexDirection; // Just means { keyInT: 1, otherKeyInT: -1 }
+};
+
+interface SchemaIndex<T> {
+  index: IndexDef<T>;
+  options?: IndexOptions;
+}
 
 export interface IMongooseSchemaConfig<T> {
   name: string;
   schema: SchemaDefinition<T>;
+  indexes?: SchemaIndex<T>[];
 }
+
 export const ReviewMongooseSchema: IMongooseSchemaConfig<IReview> = {
   name: 'Review',
   schema: {
@@ -74,6 +85,13 @@ export const ApiKeyMongooseSchema: IMongooseSchemaConfig<IApiKey> = {
       default: false,
     },
   },
+  indexes: [
+    // A businessId cannot have 2 keys with the same name
+    {
+      index: { businessId: 1, name: 1 },
+      options: { unique: true },
+    },
+  ],
 };
 
 const ActionItemMongooseSchema: IMongooseSchemaConfig<IActionItem> = {

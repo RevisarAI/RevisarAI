@@ -1,7 +1,20 @@
+import { IMongooseSchemaConfig } from 'shared-types/db';
 import createLogger from './logger';
-import { Mongoose } from 'mongoose';
+import { Model, Mongoose } from 'mongoose';
 
 const logger = createLogger('db');
+
+export const generateMongooseModel = <T>(db: Mongoose, config: IMongooseSchemaConfig<T>): Model<T> => {
+  logger.info(`Creating schema and model "${config.name}"`);
+
+  const schema = new db.Schema(config.schema);
+
+  config.indexes?.forEach(({ index, options }) => {
+    schema.index(index, options);
+  });
+
+  return db.model<T>(config.name, schema);
+};
 
 export default async (dbUrl: string, dbName: string, mongoose: Mongoose) => {
   const url = `mongodb://${dbUrl}/${dbName}`;

@@ -36,11 +36,11 @@ const WordCloudPanel: React.FC<WordCloudPanelProps> = ({ data, height, loading }
 
   const getMainColor = (word: IWordFrequency) => {
     if (word.positive > word.negative && word.positive > word.neutral) {
-      return sentimentColors.positive.main
+      return sentimentColors.positive.main;
     } else if (word.negative > word.positive && word.negative > word.neutral) {
-      return sentimentColors.negative.main
+      return sentimentColors.negative.main;
     } else {
-      return sentimentColors.neutral.main
+      return sentimentColors.neutral.main;
     }
   };
 
@@ -66,18 +66,17 @@ const WordCloudPanel: React.FC<WordCloudPanelProps> = ({ data, height, loading }
             padding={2}
           >
             {(cloudWords) =>
-              cloudWords.map((w, i) => (
+              cloudWords.map((w) => (
                 <Text
-                key={w.text}
-                fill={getMainColor(w as IWordFrequency)}
-                textAnchor={'middle'}
-                transform={`translate(${w.x}, ${w.y}) rotate(${w.rotate})`}
-                fontSize={w.size}
-                fontFamily={w.font}
-              >
-                {w.text}
-              </Text>
-
+                  key={w.text}
+                  fill={getMainColor(w as IWordFrequency)}
+                  textAnchor={'middle'}
+                  transform={`translate(${w.x}, ${w.y}) rotate(${w.rotate})`}
+                  fontSize={w.size}
+                  fontFamily={w.font}
+                >
+                  {w.text}
+                </Text>
               ))
             }
           </Wordcloud>

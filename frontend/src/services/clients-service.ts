@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IBusinessDetails, IUserDetails, IUserTokens } from 'shared-types';
+import { IBusinessProfile, IUserTokens } from 'shared-types';
 import { createApiClient } from './api-client';
 
 export class ClientsService {
@@ -9,7 +9,7 @@ export class ClientsService {
     this.apiClient = createApiClient('/clients');
   }
 
-  async updateClientInfo(business: IBusinessDetails): Promise<IUserTokens>{
+  async updateClientInfo(business: IBusinessProfile): Promise<IUserTokens> {
     return (await this.apiClient.put('/businesses/', business)).data;
   }
 }
